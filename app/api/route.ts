@@ -26,12 +26,12 @@ You will only reply with the name, cost, category in JSON format, and nothing el
   } catch (error) {
     console.log('received error');
 
-    if (error.response) {
-      console.log(error.response.status);
-      console.log(error.response.data);
-    } else {
-      console.log(error.message);
-    }
+    // if (error.response) {
+    //   console.log(error.response.status);
+    //   console.log(error.response.data);
+    // } else {
+    //   console.log(error.message);
+    // }
   }
 }
 
