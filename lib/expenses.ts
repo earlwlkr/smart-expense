@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
-type Expense = {
+export type Expense = {
+  id: string;
   name: string;
   amount: string;
   category: string;

@@ -35,25 +35,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useExpensesStore } from '@/lib/expenses';
+import { Expense, useExpensesStore } from '@/lib/expenses';
 
-export type Payment = {
-  id: string;
-  item: string;
-  amount: number;
-  category: 'dining';
-};
-
-const data: Payment[] = [
-  {
-    id: 'm5gr84i9',
-    item: 'Burger King',
-    category: 'dining',
-    amount: 316000,
-  },
-];
-
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<Expense>[] = [
   {
     id: 'select',
     header: ({ table }) => (
