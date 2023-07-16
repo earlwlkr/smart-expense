@@ -35,46 +35,23 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useExpensesStore } from '@/lib/expenses';
+
+export type Payment = {
+  id: string;
+  item: string;
+  amount: number;
+  category: 'dining';
+};
 
 const data: Payment[] = [
   {
     id: 'm5gr84i9',
-    amount: 316,
-    status: 'success',
-    email: 'ken99@yahoo.com',
-  },
-  {
-    id: '3u1reuv4',
-    amount: 242,
-    status: 'success',
-    email: 'Abe45@gmail.com',
-  },
-  {
-    id: 'derv1ws0',
-    amount: 837,
-    status: 'processing',
-    email: 'Monserrat44@gmail.com',
-  },
-  {
-    id: '5kma53ae',
-    amount: 874,
-    status: 'success',
-    email: 'Silas22@gmail.com',
-  },
-  {
-    id: 'bhqecj4p',
-    amount: 721,
-    status: 'failed',
-    email: 'carmella@hotmail.com',
+    item: 'Burger King',
+    category: 'dining',
+    amount: 316000,
   },
 ];
-
-export type Payment = {
-  id: string;
-  amount: number;
-  status: 'pending' | 'processing' | 'success' | 'failed';
-  email: string;
-};
 
 export const columns: ColumnDef<Payment>[] = [
   {
@@ -97,26 +74,19 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('status')}</div>
-    ),
-  },
-  {
-    accessorKey: 'email',
+    accessorKey: 'name',
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Email
+          Item
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue('email')}</div>,
+    cell: ({ row }) => <div>{row.getValue('name')}</div>,
   },
   {
     accessorKey: 'amount',
@@ -125,13 +95,20 @@ export const columns: ColumnDef<Payment>[] = [
       const amount = parseFloat(row.getValue('amount'));
 
       // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat('en-US', {
+      const formatted = new Intl.NumberFormat('vi-VN', {
         style: 'currency',
-        currency: 'USD',
+        currency: 'VND',
       }).format(amount);
 
       return <div className="text-right font-medium">{formatted}</div>;
     },
+  },
+  {
+    accessorKey: 'category',
+    header: 'Category',
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue('category')}</div>
+    ),
   },
   {
     id: 'actions',
@@ -154,9 +131,9 @@ export const columns: ColumnDef<Payment>[] = [
             >
               Copy payment ID
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
+            {/* <DropdownMenuSeparator />
             <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>View payment details</DropdownMenuItem> */}
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -172,9 +149,10 @@ export function Expenses() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const expenses = useExpensesStore((state) => state.items);
 
   const table = useReactTable({
-    data,
+    data: expenses,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -196,10 +174,10 @@ export function Expenses() {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
+          placeholder="Filter..."
+          value={(table.getColumn('item')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('email')?.setFilterValue(event.target.value)
+            table.getColumn('item')?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
