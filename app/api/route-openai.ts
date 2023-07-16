@@ -16,12 +16,12 @@ async function runCompletion(text: string) {
     console.log(completion.data.choices[0].text);
     return completion.data.choices[0].text;
   } catch (error) {
-    if (error.response) {
-      console.log(error.response.status);
-      console.log(error.response.data);
-    } else {
-      console.log(error.message);
-    }
+    // if (error.response) {
+    //   console.log(error.response.status);
+    //   console.log(error.response.data);
+    // } else {
+    //   console.log(error.message);
+    // }
   }
 }
 
