@@ -17,11 +17,11 @@ You will only reply with the name, cost, category in JSON format, and nothing el
         body: JSON.stringify({ inputs: prompt }),
       }
     );
-    const result = await response.json();
-    const raw = result[0].generated_text;
+    const result = (await response.json()) as { generated_text: string }[];
+    const raw = (result[0] as any).generated_text;
     const [name, amount, category] = raw
       .split(',')
-      .map((item) => item.split('[')[1].replace(/]/g, '').trim());
+      .map((item: string) => item.split('[')[1].replace(/]/g, '').trim());
     return { name, amount, category };
   } catch (error) {
     console.log('received error');

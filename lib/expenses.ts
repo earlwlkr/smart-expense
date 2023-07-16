@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 
-export const useExpensesStore = create((set) => ({
+type Expense = {
+  name: string;
+  amount: string;
+  category: string;
+};
+
+export const useExpensesStore = create<{ items: Expense[] }>((set) => ({
   items: [],
-  add: (item) => set((state) => ({ items: [item, ...state.items] })),
+  add: (item: Expense) => set((state) => ({ items: [item, ...state.items] })),
 }));
