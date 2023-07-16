@@ -7,7 +7,7 @@ import { useExpensesStore } from '@/lib/expenses';
 
 export function ExpenseInput() {
   const addExpense = useExpensesStore((state) => state.add);
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   return (
     <>
       <div className="py-4">
@@ -19,7 +19,7 @@ export function ExpenseInput() {
           const response = await fetch('/api', {
             method: 'POST',
             body: JSON.stringify({
-              q: inputRef.current.value as string,
+              q: inputRef.current?.value,
             }),
           });
           const result = await response.json();
