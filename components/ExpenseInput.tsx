@@ -1,44 +1,47 @@
-'use client';
-
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useRef } from 'react';
-import { useExpensesStore } from '@/lib/expenses';
-import { useToast } from '@/components/ui/use-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export function ExpenseInput() {
-  const { toast } = useToast();
-  const addExpense = useExpensesStore((state) => state.add);
-  const inputRef = useRef<HTMLInputElement>(null);
-
   return (
-    <div className="py-4 flex flex-col lg:flex-row">
-      <div className="lg:pr-4 pb-4 lg:pb-0">
-        <Input ref={inputRef} type="text" placeholder="enter your expense..." />
-      </div>
-
-      <Button
-        onClick={async () => {
-          try {
-            const response = await fetch('/api', {
-              method: 'POST',
-              body: JSON.stringify({
-                q: inputRef.current?.value,
-              }),
-            });
-            const result = await response.json();
-            console.log('result', result);
-            addExpense(result);
-          } catch (error) {
-            toast({
-              title: 'Error',
-              description: 'Cannot generate',
-            });
-          }
-        }}
-      >
-        Add
-      </Button>
-    </div>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">Add</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Add Expense</DialogTitle>
+          {/* <DialogDescription>
+            Make changes to your profile here. Click save when you're done.
+          </DialogDescription> */}
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="name" className="text-right">
+              Name
+            </Label>
+            <Input id="name" value="Coffee" className="col-span-3" />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="amount" className="text-right">
+              Amount
+            </Label>
+            <Input id="amount" value="20" className="col-span-3" />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button type="submit">Save changes</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
