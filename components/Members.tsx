@@ -8,10 +8,14 @@ export function Members() {
   const members = useMembersStore((state) => state.members);
 
   return (
-    <>
-      {members.map((item) => (
-        <div key={item.id}>{item.name}</div>
+    <p className="text-muted-foreground py-2">
+      With
+      {members.map((item, index) => (
+        <span key={item.id} className="pl-1">
+          {item.name}
+          {index < members.length - 1 ? ',' : ''}
+        </span>
       ))}
-    </>
+    </p>
   );
 }

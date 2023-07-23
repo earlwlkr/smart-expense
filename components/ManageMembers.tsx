@@ -14,13 +14,14 @@ import { useMembersStore } from '@/lib/stores/members';
 import { useRef, useState } from 'react';
 
 export function ManageMembers() {
+  const [open, setOpen] = useState(false);
   const [members, setMembers] = useState(useMembersStore.getState().members);
   const newMemberInputRef = useRef<HTMLInputElement>(null);
   const updateMembers = useMembersStore((store) => store.update);
 
   return (
     <>
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant="outline">Manage members</Button>
         </DialogTrigger>
@@ -29,17 +30,37 @@ export function ManageMembers() {
             <DialogTitle>Manage members</DialogTitle>
           </DialogHeader>
 
-          <div className="grid py-4">
+          <div className="flex flex-col py-4 space-y-2 w-80">
             {members.map((item) => (
-              <div key={item.id}>{item.name}</div>
+              <div
+                key={item.id}
+                className="flex max-w-sm items-center space-x-2"
+              >
+                <div className="grow">{item.name}</div>
+                <Button
+                  type="button"
+                  variant="link"
+                  onClick={() => {
+                    setMembers((members) =>
+                      members.filter((member) => member.id !== item.id)
+                    );
+                  }}
+                >
+                  Remove
+                </Button>
+              </div>
             ))}
-            <div className="flex w-full max-w-sm items-center">
+            <div className="flex max-w-sm items-center space-x-2">
               <Input placeholder="New member" ref={newMemberInputRef} />
               <Button
                 type="button"
                 variant="ghost"
                 onClick={() => {
-                  if (!newMemberInputRef.current) return;
+                  if (
+                    !newMemberInputRef.current ||
+                    !newMemberInputRef.current.value
+                  )
+                    return;
 
                   setMembers([
                     ...members,
@@ -60,6 +81,7 @@ export function ManageMembers() {
               type="submit"
               onClick={() => {
                 updateMembers(members);
+                setOpen(false);
               }}
             >
               Save changes

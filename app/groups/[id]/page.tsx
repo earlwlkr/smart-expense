@@ -2,6 +2,7 @@ import { ExpenseInput } from '@/components/ExpenseInput';
 import { Expenses } from '@/components/Expenses';
 import { ManageMembers } from '@/components/ManageMembers';
 import { Members } from '@/components/Members';
+import { Separator } from '@/components/ui/separator';
 
 export default function GroupPage() {
   return (
@@ -10,8 +11,11 @@ export default function GroupPage() {
         Da Lat Trip
       </h1>
       <Members />
-      <ManageMembers />
-      <ExpenseInput />
+      <div className="flex items-center space-x-4 h-8">
+        <ManageMembers />
+        <Separator orientation="vertical" />
+        <ExpenseInput />
+      </div>
       <Expenses />
     </div>
   );
