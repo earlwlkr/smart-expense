@@ -4,6 +4,7 @@ import { Slot } from '@radix-ui/react-slot';
 import {
   Controller,
   ControllerProps,
+  FieldError,
   FieldPath,
   FieldValues,
   FormProvider,
@@ -39,24 +40,44 @@ const FormField = <
   );
 };
 
-const useFormField = () => {
+type UseFormFieldValues = {
+  invalid: boolean;
+  isDirty: boolean;
+  isTouched: boolean;
+  error?: FieldError | undefined;
+  id: string;
+  name: string;
+  formItemId: string;
+  formDescriptionId: string;
+  formMessageId: string;
+};
+
+const useFormField = (): UseFormFieldValues => {
   const fieldContext = React.useContext(FormFieldContext);
   const itemContext = React.useContext(FormItemContext);
   const formContext = useFormContext();
-  if (!formContext) {
-    return {};
-  }
-
-  const fieldState = formContext.getFieldState(
-    fieldContext.name,
-    formContext.formState
-  );
 
   if (!fieldContext) {
     throw new Error('useFormField should be used within <FormField>');
   }
 
   const { id } = itemContext;
+
+  if (!formContext) {
+    return {
+      id,
+      name: fieldContext.name,
+      formItemId: `${id}-form-item`,
+      formDescriptionId: `${id}-form-item-description`,
+      formMessageId: `${id}-form-item-message`,
+      // ...fieldState,
+    } as UseFormFieldValues;
+  }
+
+  const fieldState = formContext.getFieldState(
+    fieldContext.name,
+    formContext.formState
+  );
 
   return {
     id,
