@@ -2,19 +2,16 @@
 
 import * as React from 'react';
 
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { useMembersStore } from '@/lib/stores/members';
 
 export function Members() {
-  const data = [
-    {
-      id: 1,
-      name: 'Mike',
-    },
-    {
-      id: 2,
-      name: 'Kallie',
-    },
-  ];
+  const members = useMembersStore((state) => state.members);
 
-  return data.map((item) => <div key={item.id}>{item.name}</div>);
+  return (
+    <>
+      {members.map((item) => (
+        <div key={item.id}>{item.name}</div>
+      ))}
+    </>
+  );
 }

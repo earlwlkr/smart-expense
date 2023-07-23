@@ -35,7 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Expense, useExpensesStore } from '@/lib/expenses';
+import { Expense, useExpensesStore } from '@/lib/stores/expenses';
 
 export const columns: ColumnDef<Expense>[] = [
   {

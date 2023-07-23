@@ -1,5 +1,6 @@
 import { ExpenseInput } from '@/components/ExpenseInput';
 import { Expenses } from '@/components/Expenses';
+import { ManageMembers } from '@/components/ManageMembers';
 import { Members } from '@/components/Members';
 
 export default function GroupPage() {
@@ -9,6 +10,7 @@ export default function GroupPage() {
         Da Lat Trip
       </h1>
       <Members />
+      <ManageMembers />
       <ExpenseInput />
       <Expenses />
     </div>

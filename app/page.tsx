@@ -1,11 +1,9 @@
-import { ExpenseInput } from '@/components/ExpenseInput';
-import { Expenses } from '@/components/Expenses';
+import { Groups } from '@/components/Groups';
 
 export default function Home() {
   return (
     <div className="container">
-      <ExpenseInput />
-      <Expenses />
+      <Groups />
     </div>
   );
 }
