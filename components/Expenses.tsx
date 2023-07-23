@@ -36,6 +36,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Expense, useExpensesStore } from '@/lib/stores/expenses';
+import { format } from 'date-fns';
 
 export const columns: ColumnDef<Expense>[] = [
   {
@@ -91,7 +92,21 @@ export const columns: ColumnDef<Expense>[] = [
     accessorKey: 'category',
     header: 'Category',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('category')}</div>
+      <div className="capitalize">{row.getValue('category').name}</div>
+    ),
+  },
+  {
+    accessorKey: 'handledBy',
+    header: 'By',
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue('handledBy').name}</div>
+    ),
+  },
+  {
+    accessorKey: 'date',
+    header: 'Date',
+    cell: ({ row }) => (
+      <div className="capitalize">{format(row.getValue('date'), 'PPPP')}</div>
     ),
   },
   // {

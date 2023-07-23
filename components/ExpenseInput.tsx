@@ -23,13 +23,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select';
-import { useMembersStore } from '@/lib/stores/members';
+import { Member, useMembersStore } from '@/lib/stores/members';
 import { DatePicker } from './DatePicker';
 import { useExpensesStore } from '@/lib/stores/expenses';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
+  Form,
   FormField,
   FormItem,
   FormLabel,
@@ -46,6 +47,7 @@ import {
 } from '@/components/ui/popover';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
+import { useId, useState } from 'react';
 
 const addExpenseFormSchema = z.object({
   name: z.string().min(2).max(50),
@@ -58,6 +60,7 @@ const addExpenseFormSchema = z.object({
 type AddExpenseFormValues = z.infer<typeof addExpenseFormSchema>;
 
 export function ExpenseInput() {
+  const [open, setOpen] = useState(false);
   const categories = useCategoriesStore((store) => store.categories);
   const members = useMembersStore((store) => store.members);
   const addExpense = useExpensesStore((store) => store.add);
@@ -77,10 +80,17 @@ export function ExpenseInput() {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
+    addExpense({
+      id: Date.now().toString(),
+      ...values,
+      category: categories.find((item) => item.id === values.category),
+      handledBy: members.find((item) => item.id === values.handledBy),
+    });
+    setOpen(false);
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">Add expense</Button>
       </DialogTrigger>
@@ -94,7 +104,9 @@ export function ExpenseInput() {
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(onSubmit, (errors) => {
+              console.log('form errors', errors);
+            })}
             className="space-y-4 py-4"
           >
             <FormField

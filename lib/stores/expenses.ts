@@ -5,9 +5,10 @@ export type Expense = {
   id: string;
   name: string;
   amount: string;
-  category: string;
+  category: { id: string; name: string };
   handledBy: Member;
   participants: Member[];
+  date: Date;
 };
 
 type ExpensesState = {
