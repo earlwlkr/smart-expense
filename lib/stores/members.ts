@@ -15,5 +15,5 @@ export const useMembersStore = create<MembersState>((set) => ({
     { id: '1', name: 'Mike' },
     { id: '2', name: 'Kallie' },
   ],
-  update: (members: Member[]) => set({ members }, true),
+  update: (members: Member[]) => set({ members }),
 }));
