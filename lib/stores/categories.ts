@@ -1,20 +1,20 @@
 import { create } from 'zustand';
-
-export type Category = {
-  id: string;
-  name: string;
-};
+import { Category } from '../types';
 
 type CategoriesState = {
   categories: Category[];
   add: (item: Category) => void;
+  set: (categories: Category[]) => void;
 };
 
+const DEFAULT_CATEGORIES = [
+  { id: '1', name: 'Food' },
+  { id: '2', name: 'Drinks' },
+];
+
 export const useCategoriesStore = create<CategoriesState>((set) => ({
-  categories: [
-    { id: '1', name: 'Food' },
-    { id: '2', name: 'Drinks' },
-  ],
+  categories: DEFAULT_CATEGORIES,
   add: (item: Category) =>
     set((state) => ({ categories: [item, ...state.categories] })),
+  set: (categories: Category[]) => set({ categories }),
 }));

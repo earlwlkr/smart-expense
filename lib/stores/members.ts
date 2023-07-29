@@ -1,9 +1,5 @@
 import { create } from 'zustand';
-
-export type Member = {
-  id: string;
-  name: string;
-};
+import { Member } from '../types';
 
 type MembersState = {
   members: Member[];
@@ -11,9 +7,6 @@ type MembersState = {
 };
 
 export const useMembersStore = create<MembersState>((set) => ({
-  members: [
-    { id: '1', name: 'Mike' },
-    { id: '2', name: 'Kallie' },
-  ],
+  members: [],
   update: (members: Member[]) => set({ members }),
 }));

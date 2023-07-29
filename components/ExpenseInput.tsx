@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -13,18 +12,15 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useCategoriesStore } from '@/lib/stores/categories';
-import { CategorySelect } from './CategorySelect';
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from './ui/select';
-import { Member, useMembersStore } from '@/lib/stores/members';
-import { DatePicker } from './DatePicker';
+import { useMembersStore } from '@/lib/stores/members';
 import { useExpensesStore } from '@/lib/stores/expenses';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -35,7 +31,6 @@ import {
   FormItem,
   FormLabel,
   FormControl,
-  FormDescription,
   FormMessage,
 } from './ui/form';
 import { format } from 'date-fns';
@@ -47,7 +42,8 @@ import {
 } from '@/components/ui/popover';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
-import { useId, useState } from 'react';
+import { useState } from 'react';
+import { useGroupsStore } from '@/lib/stores/groups';
 
 const addExpenseFormSchema = z.object({
   name: z.string().min(2).max(50),
@@ -64,6 +60,7 @@ export function ExpenseInput() {
   const categories = useCategoriesStore((store) => store.categories);
   const members = useMembersStore((store) => store.members);
   const addExpense = useExpensesStore((store) => store.add);
+  const group = useGroupsStore((store) => store.group);
 
   const form = useForm<AddExpenseFormValues>({
     resolver: zodResolver(addExpenseFormSchema),
@@ -80,7 +77,7 @@ export function ExpenseInput() {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
-    addExpense({
+    addExpense(group.id, {
       id: Date.now().toString(),
       ...values,
       category: categories.find((item) => item.id === values.category),

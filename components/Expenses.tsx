@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useParams } from 'next/navigation';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -35,8 +36,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Expense, useExpensesStore } from '@/lib/stores/expenses';
+import { useExpensesStore } from '@/lib/stores/expenses';
 import { format } from 'date-fns';
+import { Expense } from '@/lib/types';
 
 export const columns: ColumnDef<Expense>[] = [
   {
@@ -92,21 +94,23 @@ export const columns: ColumnDef<Expense>[] = [
     accessorKey: 'category',
     header: 'Category',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('category').name}</div>
+      <div className="capitalize">{row.getValue('category')?.name}</div>
     ),
   },
   {
     accessorKey: 'handledBy',
     header: 'By',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('handledBy').name}</div>
+      <div className="capitalize">{row.getValue('handledBy')?.name}</div>
     ),
   },
   {
     accessorKey: 'date',
     header: 'Date',
     cell: ({ row }) => (
-      <div className="capitalize">{format(row.getValue('date'), 'PPPP')}</div>
+      <div className="capitalize">
+        {format(new Date(row.getValue('date')), 'PPPP')}
+      </div>
     ),
   },
   // {

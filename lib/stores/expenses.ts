@@ -1,22 +1,19 @@
 import { create } from 'zustand';
-import { Member } from './members';
-
-export type Expense = {
-  id: string;
-  name: string;
-  amount: string;
-  category: { id: string; name: string };
-  handledBy: Member;
-  participants: Member[];
-  date: Date;
-};
+import { pick } from 'lodash-es';
+import { Expense } from '../types';
+import { addExpense } from '../db/expenses';
 
 type ExpensesState = {
   items: Expense[];
-  add: (item: Expense) => void;
+  add: (groupId: string, item: Expense) => void;
+  set: (items: Expense[]) => void;
 };
 
 export const useExpensesStore = create<ExpensesState>((set) => ({
   items: [],
-  add: (item: Expense) => set((state) => ({ items: [item, ...state.items] })),
+  add: (groupId: string, item: Expense) => {
+    addExpense(groupId, pick(item, ['name', 'amount', 'date', 'handledBy']));
+    set((state) => ({ items: [item, ...state.items] }));
+  },
+  set: (items: Expense[]) => set({ items }),
 }));
