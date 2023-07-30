@@ -62,7 +62,7 @@ export default function AuthForm() {
               onChange={(event) => setPassword(event.target.value)}
             />
           </div>
-          <Button disabled={isLoading} onClick={handleSignUp}>
+          <Button type="button" disabled={isLoading} onClick={handleSignUp}>
             {isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
@@ -70,7 +70,7 @@ export default function AuthForm() {
           </Button>
         </div>
       </form>
-      <div className="relative">
+      {/* <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t" />
         </div>
@@ -87,7 +87,7 @@ export default function AuthForm() {
           <Icons.gitHub className="mr-2 h-4 w-4" />
         )}{' '}
         Github
-      </Button>
+      </Button> */}
     </div>
   );
 }

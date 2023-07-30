@@ -51,6 +51,7 @@
     "zustand": "^4.3.9"
   },
   "devDependencies": {
-    "@types/lodash-es": "^4.17.8"
+    "@types/lodash-es": "^4.17.8",
+    "encoding": "^0.1.13"
   }
 }
