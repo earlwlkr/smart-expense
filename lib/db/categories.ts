@@ -6,5 +6,7 @@ export const getCategories = async (groupId: string): Promise<Category[]> => {
     .from('categories')
     .select()
     .eq('groupId', groupId);
+  console.log('data', data);
+
   return data || [];
 };
