@@ -12,8 +12,13 @@ type ExpensesState = {
 export const useExpensesStore = create<ExpensesState>((set) => ({
   items: [],
   add: (groupId: string, item: Expense) => {
-    addExpense(groupId, pick(item, ['name', 'amount', 'date', 'handledBy']));
-    set((state) => ({ items: [item, ...state.items] }));
+    const data = {
+      ...pick(item, ['name', 'amount', 'date']),
+      handledBy: item.handledBy?.id,
+      category: item.category?.id,
+    };
+    addExpense(groupId, data);
+    set((state) => ({ items: [...state.items, item] }));
   },
   set: (items: Expense[]) => set({ items }),
 }));

@@ -11,13 +11,23 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useMembersStore } from '@/lib/stores/members';
-import { useRef, useState } from 'react';
+import { Member } from '@/lib/types';
+import { useEffect, useRef, useState } from 'react';
 
 export function ManageMembers() {
   const [open, setOpen] = useState(false);
-  const [members, setMembers] = useState(useMembersStore.getState().members);
+  const [members, setMembers] = useState<Member[]>([]);
   const newMemberInputRef = useRef<HTMLInputElement>(null);
   const updateMembers = useMembersStore((store) => store.update);
+
+  // Connect to the store on mount, disconnect on unmount, catch state-changes in a reference
+  useEffect(
+    () =>
+      useMembersStore.subscribe((state) => {
+        setMembers(state.members);
+      }),
+    [setMembers]
+  );
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
