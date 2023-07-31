@@ -6,5 +6,7 @@ export const getCategories = async (groupId: string): Promise<Category[]> => {
     .from('categories')
     .select()
     .eq('groupId', groupId);
-  return data || [];
+  return (
+    data?.map((item) => ({ id: item.id.toString(), name: item.name })) || []
+  );
 };
