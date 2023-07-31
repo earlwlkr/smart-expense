@@ -17,8 +17,8 @@ export type Expense = {
   id: string;
   name: string;
   amount: string;
-  category: { id: string; name: string };
-  handledBy: Member;
-  participants: Member[];
+  category?: Category;
+  handledBy?: Member;
+  participants?: Member[];
   date: Date;
 };

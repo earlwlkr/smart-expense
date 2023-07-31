@@ -82,6 +82,7 @@ export function ExpenseInput() {
       ...values,
       category: categories.find((item) => item.id === values.category),
       handledBy: members.find((item) => item.id === values.handledBy),
+      participants: [],
     });
     setOpen(false);
   }
