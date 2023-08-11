@@ -20,7 +20,7 @@ export const useExpensesStore = create<ExpensesState>((set) => ({
     const remoteData = {
       ...pick(item, ['name', 'amount', 'date']),
       handledBy: item.handledBy?.id,
-      category: item.category?.id,
+      categoryId: item.category?.id,
     };
     addExpense(groupId, remoteData);
     set((state) => ({ items: [...state.items, item] }));

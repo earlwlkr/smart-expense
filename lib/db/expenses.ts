@@ -1,3 +1,5 @@
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+
 import { Category, Expense, Member } from '../types';
 import supabase from './init';
 
@@ -40,7 +42,9 @@ type ExpenseInput = Omit<
 };
 
 export const addExpense = async (groupId: string, expense: ExpenseInput) => {
+  const supabase = createClientComponentClient();
+  const user = await supabase.auth.getUser();
   const { error } = await supabase
     .from('expenses')
-    .insert({ ...expense, groupId });
+    .insert({ ...expense, groupId, user_id: user.data.user?.id });
 };
