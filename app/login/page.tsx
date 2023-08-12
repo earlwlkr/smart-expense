@@ -10,7 +10,7 @@ import Link from 'next/link';
 export default function Login() {
   return (
     <>
-      <div className="container relative hidden h-[800px] flex-col justify-center md:grid lg:max-w-none lg:px-0">
+      <div className="container relative h-[800px] flex-col justify-center md:grid lg:max-w-none lg:px-0">
         <div className="lg:p-8">
           <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
             <AuthForm />
