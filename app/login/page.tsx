@@ -11,15 +11,6 @@ export default function Login() {
   return (
     <>
       <div className="container relative hidden h-[800px] flex-col justify-center md:grid lg:max-w-none lg:px-0">
-        <Link
-          href="/examples/authentication"
-          className={cn(
-            buttonVariants({ variant: 'ghost' }),
-            'absolute right-4 top-4 md:right-8 md:top-8'
-          )}
-        >
-          Login
-        </Link>
         <div className="lg:p-8">
           <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
             <AuthForm />

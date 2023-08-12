@@ -12,23 +12,63 @@ export default function AuthForm() {
   const supabase = createClientComponentClient();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [authMessage, setAuthMessage] = useState<string | null>(null);
+  const [isLoading, setLoading] = useState(false);
 
   const handleSignUp = async () => {
-    await supabase.auth.signUp({
+    setAuthMessage(null);
+    setLoading(true);
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: `${location.origin}/auth/callback`,
       },
     });
+    setLoading(false);
+    if (error) {
+      setAuthMessage(error.message);
+      return;
+    }
+    setAuthMessage('Check your email for verification request!');
+
+    // setTimeout(async () => {
+    const { data: updateData, error: updateError } = await supabase
+      .from('profiles')
+      .update({ first_name: firstName })
+      .eq('id', data.user?.id);
+    console.log('updateData', { updateData, updateError });
+    // }, 1000);
     router.refresh();
   };
 
   const handleSignIn = async () => {
-    await supabase.auth.signInWithPassword({
+    setAuthMessage(null);
+    setLoading(true);
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+    setLoading(false);
+    if (error) {
+      setAuthMessage(error.message);
+      return;
+    }
+    router.refresh();
+  };
+
+  const handleSignInWithFacebook = async () => {
+    setAuthMessage(null);
+    setLoading(true);
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'facebook',
+    });
+    setLoading(false);
+    if (error) {
+      setAuthMessage(error.message);
+      return;
+    }
     router.refresh();
   };
 
@@ -36,7 +76,6 @@ export default function AuthForm() {
     await supabase.auth.signOut();
     router.refresh();
   };
-  const isLoading = false;
 
   return (
     <>
@@ -52,73 +91,45 @@ export default function AuthForm() {
         )}
       </div>
       <div className="grid gap-6">
-        {!signup && (
-          <form>
-            <div className="grid gap-2">
-              <div className="grid gap-1">
-                <Label className="sr-only" htmlFor="email">
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  placeholder="name@example.com"
-                  type="email"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                  autoCorrect="off"
-                  disabled={isLoading}
-                  onChange={(event) => setEmail(event.target.value)}
-                />
-                <Input
-                  id="password"
-                  type="password"
-                  disabled={isLoading}
-                  onChange={(event) => setPassword(event.target.value)}
-                />
-              </div>
-              <Button type="button" disabled={isLoading} onClick={handleSignIn}>
-                {isLoading && (
-                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Login
-              </Button>
-            </div>
-          </form>
-        )}
+        <form className="flex flex-col space-y-4">
+          {signup && (
+            <Input
+              id="firstName"
+              placeholder="first name"
+              disabled={isLoading}
+              onChange={(event) => setFirstName(event.target.value)}
+            />
+          )}
+          <Input
+            id="email"
+            placeholder="email"
+            type="email"
+            autoCapitalize="none"
+            autoComplete="email"
+            autoCorrect="off"
+            disabled={isLoading}
+            onChange={(event) => setEmail(event.target.value)}
+          />
+          <Input
+            id="password"
+            placeholder="password"
+            type="password"
+            disabled={isLoading}
+            onChange={(event) => setPassword(event.target.value)}
+          />
 
-        {signup && (
-          <form>
-            <div className="grid gap-2">
-              <div className="grid gap-1">
-                <Label className="sr-only" htmlFor="email">
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  placeholder="name@example.com"
-                  type="email"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                  autoCorrect="off"
-                  disabled={isLoading}
-                  onChange={(event) => setEmail(event.target.value)}
-                />
-                <Input
-                  id="password"
-                  type="password"
-                  disabled={isLoading}
-                  onChange={(event) => setPassword(event.target.value)}
-                />
-              </div>
-              <Button type="button" disabled={isLoading} onClick={handleSignUp}>
-                {isLoading && (
-                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Sign Up
-              </Button>
-            </div>
-          </form>
-        )}
+          <Button
+            type="button"
+            disabled={isLoading}
+            onClick={signup ? handleSignUp : handleSignIn}
+          >
+            {isLoading && (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            {!signup ? 'Login' : 'Sign up'}
+          </Button>
+          {authMessage && <div className="font-semibold">{authMessage}</div>}
+        </form>
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
@@ -136,6 +147,15 @@ export default function AuthForm() {
         >
           {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}{' '}
           {signup ? 'Login' : 'Sign up'}
+        </Button>
+        <Button
+          variant="outline"
+          type="button"
+          disabled={isLoading}
+          onClick={handleSignInWithFacebook}
+        >
+          {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}{' '}
+          Sign In with Facebook
         </Button>
       </div>
     </>

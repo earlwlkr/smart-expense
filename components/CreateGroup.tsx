@@ -25,6 +25,7 @@ import { addMember } from '@/lib/db/members';
 import { getProfile } from '@/lib/db/profiles';
 import { useProfileStore } from '@/lib/stores/profile';
 import { addCategories } from '@/lib/db/categories';
+import { useRouter } from 'next/navigation';
 
 const createGroupFormSchema = z.object({
   name: z.string().min(2).max(50),
@@ -35,6 +36,7 @@ export function CreateGroup({ fetchData }: { fetchData: () => Promise<void> }) {
   const [open, setOpen] = useState(false);
   const currentProfile = useProfileStore((store) => store.profile);
   const setProfile = useProfileStore((store) => store.set);
+  const router = useRouter();
 
   const form = useForm<AddExpenseFormValues>({
     resolver: zodResolver(createGroupFormSchema),
@@ -69,7 +71,8 @@ export function CreateGroup({ fetchData }: { fetchData: () => Promise<void> }) {
     );
     addCategories(created.id, ['Eats', 'Drinks']);
     setOpen(false);
-    fetchData();
+    // fetchData();
+    router.push('/groups/' + created.id);
   }
 
   return (

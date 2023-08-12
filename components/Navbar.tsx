@@ -4,14 +4,19 @@ import {
   User,
   createClientComponentClient,
 } from '@supabase/auth-helpers-nextjs';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from './ui/button';
+import { Profile } from '@/lib/types';
+import { getProfile } from '@/lib/db/profiles';
+import Link from 'next/link';
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const supabase = createClientComponentClient();
   const [user, setUser] = useState<User>();
+  const [profile, setProfile] = useState<Profile>();
 
   useEffect(() => {
     const getData = async () => {
@@ -21,6 +26,10 @@ export default function Navbar() {
       if (user) {
         setUser(user);
       }
+      const profile = await getProfile();
+      if (profile) {
+        setProfile(profile);
+      }
     };
 
     getData();
@@ -28,15 +37,30 @@ export default function Navbar() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.refresh();
+    router.push('/login');
   };
 
   return (
-    <div className="container flex justify-end">
+    <div className="container flex justify-between">
+      {pathname.startsWith('/groups/') && (
+        <Link href="/">
+          <Button type="button" variant="link">
+            Back
+          </Button>
+        </Link>
+      )}
       {user && (
-        <Button type="button" variant="link" onClick={handleSignOut}>
-          Sign out
-        </Button>
+        <div>
+          Hi Mike,
+          <Button
+            type="button"
+            variant="link"
+            onClick={handleSignOut}
+            className="inline pt-1 h-6"
+          >
+            Sign out
+          </Button>
+        </div>
       )}
     </div>
   );
