@@ -1,5 +1,3 @@
-'use client';
-
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -21,16 +19,21 @@ import {
   FormControl,
   FormMessage,
 } from './ui/form';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { addGroup } from '@/lib/db/groups';
+import { addMember } from '@/lib/db/members';
+import { getProfile } from '@/lib/db/profiles';
+import { useProfileStore } from '@/lib/stores/profile';
 
 const createGroupFormSchema = z.object({
   name: z.string().min(2).max(50),
 });
 type AddExpenseFormValues = z.infer<typeof createGroupFormSchema>;
 
-export function CreateGroup() {
+export function CreateGroup({ fetchData }: { fetchData: () => Promise<void> }) {
   const [open, setOpen] = useState(false);
+  const currentProfile = useProfileStore((store) => store.profile);
+  const setProfile = useProfileStore((store) => store.set);
 
   const form = useForm<AddExpenseFormValues>({
     resolver: zodResolver(createGroupFormSchema),
@@ -39,12 +42,30 @@ export function CreateGroup() {
     },
   });
 
-  function onSubmit(values: AddExpenseFormValues) {
+  useEffect(() => {
+    const initProfile = async () => {
+      const profile = await getProfile();
+      setProfile(profile);
+    };
+    const initStore = () => {
+      return Promise.all([initProfile()]);
+    };
+
+    initStore();
+  }, [setProfile]);
+
+  async function onSubmit(values: AddExpenseFormValues) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
-    addGroup(values);
+    const created = await addGroup(values);
+    addMember(
+      created.id,
+      { name: currentProfile.firstName },
+      currentProfile.id
+    );
     setOpen(false);
+    fetchData();
   }
 
   return (

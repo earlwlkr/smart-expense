@@ -1,6 +1,13 @@
+export type Profile = {
+  id: string;
+  firstName: string;
+  lastName: string;
+};
+
 export type Group = {
   id: string;
   name: string;
+  created_at: string;
 };
 
 export type Member = {
