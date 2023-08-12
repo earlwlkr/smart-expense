@@ -5,8 +5,14 @@ export const getCategories = async (groupId: string): Promise<Category[]> => {
   const { data, error } = await supabase
     .from('categories')
     .select()
-    .eq('groupId', groupId);
+    .eq('group_id', groupId);
   return (
     data?.map((item) => ({ id: item.id.toString(), name: item.name })) || []
   );
+};
+
+export const addCategories = async (groupId: string, categories: string[]) => {
+  const { error } = await supabase
+    .from('categories')
+    .insert(categories.map((name) => ({ name, group_id: groupId })));
 };

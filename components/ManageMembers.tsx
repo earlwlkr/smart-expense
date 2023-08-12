@@ -10,6 +10,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { addMember } from '@/lib/db/members';
+import { useGroupsStore } from '@/lib/stores/groups';
 import { useMembersStore } from '@/lib/stores/members';
 import { Member } from '@/lib/types';
 import { useEffect, useRef, useState } from 'react';
@@ -19,6 +21,7 @@ export function ManageMembers() {
   const [members, setMembers] = useState<Member[]>([]);
   const newMemberInputRef = useRef<HTMLInputElement>(null);
   const updateMembers = useMembersStore((store) => store.update);
+  const group = useGroupsStore((store) => store.group);
 
   // Connect to the store on mount, disconnect on unmount, catch state-changes in a reference
   useEffect(
@@ -43,7 +46,7 @@ export function ManageMembers() {
           {members.map((item) => (
             <div key={item.id} className="flex max-w-sm items-center space-x-2">
               <div className="grow">{item.name}</div>
-              <Button
+              {/* <Button
                 type="button"
                 variant="link"
                 onClick={() => {
@@ -53,7 +56,7 @@ export function ManageMembers() {
                 }}
               >
                 Remove
-              </Button>
+              </Button> */}
             </div>
           ))}
           <div className="flex max-w-sm items-center space-x-2">
@@ -75,6 +78,7 @@ export function ManageMembers() {
                     name: newMemberInputRef.current.value,
                   },
                 ]);
+                addMember(group.id, { name: newMemberInputRef.current.value });
                 newMemberInputRef.current.value = '';
               }}
             >

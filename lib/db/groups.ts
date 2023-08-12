@@ -25,5 +25,6 @@ export const addGroup = async (group: Omit<Group, 'id' | 'created_at'>) => {
     .from('groups')
     .insert({ ...group, user_id: user.data.user?.id })
     .select();
+  if (error) return null;
   return data[0] as Group;
 };

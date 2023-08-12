@@ -24,6 +24,7 @@ import { addGroup } from '@/lib/db/groups';
 import { addMember } from '@/lib/db/members';
 import { getProfile } from '@/lib/db/profiles';
 import { useProfileStore } from '@/lib/stores/profile';
+import { addCategories } from '@/lib/db/categories';
 
 const createGroupFormSchema = z.object({
   name: z.string().min(2).max(50),
@@ -45,6 +46,7 @@ export function CreateGroup({ fetchData }: { fetchData: () => Promise<void> }) {
   useEffect(() => {
     const initProfile = async () => {
       const profile = await getProfile();
+      if (!profile) return;
       setProfile(profile);
     };
     const initStore = () => {
@@ -59,11 +61,13 @@ export function CreateGroup({ fetchData }: { fetchData: () => Promise<void> }) {
     // ✅ This will be type-safe and validated.
     console.log(values);
     const created = await addGroup(values);
+    if (!created) return null;
     addMember(
       created.id,
       { name: currentProfile.firstName },
       currentProfile.id
     );
+    addCategories(created.id, ['Eats', 'Drinks']);
     setOpen(false);
     fetchData();
   }

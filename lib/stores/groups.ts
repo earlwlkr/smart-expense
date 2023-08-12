@@ -1,8 +1,8 @@
 import { create } from 'zustand';
-import { Group, Member } from '../types';
+import { Group } from '../types';
 
 type GroupsState = {
-  group: Group;
+  group: Omit<Group, 'created_at'>;
   set: (group: Group) => void;
 };
 

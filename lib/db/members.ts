@@ -7,7 +7,7 @@ export const getMembers = async (groupId: string): Promise<Member[]> => {
     .select()
     .eq('group_id', groupId);
 
-  return data?.map((item) => item.members).flat() || [];
+  return data || [];
 };
 
 export const addMember = async (
