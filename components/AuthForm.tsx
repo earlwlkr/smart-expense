@@ -5,6 +5,8 @@ import { Label } from '@/components/ui/label';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { Info, Terminal } from 'lucide-react';
 
 export default function AuthForm() {
   const router = useRouter();
@@ -40,7 +42,7 @@ export default function AuthForm() {
       .eq('id', data.user?.id);
     console.log('updateData', { updateData, updateError });
     // }, 1000);
-    router.refresh();
+    router.push('/');
   };
 
   const handleSignIn = async () => {
@@ -82,7 +84,7 @@ export default function AuthForm() {
 
   return (
     <>
-      <div className="flex flex-col space-y-2 text-center">
+      <div className="flex flex-col space-y-2 text-center mt-8">
         <h1 className="text-2xl font-semibold tracking-tight">
           {!signup && 'Login'}
           {signup && 'Create an account'}
@@ -131,7 +133,13 @@ export default function AuthForm() {
             )}
             {!signup ? 'Login' : 'Sign up'}
           </Button>
-          {authMessage && <div className="font-semibold">{authMessage}</div>}
+          {authMessage && (
+            <Alert>
+              <Info className="h-4 w-4" />
+              {/* <AlertTitle>Heads up!</AlertTitle> */}
+              <AlertDescription>{authMessage}</AlertDescription>
+            </Alert>
+          )}
         </form>
 
         <div className="relative">

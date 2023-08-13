@@ -21,8 +21,9 @@ export default function GroupPage({
       <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
         {group.name}
       </h1>
-      <Members />
-      <div className="flex items-center space-x-4 h-8">
+      <div className="inline-flex items-center space-x-4 h-8 mt-4">
+        <Members />
+        <Separator orientation="vertical" />
         <ManageMembers />
         <Separator orientation="vertical" />
         <ExpenseInput />

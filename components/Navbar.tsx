@@ -10,6 +10,7 @@ import { Button } from './ui/button';
 import { Profile } from '@/lib/types';
 import { getProfile } from '@/lib/db/profiles';
 import Link from 'next/link';
+import { ChevronLeft } from 'lucide-react';
 
 export default function Navbar() {
   const router = useRouter();
@@ -46,13 +47,14 @@ export default function Navbar() {
         {pathname.startsWith('/groups/') && (
           <Link href="/">
             <Button type="button" variant="link">
+              <ChevronLeft />
               Back
             </Button>
           </Link>
         )}
       </div>
       {user && (
-        <div>
+        <div className="py-2">
           Hi Mike,
           <Button
             type="button"
