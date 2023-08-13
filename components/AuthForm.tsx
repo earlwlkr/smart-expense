@@ -63,6 +63,9 @@ export default function AuthForm() {
     setLoading(true);
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'facebook',
+      options: {
+        redirectTo: 'https://smart-expense-one.vercel.app/auth/callback',
+      },
     });
     setLoading(false);
     if (error) {
