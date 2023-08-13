@@ -100,7 +100,7 @@ export const columns: ColumnDef<Expense>[] = [
     header: 'Date',
     cell: ({ row }) => (
       <div className="capitalize">
-        {format(new Date(row.getValue('date')), 'PPPP')}
+        {format(new Date(row.getValue('date')), 'PP')}
       </div>
     ),
   },
