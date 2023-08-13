@@ -46,8 +46,11 @@ import { useState } from 'react';
 import { useGroupsStore } from '@/lib/stores/groups';
 
 const addExpenseFormSchema = z.object({
-  name: z.string().min(2).max(50),
-  amount: z.string(),
+  name: z
+    .string()
+    .min(2, { message: 'Must be more than 2 characters' })
+    .max(50),
+  amount: z.coerce.number().positive({ message: 'Must be positive' }),
   category: z.string(),
   handledBy: z.string(),
   participants: z.array(z.object({ name: z.string() })),
@@ -66,7 +69,7 @@ export function ExpenseInput() {
     resolver: zodResolver(addExpenseFormSchema),
     defaultValues: {
       name: '',
-      amount: '',
+      amount: 0,
       category: '',
       handledBy: '',
       participants: [],
@@ -80,6 +83,7 @@ export function ExpenseInput() {
     addExpense(group.id, {
       id: Date.now().toString(),
       ...values,
+      amount: String(values.amount),
       category: categories.find((item) => item.id === values.category),
       handledBy: members.find((item) => item.id === values.handledBy),
       participants: [],
@@ -114,9 +118,13 @@ export function ExpenseInput() {
                 <FormItem className="grid grid-cols-4 items-center gap-4 space-y-0">
                   <FormLabel className="text-right">Name</FormLabel>
                   <FormControl className="col-span-3">
-                    <Input placeholder="description" {...field} />
+                    <Input
+                      placeholder="description"
+                      autoComplete="off"
+                      {...field}
+                    />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="col-start-2 col-span-4" />
                 </FormItem>
               )}
             />
@@ -130,7 +138,7 @@ export function ExpenseInput() {
                   <FormControl className="col-span-3">
                     <Input placeholder="amount" type="number" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="col-start-2 col-span-4" />
                 </FormItem>
               )}
             />
@@ -246,7 +254,7 @@ export function ExpenseInput() {
                       />
                     </PopoverContent>
                   </Popover>
-                  <FormMessage />
+                  <FormMessage className="col-start-2 col-span-4" />
                 </FormItem>
               )}
             />
