@@ -42,13 +42,15 @@ export default function Navbar() {
 
   return (
     <div className="container flex justify-between">
-      {pathname.startsWith('/groups/') && (
-        <Link href="/">
-          <Button type="button" variant="link">
-            Back
-          </Button>
-        </Link>
-      )}
+      <div>
+        {pathname.startsWith('/groups/') && (
+          <Link href="/">
+            <Button type="button" variant="link">
+              Back
+            </Button>
+          </Link>
+        )}
+      </div>
       {user && (
         <div>
           Hi Mike,
