@@ -44,13 +44,25 @@ import { Calendar as CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { useState } from 'react';
 import { useGroupsStore } from '@/lib/stores/groups';
+import { CurrencyInput } from './CurrencyInput';
 
 const addExpenseFormSchema = z.object({
   name: z
     .string()
     .min(2, { message: 'Must be more than 2 characters' })
     .max(50),
-  amount: z.coerce.number().positive({ message: 'Must be positive' }),
+  amount: z.string().transform((newValue) => {
+    const [formattedWholeValue, decimalValue = '0'] = newValue.split('.');
+    const significantValue = formattedWholeValue.replace(/,/g, '');
+    const floatValue = parseFloat(
+      significantValue + '.' + decimalValue.slice(0, 2)
+    );
+    if (isNaN(floatValue) === false) {
+      return floatValue;
+    }
+    return 0;
+  }),
+  // .positive({ message: 'Must be positive' }),
   category: z.string(),
   handledBy: z.string(),
   participants: z.array(z.object({ name: z.string() })),
@@ -136,7 +148,8 @@ export function ExpenseInput() {
                 <FormItem className="grid grid-cols-4 items-center gap-4 space-y-0">
                   <FormLabel className="text-right">Amount</FormLabel>
                   <FormControl className="col-span-3">
-                    <Input placeholder="amount" type="number" {...field} />
+                    {/* <Input placeholder="amount" type="number" {...field} /> */}
+                    <CurrencyInput {...field} />
                   </FormControl>
                   <FormMessage className="col-start-2 col-span-4" />
                 </FormItem>
