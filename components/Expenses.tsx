@@ -25,6 +25,8 @@ import {
 import { useExpensesStore } from '@/lib/stores/expenses';
 import { format } from 'date-fns';
 import { Category, Expense, Member } from '@/lib/types';
+import { ArrowDown, ArrowUp } from 'lucide-react';
+import { Button } from './ui/button';
 
 export const columns: ColumnDef<Expense>[] = [
   // {
@@ -64,7 +66,24 @@ export const columns: ColumnDef<Expense>[] = [
   },
   {
     accessorKey: 'amount',
-    header: () => <div className="text-right">Amount</div>,
+    header: ({ column }) => {
+      return (
+        <div className="text-right">
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            className="text-right"
+          >
+            Amount
+            {column.getIsSorted() === 'asc' ? (
+              <ArrowUp className="ml-2 h-4 w-4" />
+            ) : column.getIsSorted() === 'desc' ? (
+              <ArrowDown className="ml-2 h-4 w-4" />
+            ) : null}
+          </Button>
+        </div>
+      );
+    },
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue('amount'));
 
@@ -97,7 +116,21 @@ export const columns: ColumnDef<Expense>[] = [
   },
   {
     accessorKey: 'date',
-    header: 'Date',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Date
+          {column.getIsSorted() === 'asc' ? (
+            <ArrowUp className="ml-2 h-4 w-4" />
+          ) : column.getIsSorted() === 'desc' ? (
+            <ArrowDown className="ml-2 h-4 w-4" />
+          ) : null}
+        </Button>
+      );
+    },
     cell: ({ row }) => (
       <div className="capitalize">
         {format(new Date(row.getValue('date')), 'PP')}
@@ -136,7 +169,9 @@ export const columns: ColumnDef<Expense>[] = [
 ];
 
 export function Expenses() {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = React.useState<SortingState>([
+    { id: 'date', desc: true },
+  ]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -166,6 +201,17 @@ export function Expenses() {
 
   return (
     <div className="w-full py-4">
+      <div>
+        <strong>Total:</strong>{' '}
+        {new Intl.NumberFormat('vi-VN', {
+          style: 'currency',
+          currency: 'VND',
+        }).format(
+          expenses.reduce((sum, item) => {
+            return sum + Number(item.amount);
+          }, 0)
+        )}
+      </div>
       {/* <div className="flex items-center py-4">
         <Input
           placeholder="Filter..."
