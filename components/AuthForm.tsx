@@ -57,7 +57,7 @@ export default function AuthForm() {
       setAuthMessage(error.message);
       return;
     }
-    router.refresh();
+    router.push('/');
   };
 
   const handleSignInWithFacebook = async () => {

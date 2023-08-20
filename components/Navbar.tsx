@@ -16,7 +16,7 @@ export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createClientComponentClient();
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<User | null>();
   const [profile, setProfile] = useState<Profile>();
 
   useEffect(() => {
@@ -26,6 +26,8 @@ export default function Navbar() {
       } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
+      } else {
+        setUser(null);
       }
       const profile = await getProfile();
       if (profile) {
@@ -34,7 +36,7 @@ export default function Navbar() {
     };
 
     getData();
-  }, [supabase.auth]);
+  }, [supabase.auth, pathname]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
