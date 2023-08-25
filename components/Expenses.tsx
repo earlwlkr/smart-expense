@@ -106,6 +106,18 @@ export const columns: ColumnDef<Expense>[] = [
     ),
   },
   {
+    accessorKey: 'participants',
+    header: 'With',
+    cell: ({ row }) => (
+      <div className="capitalize">
+        {row
+          .getValue<Member[]>('participants')
+          .map((member) => member?.name)
+          .join(', ')}
+      </div>
+    ),
+  },
+  {
     accessorKey: 'handledBy',
     header: 'By',
     cell: ({ row }) => (

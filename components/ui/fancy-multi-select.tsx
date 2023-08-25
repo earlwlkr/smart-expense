@@ -1,5 +1,3 @@
-'use client';
-
 import * as React from 'react';
 import { X } from 'lucide-react';
 
@@ -12,11 +10,13 @@ type OptionItem = Record<'value' | 'label', string>;
 type FancyMultiSelectProps = {
   options: OptionItem[];
   defaultSelected: OptionItem[];
+  onChange: (selected: OptionItem[]) => void;
 };
 
 export function FancyMultiSelect({
   options,
   defaultSelected,
+  onChange,
 }: FancyMultiSelectProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
@@ -26,6 +26,19 @@ export function FancyMultiSelect({
   const handleUnselect = React.useCallback((option: OptionItem) => {
     setSelected((prev) => prev.filter((s) => s.value !== option.value));
   }, []);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const onChangeCb = React.useCallback(onChange, []);
+
+  React.useEffect(() => {
+    onChangeCb(selected);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  React.useEffect(() => {
+    onChangeCb(selected);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected]);
 
   const handleKeyDown = React.useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {

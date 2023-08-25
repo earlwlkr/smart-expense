@@ -2,6 +2,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 import { Category, Expense, Member } from '../types';
 import supabase from './init';
+import { first, get } from 'lodash-es';
 
 export const getExpenses = async (groupId: string): Promise<Expense[]> => {
   const { data, error } = await supabase
@@ -46,8 +47,12 @@ export const getExpenses = async (groupId: string): Promise<Expense[]> => {
       category: item.categories as unknown as Category,
       participants:
         (participants || [])
-          .filter((participant) => participant.expenses.id === item.id)
-          .map((participant) => participant.members) || [],
+          .filter((participant) => get(participant.expenses, 'id') === item.id)
+          .map(
+            (participant) =>
+              (first<Member>(participant.members) as Member) ||
+              participant.members
+          ) || [],
     })) || []
   );
 };

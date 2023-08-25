@@ -26,6 +26,6 @@ export type Expense = {
   amount: string;
   category?: Category;
   handledBy?: Member;
-  participants?: Member[];
+  participants: Member[];
   date: Date;
 };

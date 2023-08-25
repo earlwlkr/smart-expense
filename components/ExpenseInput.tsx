@@ -66,7 +66,7 @@ const addExpenseFormSchema = z.object({
   // .positive({ message: 'Must be positive' }),
   category: z.string(),
   handledBy: z.string(),
-  participants: z.array(z.object({ name: z.string() })),
+  participants: z.array(z.object({ id: z.string(), name: z.string() })),
   date: z.date(),
 });
 type AddExpenseFormValues = z.infer<typeof addExpenseFormSchema>;
@@ -217,23 +217,40 @@ export function ExpenseInput() {
               )}
             />
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="date" className="text-right">
-                With
-              </Label>
-              <div className="col-span-3">
-                <FancyMultiSelect
-                  options={members.map((member) => ({
-                    label: member.name,
-                    value: member.id,
-                  }))}
-                  defaultSelected={members.map((member) => ({
-                    label: member.name,
-                    value: member.id,
-                  }))}
-                />
-              </div>
-            </div>
+            <FormField
+              control={form.control}
+              name="participants"
+              render={({ field }) => {
+                return (
+                  <FormItem className="grid grid-cols-4 items-center gap-4 space-y-0">
+                    <FormLabel className="text-right">With</FormLabel>
+                    <FormControl className="col-span-3">
+                      <FancyMultiSelect
+                        options={members.map((member) => ({
+                          label: member.name,
+                          value: member.id,
+                        }))}
+                        defaultSelected={members.map((member) => ({
+                          label: member.name,
+                          value: member.id,
+                        }))}
+                        onChange={(selected) => {
+                          field.onChange({
+                            target: {
+                              value: selected.map(({ label, value }) => ({
+                                name: label,
+                                id: value,
+                              })),
+                            },
+                          });
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage className="col-start-2 col-span-4" />
+                  </FormItem>
+                );
+              }}
+            />
 
             <FormField
               control={form.control}
