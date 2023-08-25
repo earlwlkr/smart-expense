@@ -45,6 +45,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { useState } from 'react';
 import { useGroupsStore } from '@/lib/stores/groups';
 import { CurrencyInput } from './CurrencyInput';
+import { FancyMultiSelect } from './ui/fancy-multi-select';
 
 const addExpenseFormSchema = z.object({
   name: z
@@ -221,12 +222,16 @@ export function ExpenseInput() {
                 With
               </Label>
               <div className="col-span-3">
-                {members.map((item, index) => (
-                  <span key={item.id} className="pl-1">
-                    {item.name}
-                    {index < members.length - 1 ? ',' : ''}
-                  </span>
-                ))}
+                <FancyMultiSelect
+                  options={members.map((member) => ({
+                    label: member.name,
+                    value: member.id,
+                  }))}
+                  defaultSelected={members.map((member) => ({
+                    label: member.name,
+                    value: member.id,
+                  }))}
+                />
               </div>
             </div>
 

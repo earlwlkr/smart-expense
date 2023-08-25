@@ -22,7 +22,7 @@ export const useExpensesStore = create<ExpensesState>((set) => ({
       handledBy: item.handledBy?.id,
       categoryId: item.category?.id,
     };
-    addExpense(groupId, remoteData);
+    addExpense(groupId, remoteData, item.participants || []);
     set((state) => ({ items: [...state.items, item] }));
   },
   set: (items: Expense[]) => set({ items }),
