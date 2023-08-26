@@ -42,7 +42,7 @@ import {
 } from '@/components/ui/popover';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGroupsStore } from '@/lib/stores/groups';
 import { CurrencyInput } from './CurrencyInput';
 import { FancyMultiSelect } from './ui/fancy-multi-select';
@@ -95,9 +95,13 @@ export function ExpenseInput() {
       amount: 0,
       category: '',
       handledBy: '',
-      participants: [],
+      participants: members,
     },
   });
+
+  useEffect(() => {
+    form.setValue('participants', members);
+  }, [form, members]);
 
   function onSubmit(values: AddExpenseFormValues) {
     // Do something with the form values.
@@ -119,8 +123,7 @@ export function ExpenseInput() {
         onSubmit={form.handleSubmit(onSubmit, (errors) => {
           console.log('form errors', errors);
         })}
-        className="grid gap-4 py-4"
-        // className="space-y-4 py-4"
+        className="space-y-4 mt-4"
       >
         <FormField
           control={form.control}
@@ -222,9 +225,9 @@ export function ExpenseInput() {
                       label: member.name,
                       value: member.id,
                     }))}
-                    defaultSelected={members.map((member) => ({
-                      label: member.name,
-                      value: member.id,
+                    defaultSelected={field.value.map(({ id, name }) => ({
+                      label: name,
+                      value: id,
                     }))}
                     onChange={(selected) => {
                       field.onChange({

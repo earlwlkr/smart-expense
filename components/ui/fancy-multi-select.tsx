@@ -36,11 +36,6 @@ export function FancyMultiSelect({
   React.useEffect(() => {
     onChangeCb(selected);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  React.useEffect(() => {
-    onChangeCb(selected);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected]);
 
   const handleKeyDown = React.useCallback(
