@@ -22,12 +22,12 @@ export function Groups() {
   }, [fetchData]);
 
   return (
-    <div>
+    <div className="container">
       <CreateGroup fetchData={fetchData} />
-      <div className="space-x-4 mt-4">
+      <div className="flex flex-col space-x-0 lg:flex-row lg:space-x-4">
         {groups.map((item) => (
           <Link key={item.id} href={`/groups/${item.id}`}>
-            <Card className="inline-flex">
+            <Card className="mt-4">
               <CardHeader>
                 <CardTitle className="pb-2 w-80 truncate whitespace-nowrap">
                   {item.name}
