@@ -25,7 +25,7 @@ import {
 import { useExpensesStore } from '@/lib/stores/expenses';
 import { format } from 'date-fns';
 import { Category, Expense, Member } from '@/lib/types';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { Button } from './ui/button';
 
 export const columns: ColumnDef<Expense>[] = [
@@ -79,7 +79,9 @@ export const columns: ColumnDef<Expense>[] = [
               <ArrowUp className="ml-2 h-4 w-4" />
             ) : column.getIsSorted() === 'desc' ? (
               <ArrowDown className="ml-2 h-4 w-4" />
-            ) : null}
+            ) : (
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            )}
           </Button>
         </div>
       );
@@ -139,7 +141,9 @@ export const columns: ColumnDef<Expense>[] = [
             <ArrowUp className="ml-2 h-4 w-4" />
           ) : column.getIsSorted() === 'desc' ? (
             <ArrowDown className="ml-2 h-4 w-4" />
-          ) : null}
+          ) : (
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          )}
         </Button>
       );
     },
@@ -310,7 +314,7 @@ export function Expenses() {
           </TableBody>
         </Table>
       </div>
-      {/* <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
@@ -333,7 +337,7 @@ export function Expenses() {
             Next
           </Button>
         </div>
-      </div> */}
+      </div>
     </div>
   );
 }

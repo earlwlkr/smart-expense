@@ -21,12 +21,17 @@ export default function GroupPage({
       <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
         {group.name}
       </h1>
-      <div className="inline-flex items-center space-x-4 h-8 mt-4">
-        <Members />
-        <Separator orientation="vertical" />
-        <ManageMembers />
-        <Separator orientation="vertical" />
-        <ExpenseInput />
+      <div className="lg:items-center grid grid-cols-1 lg:inline-flex">
+        <div className="flex mr-4">
+          <Members />
+        </div>
+        <div className="flex mr-4">
+          <ManageMembers />
+          <div className="flex">
+            <Separator orientation="vertical" className="mx-4" />
+            <ExpenseInput />
+          </div>
+        </div>
       </div>
       <Expenses />
     </div>

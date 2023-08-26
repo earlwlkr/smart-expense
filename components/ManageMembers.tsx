@@ -15,6 +15,14 @@ import { useGroupsStore } from '@/lib/stores/groups';
 import { useMembersStore } from '@/lib/stores/members';
 import { Member } from '@/lib/types';
 import { useEffect, useRef, useState } from 'react';
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from './ui/sheet';
+import { useMediaQuery } from '@uidotdev/usehooks';
 
 export function ManageMembers() {
   const [open, setOpen] = useState(false);
@@ -22,6 +30,7 @@ export function ManageMembers() {
   const newMemberInputRef = useRef<HTMLInputElement>(null);
   const updateMembers = useMembersStore((store) => store.update);
   const group = useGroupsStore((store) => store.group);
+  const isSmallDevice = useMediaQuery('only screen and (max-width : 768px)');
 
   // Connect to the store on mount, disconnect on unmount, catch state-changes in a reference
   useEffect(
@@ -32,21 +41,12 @@ export function ManageMembers() {
     [setMembers]
   );
 
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">Manage members</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Manage members</DialogTitle>
-        </DialogHeader>
-
-        <div className="flex flex-col py-4 space-y-2 w-80">
-          {members.map((item) => (
-            <div key={item.id} className="flex max-w-sm items-center space-x-2">
-              <div className="grow">{item.name}</div>
-              {/* <Button
+  const content = (
+    <div className="flex flex-col py-4 space-y-2">
+      {members.map((item) => (
+        <div key={item.id} className="flex max-w-sm items-center space-x-2">
+          <div className="grow">{item.name}</div>
+          {/* <Button
                 type="button"
                 variant="link"
                 onClick={() => {
@@ -57,35 +57,57 @@ export function ManageMembers() {
               >
                 Remove
               </Button> */}
-            </div>
-          ))}
-          <div className="flex max-w-sm items-center space-x-2">
-            <Input placeholder="New member" ref={newMemberInputRef} />
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => {
-                if (
-                  !newMemberInputRef.current ||
-                  !newMemberInputRef.current.value
-                )
-                  return;
-
-                setMembers([
-                  ...members,
-                  {
-                    id: Date.now().toString(),
-                    name: newMemberInputRef.current.value,
-                  },
-                ]);
-                addMember(group.id, { name: newMemberInputRef.current.value });
-                newMemberInputRef.current.value = '';
-              }}
-            >
-              Add
-            </Button>
-          </div>
         </div>
+      ))}
+      <div className="flex max-w-sm items-center space-x-2">
+        <Input placeholder="New member" ref={newMemberInputRef} />
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => {
+            if (!newMemberInputRef.current || !newMemberInputRef.current.value)
+              return;
+
+            setMembers([
+              ...members,
+              {
+                id: Date.now().toString(),
+                name: newMemberInputRef.current.value,
+              },
+            ]);
+            addMember(group.id, { name: newMemberInputRef.current.value });
+            newMemberInputRef.current.value = '';
+          }}
+        >
+          Add
+        </Button>
+      </div>
+    </div>
+  );
+
+  return isSmallDevice ? (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="outline">Manage members</Button>
+      </SheetTrigger>
+      <SheetContent side="left">
+        <SheetHeader>
+          <SheetTitle>Manage members</SheetTitle>
+        </SheetHeader>
+        {content}
+      </SheetContent>
+    </Sheet>
+  ) : (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline">Manage members</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Manage members</DialogTitle>
+        </DialogHeader>
+
+        {content}
         <DialogFooter>
           <Button
             type="submit"

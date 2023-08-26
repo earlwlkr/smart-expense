@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Command, CommandGroup, CommandItem } from '@/components/ui/command';
 import { Command as CommandPrimitive } from 'cmdk';
+import { cn } from '@/lib/utils';
 
 type OptionItem = Record<'value' | 'label', string>;
 
@@ -11,12 +12,14 @@ type FancyMultiSelectProps = {
   options: OptionItem[];
   defaultSelected: OptionItem[];
   onChange: (selected: OptionItem[]) => void;
+  className: string;
 };
 
 export function FancyMultiSelect({
   options,
   defaultSelected,
   onChange,
+  className,
 }: FancyMultiSelectProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
@@ -70,7 +73,7 @@ export function FancyMultiSelect({
   return (
     <Command
       onKeyDown={handleKeyDown}
-      className="overflow-visible bg-transparent"
+      className={cn('overflow-visible bg-transparent', className)}
     >
       <div className="group border border-input px-3 py-2 text-sm ring-offset-background rounded-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
         <div className="flex gap-1 flex-wrap">

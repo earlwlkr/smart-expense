@@ -77,8 +77,8 @@ export const addExpense = async (
     .insert({ ...expense, groupId, user_id: user.data.user?.id })
     .select()
     .single();
-  participants.forEach((participant) => {
-    supabase
+  participants.forEach(async (participant) => {
+    await supabase
       .from('participants')
       .insert({ expense_id: inserted.id, member_id: participant.id });
   });
