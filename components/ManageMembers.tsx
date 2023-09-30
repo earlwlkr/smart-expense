@@ -86,7 +86,15 @@ export function ManageMembers() {
   );
 
   return isSmallDevice ? (
-    <Sheet>
+    <Sheet
+      open={open}
+      onOpenChange={(opening) => {
+        if (!opening) {
+          updateMembers(members);
+        }
+        setOpen(opening);
+      }}
+    >
       <SheetTrigger asChild>
         <Button variant="outline">Manage members</Button>
       </SheetTrigger>

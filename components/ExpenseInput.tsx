@@ -298,7 +298,7 @@ export function ExpenseInput() {
   );
 
   return isSmallDevice ? (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="outline">Add expense</Button>
       </SheetTrigger>
