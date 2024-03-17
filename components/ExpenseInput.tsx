@@ -96,6 +96,7 @@ export function ExpenseInput() {
       category: '',
       handledBy: '',
       participants: members,
+      date: new Date(),
     },
   });
 

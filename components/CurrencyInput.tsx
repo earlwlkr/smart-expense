@@ -37,6 +37,7 @@ export const CurrencyInput = React.forwardRef<HTMLInputElement, InputProps>(
         {...props}
         type="text"
         value={value}
+        autoComplete="off"
         onChange={(e) => {
           if (props.onChange) {
             props.onChange(e);
