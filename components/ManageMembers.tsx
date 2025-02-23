@@ -76,6 +76,13 @@ export function ManageMembers() {
               },
             ]);
             addMember(group.id, { name: newMemberInputRef.current.value });
+            updateMembers([
+              ...members,
+              {
+                id: Date.now().toString(),
+                name: newMemberInputRef.current.value,
+              },
+            ]);
             newMemberInputRef.current.value = '';
           }}
         >
@@ -116,7 +123,7 @@ export function ManageMembers() {
         </DialogHeader>
 
         {content}
-        <DialogFooter>
+        {/* <DialogFooter>
           <Button
             type="submit"
             onClick={() => {
@@ -126,7 +133,7 @@ export function ManageMembers() {
           >
             Save changes
           </Button>
-        </DialogFooter>
+        </DialogFooter> */}
       </DialogContent>
     </Dialog>
   );
