@@ -14,7 +14,11 @@ export const getExpenses = async (groupId: string): Promise<Expense[]> => {
       id,
       name
     ),
-    date
+    date,
+    handled_by (
+      id,
+      name
+    )
     `
     )
     .eq('group_id', groupId);
@@ -37,7 +41,7 @@ export const getExpenses = async (groupId: string): Promise<Expense[]> => {
   return (
     data?.map<Expense>((item) => ({
       ...item,
-      handledBy: item.members as unknown as Member,
+      handledBy: item.handled_by as Member,
       category: item.categories as unknown as Category,
       participants:
         (participants || [])
@@ -67,7 +71,11 @@ export const addExpense = async (
   const user = await supabase.auth.getUser();
   const { data: inserted, error } = await supabase
     .from('expenses')
-    .insert({ ...expense, group_id: groupId, created_by: user.data.user?.id })
+    .insert({
+      ...expense,
+      group_id: groupId,
+      // created_by: user.data.user?.id,
+    })
     .select()
     .single();
   participants.forEach(async (participant) => {
