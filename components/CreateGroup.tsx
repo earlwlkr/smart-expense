@@ -37,6 +37,7 @@ export function CreateGroup({ fetchData }: { fetchData: () => Promise<void> }) {
   const currentProfile = useProfileStore((store) => store.profile);
   const setProfile = useProfileStore((store) => store.set);
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<AddExpenseFormValues>({
     resolver: zodResolver(createGroupFormSchema),
@@ -62,6 +63,7 @@ export function CreateGroup({ fetchData }: { fetchData: () => Promise<void> }) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
+    setLoading(true);
     const created = await addGroup(values);
     if (!created) return null;
     addMember(
@@ -70,6 +72,7 @@ export function CreateGroup({ fetchData }: { fetchData: () => Promise<void> }) {
       currentProfile.id
     );
     addCategories(created.id, ['Eats', 'Drinks']);
+    setLoading(false);
     setOpen(false);
     // fetchData();
     router.push('/groups/' + created.id);
@@ -110,7 +113,9 @@ export function CreateGroup({ fetchData }: { fetchData: () => Promise<void> }) {
             />
 
             <DialogFooter>
-              <Button type="submit">Save changes</Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Saving...' : 'Save changes'}
+              </Button>
             </DialogFooter>
           </form>
         </Form>
