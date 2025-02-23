@@ -1,5 +1,3 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-
 import { Category, Expense, Member } from '../types';
 import supabase from './init';
 import { first, get } from 'lodash-es';
@@ -16,14 +14,10 @@ export const getExpenses = async (groupId: string): Promise<Expense[]> => {
       id,
       name
     ),
-    date,
-    members (
-      id,
-      name
-    )
+    date
     `
     )
-    .eq('groupId', groupId);
+    .eq('group_id', groupId);
   const { data: participants } = await supabase
     .from('participants')
     .select(
@@ -70,11 +64,10 @@ export const addExpense = async (
   expense: ExpenseInput,
   participants: Member[]
 ) => {
-  const supabase = createClientComponentClient();
   const user = await supabase.auth.getUser();
   const { data: inserted, error } = await supabase
     .from('expenses')
-    .insert({ ...expense, groupId, user_id: user.data.user?.id })
+    .insert({ ...expense, group_id: groupId, created_by: user.data.user?.id })
     .select()
     .single();
   participants.forEach(async (participant) => {

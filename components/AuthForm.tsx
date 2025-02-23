@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
@@ -11,7 +11,7 @@ import { Info, Terminal } from 'lucide-react';
 export default function AuthForm() {
   const router = useRouter();
   const [signup, setSignUp] = useState(false);
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
