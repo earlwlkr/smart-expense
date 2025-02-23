@@ -1,13 +1,17 @@
-"use client";
+'use client';
 
-import { ExpenseInput } from "@/components/ExpenseInput";
-import { Expenses } from "@/components/Expenses";
-import { ManageMembers } from "@/components/ManageMembers";
-import { Members } from "@/components/Members";
-import { useGroupsStore } from "@/lib/stores/groups";
-import { useInitStore } from "@/lib/stores/useInitStore";
+import { ExpenseInput } from '@/components/ExpenseInput';
+import { Expenses } from '@/components/Expenses';
+import { ManageMembers } from '@/components/ManageMembers';
+import { Members } from '@/components/Members';
+import { useGroupsStore } from '@/lib/stores/groups';
+import { useInitStore } from '@/lib/stores/useInitStore';
 
-export function Dashboard({ params: { id } }: { params: { id: string } }) {
+export default function Dashboard({
+  params: { id },
+}: {
+  params: { id: string };
+}) {
   useInitStore(id);
   const group = useGroupsStore((store) => store.group);
   return (
@@ -24,5 +28,3 @@ export function Dashboard({ params: { id } }: { params: { id: string } }) {
     </>
   );
 }
-
-export default Dashboard;

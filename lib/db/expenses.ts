@@ -41,7 +41,7 @@ export const getExpenses = async (groupId: string): Promise<Expense[]> => {
   return (
     data?.map<Expense>((item) => ({
       ...item,
-      handledBy: item.handled_by as Member,
+      handledBy: item.handled_by as unknown as Member,
       category: item.categories as unknown as Category,
       participants:
         (participants || [])

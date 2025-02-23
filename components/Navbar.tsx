@@ -28,12 +28,13 @@ import {
   ShoppingCart,
   Users,
 } from 'lucide-react';
+import { User } from '@supabase/auth-js';
 
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createClient();
-  const [user, setUser] = useState();
+  const [user, setUser] = useState<User | null>();
   const [profile, setProfile] = useState<Profile>();
 
   useEffect(() => {
