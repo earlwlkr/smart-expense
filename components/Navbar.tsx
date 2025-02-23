@@ -62,7 +62,7 @@ export default function Navbar() {
   };
 
   return (
-    <div className="container flex justify-between">
+    <div className="flex justify-between">
       <div>
         {pathname.startsWith('/groups/') && (
           <Link href="/">
