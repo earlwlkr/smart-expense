@@ -1,9 +1,9 @@
 // import './globals.css';
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 
-import { Toaster } from "@/components/ui/toaster";
-import Link from "next/link";
+import { Toaster } from '@/components/ui/toaster';
+import Link from 'next/link';
 import {
   Bell,
   CircleUser,
@@ -15,17 +15,17 @@ import {
   Search,
   ShoppingCart,
   Users,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,15 +33,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import Navbar from '@/components/Navbar';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Playground",
-  description: "AI Playground",
+  title: 'Playground',
+  description: 'AI Playground',
 };
 
 export default function RootLayout({
@@ -52,6 +53,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <Navbar />
         <div className="container mt-4">{children}</div>
         {/* <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
           <div className="hidden border-r bg-muted/40 md:block">

@@ -62,25 +62,6 @@ export default function Navbar() {
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="secondary" size="icon" className="rounded-full">
-          <CircleUser className="h-5 w-5" />
-          <span className="sr-only">Toggle user menu</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>Settings</DropdownMenuItem>
-        <DropdownMenuItem>Support</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut}>Logout</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-
-  return (
     <div className="container flex justify-between">
       <div>
         {pathname.startsWith('/groups/') && (
@@ -94,7 +75,6 @@ export default function Navbar() {
       </div>
       {user && (
         <div className="py-2">
-          Hi Mike,
           <Button
             type="button"
             variant="link"
@@ -105,6 +85,21 @@ export default function Navbar() {
           </Button>
         </div>
       )}
+      {/* <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="secondary" size="icon" className="rounded-full">
+            <CircleUser className="h-5 w-5" />
+            <span className="sr-only">Toggle user menu</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleSignOut}>Logout</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu> */}
     </div>
   );
 }
