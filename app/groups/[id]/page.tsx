@@ -23,6 +23,7 @@ export default function Dashboard({
         <Members />
       </div>
       <ManageMembers />
+      <span className="mx-2">|</span>
       <ExpenseInput />
       <Expenses />
     </>
