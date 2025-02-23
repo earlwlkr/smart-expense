@@ -60,6 +60,18 @@ export default function AuthForm() {
     router.push('/');
   };
 
+  const handleSignInAnonymously = async () => {
+    setAuthMessage(null);
+    setLoading(true);
+    const { data, error } = await supabase.auth.signInAnonymously();
+    setLoading(false);
+    if (error) {
+      setAuthMessage(error.message);
+      return;
+    }
+    router.push('/');
+  };
+
   const handleSignInWithFacebook = async () => {
     setAuthMessage(null);
     setLoading(true);
@@ -163,11 +175,20 @@ export default function AuthForm() {
           variant="outline"
           type="button"
           disabled={isLoading}
+          onClick={handleSignInAnonymously}
+        >
+          {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}{' '}
+          Sign In anonymously
+        </Button>
+        {/* <Button
+          variant="outline"
+          type="button"
+          disabled={isLoading}
           onClick={handleSignInWithFacebook}
         >
           {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}{' '}
           Sign In with Facebook
-        </Button>
+        </Button> */}
       </div>
     </>
   );
