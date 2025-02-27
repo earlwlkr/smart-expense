@@ -17,9 +17,7 @@ export default function Dashboard({
   return (
     <>
       <div className="flex items-center">
-        <h1 className="text-lg font-semibold md:text-2xl">
-          {group.name} {'💵'} Expenses
-        </h1>
+        <h1 className="text-lg font-semibold md:text-2xl">{group.name}</h1>
       </div>
       <div className="flex mr-4 mb-2">
         <ManageMembers />

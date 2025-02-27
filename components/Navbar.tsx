@@ -73,6 +73,9 @@ export default function Navbar() {
           </Link>
         )}
       </div>
+      <div>
+        <h1 className="font-semibold md:text-2xl pt-2">Expenses</h1>
+      </div>
       {user && (
         <div className="py-2">
           <Button
