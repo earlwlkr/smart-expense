@@ -327,7 +327,7 @@ export function Expenses() {
                   }).format(Number(expense.amount))}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  {expense.category.name}
+                  {expense.category?.name}
                 </div>
               </div>
             </div>
@@ -335,7 +335,7 @@ export function Expenses() {
               <div>
                 With: {expense.participants.map((p) => p.name).join(', ')}
               </div>
-              <div>By: {expense.handledBy.name}</div>
+              <div>By: {expense.handledBy?.name}</div>
             </div>
           </div>
         ))}
