@@ -21,11 +21,9 @@ export default function Dashboard({
           {group.name} {'💵'} Expenses
         </h1>
       </div>
-      <div className="flex mr-4">
-        <Members />
+      <div className="flex mr-4 mb-2">
+        <ManageMembers />
       </div>
-      <ManageMembers />
-      <span className="mx-2">|</span>
       <ExpenseInput />
       <Expenses />
     </>

@@ -103,7 +103,9 @@ export function ManageMembers() {
       }}
     >
       <SheetTrigger asChild>
-        <Button variant="outline">Manage members</Button>
+        <div>
+          With <span>{members.map((member) => member.name)}</span>
+        </div>
       </SheetTrigger>
       <SheetContent side="left">
         <SheetHeader>
@@ -115,7 +117,9 @@ export function ManageMembers() {
   ) : (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Manage members</Button>
+        <div>
+          With <span>{members.map((member) => member.name)}</span>
+        </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -123,17 +127,6 @@ export function ManageMembers() {
         </DialogHeader>
 
         {content}
-        {/* <DialogFooter>
-          <Button
-            type="submit"
-            onClick={() => {
-              updateMembers(members);
-              setOpen(false);
-            }}
-          >
-            Save changes
-          </Button>
-        </DialogFooter> */}
       </DialogContent>
     </Dialog>
   );

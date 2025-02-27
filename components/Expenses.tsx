@@ -215,55 +215,8 @@ export function Expenses() {
     },
   });
 
-  return (
-    <div className="w-full py-4">
-      <div className="mt-4 mb-2">
-        <strong>Total:</strong>{' '}
-        {new Intl.NumberFormat('vi-VN', {
-          style: 'currency',
-          currency: 'VND',
-        }).format(
-          expenses.reduce((sum, item) => {
-            return sum + Number(item.amount);
-          }, 0)
-        )}
-      </div>
-      {/* <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div> */}
+  const tableDisplay = (
+    <>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -340,6 +293,53 @@ export function Expenses() {
           </div>
         </div>
       )}
+    </>
+  );
+
+  return (
+    <div className="w-full py-4">
+      <div className="mt-4 mb-2">
+        <strong>Total:</strong>{' '}
+        {new Intl.NumberFormat('vi-VN', {
+          style: 'currency',
+          currency: 'VND',
+        }).format(
+          expenses.reduce((sum, item) => {
+            return sum + Number(item.amount);
+          }, 0)
+        )}
+      </div>
+      <div className="rounded-md border">
+        {expenses.map((expense) => (
+          <div key={expense.id} className="p-4 border-b">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-lg font-medium">{expense.name}</div>
+                <div className="text-sm text-muted-foreground">
+                  {format(new Date(expense.date), 'PP')}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-lg font-medium">
+                  {new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND',
+                  }).format(Number(expense.amount))}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {expense.category.name}
+                </div>
+              </div>
+            </div>
+            <div className="mt-2 text-sm text-muted-foreground">
+              <div>
+                With: {expense.participants.map((p) => p.name).join(', ')}
+              </div>
+              <div>By: {expense.handledBy.name}</div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
