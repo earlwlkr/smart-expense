@@ -29,6 +29,8 @@ import {
   Users,
 } from 'lucide-react';
 import { User } from '@supabase/auth-js';
+import { useGroupsStore } from '@/lib/stores/groups';
+import { useInitStore } from '@/lib/stores/useInitStore';
 
 export default function Navbar() {
   const router = useRouter();
@@ -36,6 +38,7 @@ export default function Navbar() {
   const supabase = createClient();
   const [user, setUser] = useState<User | null>();
   const [profile, setProfile] = useState<Profile>();
+  const group = useGroupsStore((store) => store.group);
 
   useEffect(() => {
     const getData = async () => {
@@ -73,9 +76,9 @@ export default function Navbar() {
           </Link>
         )}
       </div>
-      <div>
-        <h1 className="font-semibold md:text-2xl pt-2">Expenses</h1>
-      </div>
+      <h1 className="font-semibold text-center md:text-2xl pt-2">
+        {group?.name || 'Expenses'}
+      </h1>
       {user && (
         <div className="py-2">
           <Button
