@@ -49,7 +49,7 @@ export function Expenses() {
               <div>
                 With:{' '}
                 {expense.participants
-                  .toSorted((memberA, memberB) =>
+                  .sort((memberA, memberB) =>
                     memberA.name.localeCompare(memberB.name)
                   )
                   .map((p) => p.name)
