@@ -47,7 +47,13 @@ export function Expenses() {
             </div>
             <div className="mt-2 text-sm text-muted-foreground">
               <div>
-                With: {expense.participants.map((p) => p.name).join(', ')}
+                With:{' '}
+                {expense.participants
+                  .toSorted((memberA, memberB) =>
+                    memberA.name.localeCompare(memberB.name)
+                  )
+                  .map((p) => p.name)
+                  .join(', ')}
               </div>
               <div>By: {expense.handledBy?.name}</div>
             </div>
