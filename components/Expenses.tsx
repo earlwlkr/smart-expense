@@ -4,9 +4,11 @@ import * as React from 'react';
 
 import { useExpensesStore } from '@/lib/stores/expenses';
 import { format } from 'date-fns';
+import { useMembersStore } from '@/lib/stores/members';
 
 export function Expenses() {
   const expenses = useExpensesStore((state) => state.items);
+  const members = useMembersStore((state) => state.members);
 
   return (
     <div className="w-full py-4">
