@@ -4,24 +4,26 @@ import * as React from 'react';
 
 import { useExpensesStore } from '@/lib/stores/expenses';
 import { format } from 'date-fns';
-import { useMembersStore } from '@/lib/stores/members';
+import { ExpenseInput } from './ExpenseInput';
 
 export function Expenses() {
   const expenses = useExpensesStore((state) => state.items);
-  const members = useMembersStore((state) => state.members);
 
   return (
-    <div className="w-full py-4">
-      <div className="mt-4 mb-2">
-        <strong>Total:</strong>{' '}
-        {new Intl.NumberFormat('vi-VN', {
-          style: 'currency',
-          currency: 'VND',
-        }).format(
-          expenses.reduce((sum, item) => {
-            return sum + Number(item.amount);
-          }, 0)
-        )}
+    <div className="flex flex-col w-full pb-4">
+      <div className="mt-4 mb-2 flex justify-between items-end">
+        <ExpenseInput />
+        <div>
+          <strong>Total:</strong>{' '}
+          {new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+          }).format(
+            expenses.reduce((sum, item) => {
+              return sum + Number(item.amount);
+            }, 0)
+          )}
+        </div>
       </div>
       <div className="rounded-md border">
         {expenses.map((expense) => (

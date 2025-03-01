@@ -47,7 +47,6 @@ export function ExpenseSplit() {
   const splitDetails = calculateSplitDetails(expenses);
   return (
     <div className="w-full py-4">
-      <strong>Split:</strong>{' '}
       {splitDetails &&
         Object.entries(splitDetails).map(([participantId, details]) => {
           const participant = members.find((m) => m.id === participantId);

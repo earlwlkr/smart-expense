@@ -317,7 +317,7 @@ export function ExpenseInput() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="mb-4">Add Expense</DialogTitle>
+          <DialogTitle>Add Expense</DialogTitle>
           {formComponent}
         </DialogHeader>
       </DialogContent>
