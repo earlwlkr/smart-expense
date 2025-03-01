@@ -7,7 +7,7 @@ import { getGroups } from '@/lib/db/groups';
 import { CreateGroup } from './CreateGroup';
 import { Group } from '@/lib/types';
 import { Card, CardDescription, CardHeader, CardTitle } from './ui/card';
-import format from 'date-fns/format';
+import { format } from 'date-fns/format';
 
 export function Groups() {
   const [groups, setGroups] = useState<Group[]>([]);
