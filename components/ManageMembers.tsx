@@ -104,7 +104,7 @@ export function ManageMembers() {
     >
       <SheetTrigger asChild>
         <div>
-          With <span>{members.map((member) => member.name)}</span>
+          With <span>{members.map((member) => member.name).join(', ')}</span>
         </div>
       </SheetTrigger>
       <SheetContent side="left">
@@ -118,7 +118,7 @@ export function ManageMembers() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <div>
-          With <span>{members.map((member) => member.name)}</span>
+          With <span>{members.map((member) => member.name).join(', ')}</span>
         </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
