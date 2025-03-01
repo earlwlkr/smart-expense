@@ -121,7 +121,7 @@ export function ManageMembers() {
   ) : (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div>
+        <div className="text-gray-500">
           With <span>{members.map((member) => member.name).join(', ')}</span>
         </div>
       </DialogTrigger>

@@ -9,12 +9,12 @@ import { ManageMembers } from './ManageMembers';
 export function GroupDetail({ id }: { id: string }) {
   useInitStore(id);
   return (
-    <div>
+    <div className="flex flex-col justify-center items-center">
       <div className="flex justify-center mb-2">
         <ManageMembers />
       </div>
-      <Tabs defaultValue="expenses">
-        <TabsList>
+      <Tabs defaultValue="expenses" className="w-[400px] mt-2">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="expenses">Expenses</TabsTrigger>
           <TabsTrigger value="split">Split</TabsTrigger>
         </TabsList>
