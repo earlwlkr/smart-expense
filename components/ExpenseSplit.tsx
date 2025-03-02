@@ -1,6 +1,16 @@
 import { useExpensesStore } from '@/lib/stores/expenses';
 import { useMembersStore } from '@/lib/stores/members';
 import { Expense } from '@/lib/types';
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 function calculateSplitDetails(expenses: Expense[]) {
   const splitDetails = expenses.reduce((acc, expense) => {
@@ -46,23 +56,37 @@ export function ExpenseSplit() {
   const members = useMembersStore((state) => state.members);
   const splitDetails = calculateSplitDetails(expenses);
   return (
-    <div className="w-full py-4">
-      {splitDetails &&
-        Object.entries(splitDetails).map(([participantId, details]) => {
-          const participant = members.find((m) => m.id === participantId);
-          return Object.entries(details).map(([payerId, amount]) => {
-            const payer = members.find((m) => m.id === payerId);
-            return (
-              <div key={payerId}>
-                {participant?.name} {'=>'} {payer?.name}{' '}
-                {new Intl.NumberFormat('vi-VN', {
-                  style: 'currency',
-                  currency: 'VND',
-                }).format(amount)}
-              </div>
-            );
-          });
-        })}
-    </div>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>From</TableHead>
+          <TableHead>To</TableHead>
+          <TableHead className="text-right">Amount</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {splitDetails &&
+          Object.entries(splitDetails).map(([participantId, details]) => {
+            const participant = members.find((m) => m.id === participantId);
+            return Object.entries(details).map(([payerId, amount]) => {
+              const payer = members.find((m) => m.id === payerId);
+              return (
+                <TableRow key={`${participantId}-${payerId}`}>
+                  <TableCell className="font-medium">
+                    {participant?.name}
+                  </TableCell>
+                  <TableCell>{payer?.name}</TableCell>
+                  <TableCell className="text-right">
+                    {new Intl.NumberFormat('vi-VN', {
+                      style: 'currency',
+                      currency: 'VND',
+                    }).format(amount)}
+                  </TableCell>
+                </TableRow>
+              );
+            });
+          })}
+      </TableBody>
+    </Table>
   );
 }
