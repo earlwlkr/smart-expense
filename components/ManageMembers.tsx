@@ -21,9 +21,8 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from './ui/sheet';
+} from '@/components/ui/sheet';
 import { useMediaQuery } from '@uidotdev/usehooks';
-import { ExpenseSplit } from '@/components/ExpenseSplit';
 
 export function ManageMembers() {
   const [open, setOpen] = useState(false);
@@ -113,9 +112,6 @@ export function ManageMembers() {
           <SheetTitle>Manage members</SheetTitle>
         </SheetHeader>
         {content}
-        <div>
-          <ExpenseSplit />
-        </div>
       </SheetContent>
     </Sheet>
   ) : (
@@ -131,9 +127,6 @@ export function ManageMembers() {
         </DialogHeader>
 
         {content}
-        <div>
-          <ExpenseSplit />
-        </div>
       </DialogContent>
     </Dialog>
   );
