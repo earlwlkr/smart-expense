@@ -36,6 +36,7 @@ import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useGroupsStore } from '@/lib/stores/groups';
 import { CurrencyInput } from '@/components/CurrencyInput';
 import { FancyMultiSelect } from '@/components/ui/fancy-multi-select';
+import { Combobox } from '@/components/Expenses/Combobox';
 
 const addExpenseFormSchema = z.object({
   name: z
@@ -147,22 +148,15 @@ export function ExpenseForm({
           render={({ field }) => (
             <FormItem className="grid grid-cols-4 items-center gap-4 space-y-0">
               <FormLabel className="text-right">Category</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl className="col-span-3">
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectGroup>
-                    {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.id}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+
+              <Combobox
+                options={categories.map((category) => ({
+                  value: category.id,
+                  label: category.name,
+                }))}
+                defaultValue={field.value}
+                onChange={field.onChange}
+              />
               <FormMessage />
             </FormItem>
           )}

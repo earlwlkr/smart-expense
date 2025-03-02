@@ -50,7 +50,7 @@ function Button({
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
-      {...(props as React.ComponentPropsWithoutRef<typeof Comp>)}
+      {...props}
     />
   )
 }
