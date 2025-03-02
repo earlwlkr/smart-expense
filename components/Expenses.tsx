@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { useExpensesStore } from '@/lib/stores/expenses';
 import { format } from 'date-fns';
-import { ExpenseInput } from './ExpenseInput';
+import { AddExpenseButton } from '@/components/AddExpenseButton';
 
 export function Expenses() {
   const expenses = useExpensesStore((state) => state.items);
@@ -12,7 +12,7 @@ export function Expenses() {
   return (
     <div className="flex flex-col w-full pb-4">
       <div className="mt-4 mb-2 flex justify-between items-end">
-        <ExpenseInput />
+        <AddExpenseButton />
         <div>
           <strong>Total:</strong>{' '}
           {new Intl.NumberFormat('vi-VN', {

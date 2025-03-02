@@ -1,16 +1,6 @@
-'use client';
-
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useCategoriesStore } from '@/lib/stores/categories';
 import {
   Select,
@@ -42,19 +32,10 @@ import {
 } from '@/components/ui/popover';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useGroupsStore } from '@/lib/stores/groups';
-import { CurrencyInput } from './CurrencyInput';
-import { FancyMultiSelect } from './ui/fancy-multi-select';
-import { useMediaQuery } from '@uidotdev/usehooks';
-import {
-  Sheet,
-  SheetTrigger,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from './ui/sheet';
+import { CurrencyInput } from '@/components/CurrencyInput';
+import { FancyMultiSelect } from '@/components/ui/fancy-multi-select';
 
 const addExpenseFormSchema = z.object({
   name: z
@@ -80,14 +61,15 @@ const addExpenseFormSchema = z.object({
 });
 type AddExpenseFormValues = z.infer<typeof addExpenseFormSchema>;
 
-export function ExpenseInput() {
-  const [open, setOpen] = useState(false);
+export function ExpenseForm({
+  setOpen,
+}: {
+  setOpen: Dispatch<SetStateAction<boolean>>;
+}) {
   const categories = useCategoriesStore((store) => store.categories);
   const members = useMembersStore((store) => store.members);
   const addExpense = useExpensesStore((store) => store.add);
   const group = useGroupsStore((store) => store.group);
-  const isSmallDevice = useMediaQuery('only screen and (max-width : 768px)');
-
   const form = useForm<AddExpenseFormValues>({
     resolver: zodResolver(addExpenseFormSchema),
     defaultValues: {
@@ -118,7 +100,7 @@ export function ExpenseInput() {
     setOpen(false);
   }
 
-  const formComponent = (
+  return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit, (errors) => {
@@ -296,31 +278,5 @@ export function ExpenseInput() {
         </DialogFooter>
       </form>
     </Form>
-  );
-
-  return isSmallDevice ? (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button variant="outline">Add expense</Button>
-      </SheetTrigger>
-      <SheetContent side="left">
-        <SheetHeader>
-          <SheetTitle>Add Expense</SheetTitle>
-        </SheetHeader>
-        {formComponent}
-      </SheetContent>
-    </Sheet>
-  ) : (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">Add expense</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Add Expense</DialogTitle>
-          {formComponent}
-        </DialogHeader>
-      </DialogContent>
-    </Dialog>
   );
 }
