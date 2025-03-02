@@ -1,4 +1,4 @@
-import { GroupDetail } from '@/components/GroupDetail';
+import { GroupDetail } from '@/components/Groups/GroupDetail';
 
 export default async function Dashboard({
   params,

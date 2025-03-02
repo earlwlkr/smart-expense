@@ -18,7 +18,7 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
-} from './ui/form';
+} from '../ui/form';
 import { useEffect, useState } from 'react';
 import { addGroup } from '@/lib/db/groups';
 import { addMember } from '@/lib/db/members';

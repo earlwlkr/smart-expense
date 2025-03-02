@@ -9,7 +9,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './ui/select';
+} from '../ui/select';
 import { useMembersStore } from '@/lib/stores/members';
 import { useExpensesStore } from '@/lib/stores/expenses';
 import * as z from 'zod';
@@ -22,7 +22,7 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
-} from './ui/form';
+} from '../ui/form';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import {

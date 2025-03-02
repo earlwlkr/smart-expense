@@ -17,7 +17,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { ExpenseForm } from '@/components/ExpenseForm';
+import { ExpenseForm } from '@/components/Expenses/ExpenseForm';
 
 export function AddExpenseButton() {
   const [open, setOpen] = useState(false);
