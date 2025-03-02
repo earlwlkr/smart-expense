@@ -68,7 +68,7 @@ export function CreateGroup({ fetchData }: { fetchData: () => Promise<void> }) {
     if (!created) return null;
     addMember(
       created.id,
-      { name: currentProfile.firstName },
+      { name: currentProfile.firstName || 'user' },
       currentProfile.id
     );
     addCategories(created.id, ['Eats', 'Drinks']);

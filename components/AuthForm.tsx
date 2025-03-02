@@ -178,7 +178,7 @@ export default function AuthForm() {
           onClick={handleSignInAnonymously}
         >
           {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}{' '}
-          Sign In anonymously
+          Sign in anonymously
         </Button>
         {/* <Button
           variant="outline"
