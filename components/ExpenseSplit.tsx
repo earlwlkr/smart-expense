@@ -15,7 +15,7 @@ import {
 function calculateSplitDetails(expenses: Expense[]) {
   const splitDetails = expenses.reduce((acc, expense) => {
     expense.participants.forEach((participant) => {
-      if (expense.handledBy?.id === participant.id) {
+      if (!expense.handledBy?.id || expense.handledBy?.id === participant.id) {
         return;
       }
       const handledById = expense.handledBy?.id!;
