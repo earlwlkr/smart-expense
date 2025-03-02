@@ -15,6 +15,6 @@ const DEFAULT_CATEGORIES = [
 export const useCategoriesStore = create<CategoriesState>((set) => ({
   categories: DEFAULT_CATEGORIES,
   add: (item: Category) =>
-    set((state) => ({ categories: [item, ...state.categories] })),
+    set((state) => ({ categories: [...state.categories, item] })),
   set: (categories: Category[]) => set({ categories }),
 }));
