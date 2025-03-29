@@ -65,10 +65,10 @@ const addExpenseFormSchema = z.object({
 type AddExpenseFormValues = z.infer<typeof addExpenseFormSchema>;
 
 export function ExpenseForm({
-  setOpen,
+  onClose,
   expense,
 }: {
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  onClose: () => void;
   expense?: Expense;
 }) {
   const categories = useCategoriesStore((store) => store.categories);
@@ -112,7 +112,7 @@ export function ExpenseForm({
       category: categories.find((item) => item.id === values.category),
       handledBy: members.find((item) => item.id === values.handledBy),
     });
-    setOpen(false);
+    onClose();
   }
 
   return (
@@ -294,7 +294,7 @@ export function ExpenseForm({
                 // Add your delete logic here
                 console.log('Delete expense:', expense.id);
                 removeExpense(expense.id);
-                setOpen(false);
+                onClose();
               }}
             >
               <Trash /> {/* Trash icon */}

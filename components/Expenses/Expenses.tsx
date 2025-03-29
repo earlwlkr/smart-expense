@@ -16,7 +16,7 @@ export function Expenses() {
   return (
     <div className="flex flex-col w-full pb-4">
       <div className="mt-4 mb-2 flex justify-between items-end">
-        <AddExpenseButton open={open} setOpen={setOpen} expense={expense} />
+        <AddExpenseButton open={open} setOpen={setOpen} expense={expense} setExpense={setExpense} />
         <div>
           <strong>Total:</strong>{' '}
           {new Intl.NumberFormat('vi-VN', {

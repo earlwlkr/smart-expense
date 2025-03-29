@@ -24,15 +24,21 @@ export function AddExpenseButton({
   open,
   setOpen,
   expense,
+  setExpense,
 }: {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   expense?: Expense;
+  setExpense: Dispatch<SetStateAction<Expense>>;
 }) {
   const isSmallDevice = useMediaQuery('only screen and (max-width : 768px)');
+  const onOpenChange = (open: boolean = false) => {
+    setExpense(null);
+    setOpen(open);
+  };
 
   return isSmallDevice ? (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetTrigger asChild>
         <Button variant="outline">Add expense</Button>
       </SheetTrigger>
@@ -40,18 +46,18 @@ export function AddExpenseButton({
         <SheetHeader>
           <SheetTitle>Add Expense</SheetTitle>
         </SheetHeader>
-        <ExpenseForm setOpen={setOpen} expense={expense} />
+        <ExpenseForm onClose={onOpenChange} expense={expense} />
       </SheetContent>
     </Sheet>
   ) : (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button variant="outline">Add expense</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add Expense</DialogTitle>
-          <ExpenseForm setOpen={setOpen} expense={expense} />
+          <ExpenseForm onClose={onOpenChange} expense={expense} />
         </DialogHeader>
       </DialogContent>
     </Dialog>
