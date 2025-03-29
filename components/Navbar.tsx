@@ -65,7 +65,7 @@ export default function Navbar() {
   };
 
   return (
-    <div className="flex justify-between">
+    <div className="grid grid-cols-3">
       <div>
         {pathname.startsWith('/groups/') && (
           <Link href="/">
@@ -80,7 +80,7 @@ export default function Navbar() {
         {group?.name || 'Expenses'}
       </h1>
       {user && (
-        <div className="py-2">
+        <div className="py-2 text-right">
           <Button
             type="button"
             variant="link"
