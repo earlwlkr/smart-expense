@@ -19,3 +19,7 @@ export const addMember = async (
     .from('members')
     .insert({ ...member, group_id: groupId, profile_id: profileId });
 };
+
+export const removeMember = async (memberId: string) => {
+  const { error } = await supabase.from('members').delete().eq('id', memberId);
+};

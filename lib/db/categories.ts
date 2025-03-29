@@ -16,3 +16,10 @@ export const addCategories = async (groupId: string, categories: string[]) => {
     .from('categories')
     .insert(categories.map((name) => ({ name, group_id: groupId })));
 };
+
+export const removeCategory = async (categoryId: string) => {
+  const { error } = await supabase
+    .from('categories')
+    .delete()
+    .eq('id', categoryId);
+};
