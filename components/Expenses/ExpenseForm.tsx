@@ -37,6 +37,8 @@ import { useGroupsStore } from '@/lib/stores/groups';
 import { CurrencyInput } from '@/components/CurrencyInput';
 import { FancyMultiSelect } from '@/components/ui/fancy-multi-select';
 import { Combobox } from '@/components/Expenses/Combobox';
+import { Expense } from '@/lib/types';
+import { Trash } from 'lucide-react'; // Import the trash icon
 
 const addExpenseFormSchema = z.object({
   name: z
@@ -64,8 +66,10 @@ type AddExpenseFormValues = z.infer<typeof addExpenseFormSchema>;
 
 export function ExpenseForm({
   setOpen,
+  expense,
 }: {
   setOpen: Dispatch<SetStateAction<boolean>>;
+  expense?: Expense;
 }) {
   const categories = useCategoriesStore((store) => store.categories);
   const members = useMembersStore((store) => store.members);
@@ -84,8 +88,17 @@ export function ExpenseForm({
   });
 
   useEffect(() => {
-    form.setValue('participants', members);
-  }, [form, members]);
+    if (expense) {
+      form.setValue('name', expense.name);
+      // form.setValue('amount', expense.amount);
+      form.setValue('category', expense.category?.id as string);
+      form.setValue('handledBy', expense.handledBy?.id as string);
+      form.setValue('participants', expense.participants);
+      form.setValue('date', new Date(expense.date));
+    } else {
+      form.setValue('participants', members);
+    }
+  }, [form, members, expense]);
 
   function onSubmit(values: AddExpenseFormValues) {
     // Do something with the form values.
@@ -267,7 +280,24 @@ export function ExpenseForm({
           )}
         />
 
-        <DialogFooter>
+        <DialogFooter
+          className={`flex ${
+            expense ? 'sm:justify-between' : 'sm:justify-end'
+          }`}
+        >
+          {expense && (
+            <Button
+              variant="destructive"
+              className="flex items-center"
+              onClick={() => {
+                // Add your delete logic here
+                console.log('Delete expense:', expense.id);
+              }}
+            >
+              <Trash /> {/* Trash icon */}
+              <span>Delete</span>
+            </Button>
+          )}
           <Button type="submit">Save changes</Button>
         </DialogFooter>
       </form>

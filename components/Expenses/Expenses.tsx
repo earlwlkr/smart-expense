@@ -5,14 +5,18 @@ import * as React from 'react';
 import { useExpensesStore } from '@/lib/stores/expenses';
 import { format } from 'date-fns';
 import { AddExpenseButton } from '@/components/AddExpenseButton';
+import { useState } from 'react';
+import { Expense } from '@/lib/types';
 
 export function Expenses() {
   const expenses = useExpensesStore((state) => state.items);
+  const [open, setOpen] = useState(false);
+  const [expense, setExpense] = useState<Expense>(null);
 
   return (
     <div className="flex flex-col w-full pb-4">
       <div className="mt-4 mb-2 flex justify-between items-end">
-        <AddExpenseButton />
+        <AddExpenseButton open={open} setOpen={setOpen} expense={expense} />
         <div>
           <strong>Total:</strong>{' '}
           {new Intl.NumberFormat('vi-VN', {
@@ -27,7 +31,14 @@ export function Expenses() {
       </div>
       <div className="rounded-md border">
         {expenses.map((expense) => (
-          <div key={expense.id} className="p-4 border-b">
+          <div
+            key={expense.id}
+            className="p-4 border-b"
+            onClick={() => {
+              setExpense(expense);
+              setOpen(true);
+            }}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-lg font-medium">{expense.name}</div>

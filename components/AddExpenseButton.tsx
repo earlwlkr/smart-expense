@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import {
   Sheet,
@@ -18,9 +18,17 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { ExpenseForm } from '@/components/Expenses/ExpenseForm';
+import { Expense } from '@/lib/types';
 
-export function AddExpenseButton() {
-  const [open, setOpen] = useState(false);
+export function AddExpenseButton({
+  open,
+  setOpen,
+  expense,
+}: {
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  expense?: Expense;
+}) {
   const isSmallDevice = useMediaQuery('only screen and (max-width : 768px)');
 
   return isSmallDevice ? (
@@ -32,7 +40,7 @@ export function AddExpenseButton() {
         <SheetHeader>
           <SheetTitle>Add Expense</SheetTitle>
         </SheetHeader>
-        <ExpenseForm setOpen={setOpen} />
+        <ExpenseForm setOpen={setOpen} expense={expense} />
       </SheetContent>
     </Sheet>
   ) : (
@@ -43,7 +51,7 @@ export function AddExpenseButton() {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add Expense</DialogTitle>
-          <ExpenseForm setOpen={setOpen} />
+          <ExpenseForm setOpen={setOpen} expense={expense} />
         </DialogHeader>
       </DialogContent>
     </Dialog>
