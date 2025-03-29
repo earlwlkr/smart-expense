@@ -91,7 +91,7 @@ export function ExpenseForm({
   useEffect(() => {
     if (expense) {
       form.setValue('name', expense.name);
-      // form.setValue('amount', expense.amount);
+      form.setValue('amount', expense.amount);
       form.setValue('category', expense.category?.id as string);
       form.setValue('handledBy', expense.handledBy?.id as string);
       form.setValue('participants', expense.participants);
@@ -105,13 +105,16 @@ export function ExpenseForm({
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
-    addExpense(group.id, {
-      id: Date.now().toString(),
-      ...values,
-      amount: String(values.amount),
-      category: categories.find((item) => item.id === values.category),
-      handledBy: members.find((item) => item.id === values.handledBy),
-    });
+    if (expense) {
+    } else {
+      addExpense(group.id, {
+        id: Date.now().toString(),
+        ...values,
+        amount: String(values.amount),
+        category: categories.find((item) => item.id === values.category),
+        handledBy: members.find((item) => item.id === values.handledBy),
+      });
+    }
     onClose();
   }
 
