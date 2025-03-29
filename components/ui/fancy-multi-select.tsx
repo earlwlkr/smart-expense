@@ -107,30 +107,33 @@ export function FancyMultiSelect({
         </div>
       </div>
       <div className="relative mt-2">
-        {open && selectables.length > 0 ? (
-          <div className="absolute w-full z-10 top-0 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
-            <CommandGroup className="h-full overflow-auto">
-              {selectables.map((option) => {
-                return (
-                  <CommandItem
-                    key={option.value}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    onSelect={(value) => {
-                      setInputValue('');
-                      setSelected((prev) => [...prev, option]);
-                    }}
-                    className={'cursor-pointer'}
-                  >
-                    {option.label}
-                  </CommandItem>
-                );
-              })}
-            </CommandGroup>
-          </div>
-        ) : null}
+        <CommandPrimitive.List>
+          {open && selectables.length > 0 ? (
+            <div className="absolute w-full z-10 top-0 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
+              <CommandGroup className="h-full overflow-auto">
+                {selectables.map((option) => {
+                  return (
+                    <CommandPrimitive.Item key={option.value}>
+                      <CommandItem
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                        onSelect={(value) => {
+                          setInputValue('');
+                          setSelected((prev) => [...prev, option]);
+                        }}
+                        className={'cursor-pointer'}
+                      >
+                        {option.label}
+                      </CommandItem>
+                    </CommandPrimitive.Item>
+                  );
+                })}
+              </CommandGroup>
+            </div>
+          ) : null}
+        </CommandPrimitive.List>
       </div>
     </Command>
   );
