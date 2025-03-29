@@ -15,9 +15,11 @@ export const addMember = async (
   member: Omit<Member, 'id' | 'created_at'>,
   profileId?: string
 ) => {
-  const { error } = await supabase
+  const { error, data } = await supabase
     .from('members')
-    .insert({ ...member, group_id: groupId, profile_id: profileId });
+    .insert({ ...member, group_id: groupId, profile_id: profileId })
+    .select();
+  return data;
 };
 
 export const removeMember = async (memberId: string) => {

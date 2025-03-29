@@ -5,6 +5,7 @@ type CategoriesState = {
   categories: Category[];
   add: (item: Category) => void;
   set: (categories: Category[]) => void;
+  update: (categories: Category[]) => void;
 };
 
 const DEFAULT_CATEGORIES = [
@@ -17,4 +18,5 @@ export const useCategoriesStore = create<CategoriesState>((set) => ({
   add: (item: Category) =>
     set((state) => ({ categories: [...state.categories, item] })),
   set: (categories: Category[]) => set({ categories }),
+  update: (categories: Category[]) => set({ categories }),
 }));

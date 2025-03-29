@@ -12,9 +12,11 @@ export const getCategories = async (groupId: string): Promise<Category[]> => {
 };
 
 export const addCategories = async (groupId: string, categories: string[]) => {
-  const { error } = await supabase
+  const { error, data } = await supabase
     .from('categories')
-    .insert(categories.map((name) => ({ name, group_id: groupId })));
+    .insert(categories.map((name) => ({ name, group_id: groupId })))
+    .select();
+  return data;
 };
 
 export const removeCategory = async (categoryId: string) => {
