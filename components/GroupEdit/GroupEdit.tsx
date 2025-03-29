@@ -48,7 +48,7 @@ export function GroupEdit() {
           {tempMembers.map((member) => (
             <div
               key={member.id}
-              className="flex items-center justify-between max-w-md p-2 border rounded-md"
+              className="flex items-center justify-between max-w-md p-2 border-b rounded-b-none rounded-md"
             >
               <span className="text-sm">{member.name}</span>
               <Button
@@ -100,7 +100,7 @@ export function GroupEdit() {
           {tempCategories.map((category) => (
             <div
               key={category.id}
-              className="flex items-center justify-between max-w-md p-2 border rounded-md"
+              className="flex items-center justify-between max-w-md p-2 border-b rounded-b-none rounded-md"
             >
               <span className="text-sm">{category.name}</span>
               <Button
