@@ -6,7 +6,7 @@ import { useCategoriesStore } from '@/lib/stores/categories';
 import { useGroupsStore } from '@/lib/stores/groups';
 import { useMembersStore } from '@/lib/stores/members';
 import { useRef, useState } from 'react';
-import { Separator } from '../ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export function GroupEdit() {
   const group = useGroupsStore((store) => store.group);
@@ -38,10 +38,12 @@ export function GroupEdit() {
   };
 
   return (
-    <div className="flex flex-col py-6 space-y-6">
-      {/* Members Section */}
-      <div>
-        <h2 className="text-lg font-semibold mb-4">Members</h2>
+    <Tabs defaultValue="members" className="flex flex-col">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="members">Members</TabsTrigger>
+        <TabsTrigger value="categories">Categories</TabsTrigger>
+      </TabsList>
+      <TabsContent value="members">
         <div className="space-y-2">
           {tempMembers.map((member) => (
             <div
@@ -54,7 +56,7 @@ export function GroupEdit() {
                 variant="ghost"
                 onClick={() => handleDeleteMember(member.id)}
               >
-                Delete
+                Remove
               </Button>
             </div>
           ))}
@@ -83,9 +85,8 @@ export function GroupEdit() {
                   name: newMemberInputRef.current.value,
                 });
                 if (added && added.length > 0) {
-                  updateMembers([...tempCategories, ...added]);
+                  updateMembers([...tempMembers, ...added]);
                 }
-                updateMembers([...tempMembers, newMember]);
                 newMemberInputRef.current.value = '';
               }}
             >
@@ -93,13 +94,8 @@ export function GroupEdit() {
             </Button>
           </div>
         </div>
-      </div>
-
-      <Separator />
-
-      {/* Categories Section */}
-      <div>
-        <h2 className="text-lg font-semibold mb-4">Categories</h2>
+      </TabsContent>
+      <TabsContent value="categories">
         <div className="space-y-2">
           {tempCategories.map((category) => (
             <div
@@ -112,7 +108,7 @@ export function GroupEdit() {
                 variant="ghost"
                 onClick={() => handleDeleteCategory(category.id)}
               >
-                Delete
+                Remove
               </Button>
             </div>
           ))}
@@ -149,7 +145,7 @@ export function GroupEdit() {
             </Button>
           </div>
         </div>
-      </div>
-    </div>
+      </TabsContent>
+    </Tabs>
   );
 }
