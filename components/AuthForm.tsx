@@ -96,7 +96,7 @@ export default function AuthForm() {
 
   return (
     <>
-      <div className="flex flex-col space-y-2 text-center mt-8">
+      <div className="flex flex-col space-y-2 text-center">
         <h1 className="text-2xl font-semibold tracking-tight">
           {!signup && 'Login'}
           {signup && 'Create an account'}

@@ -22,9 +22,9 @@ export function Groups() {
   }, [fetchData]);
 
   return (
-    <div className="lg:container px-4">
+    <div className="">
       <CreateGroup fetchData={fetchData} />
-      <div className="mt-4 flex flex-col gap-y-4 lg:grid lg:grid-cols-3 lg:gap-x-4">
+      <div className="mt-4 flex flex-col gap-y-4">
         {groups.map((item) => (
           <Link key={item.id} href={`/groups/${item.id}`}>
             <Card>

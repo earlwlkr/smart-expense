@@ -28,8 +28,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex flex-col justify-center items-center">
-            <div className="mt-4 w-[400px]">
+          <div className="md:flex md:justify-center">
+            <div className="mt-4 mx-4 md:w-[400px]">
               <Navbar />
               {children}
               <Toaster />

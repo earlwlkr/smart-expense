@@ -65,7 +65,7 @@ export default function Navbar() {
   };
 
   return (
-    <div className="grid grid-cols-3">
+    <div className="flex items-center grid grid-cols-3">
       <div>
         {pathname.startsWith('/groups/') && (
           <Link href="/">
@@ -76,9 +76,11 @@ export default function Navbar() {
           </Link>
         )}
       </div>
-      <h1 className="font-semibold text-center md:text-2xl pt-2">
-        {group?.name || 'Expenses'}
-      </h1>
+      {user && (
+        <h1 className="font-semibold text-center md:text-2xl">
+          {group?.name || 'Expenses'}
+        </h1>
+      )}
       {user && (
         <div className="py-2 text-right">
           <Button
