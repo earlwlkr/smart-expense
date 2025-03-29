@@ -38,7 +38,7 @@ export function GroupEdit() {
   };
 
   return (
-    <Tabs defaultValue="members" className="flex flex-col">
+    <Tabs defaultValue="members" className="flex flex-col mt-2">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="members">Members</TabsTrigger>
         <TabsTrigger value="categories">Categories</TabsTrigger>
