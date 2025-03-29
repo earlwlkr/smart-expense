@@ -83,4 +83,13 @@ export const addExpense = async (
       .from('participants')
       .insert({ expense_id: inserted.id, member_id: participant.id });
   });
+  inserted.participants = participants;
+  return inserted as Expense;
+};
+
+export const removeExpense = async (expenseId: string) => {
+  const { error } = await supabase
+    .from('expenses')
+    .delete()
+    .eq('id', expenseId);
 };

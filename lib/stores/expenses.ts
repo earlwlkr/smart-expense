@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { pick } from 'lodash-es';
 import { Category, Expense, Member } from '../types';
-import { addExpense } from '../db/expenses';
+import { addExpense, removeExpense } from '../db/expenses';
 
 type ExpensesState = {
   items: Expense[];
@@ -16,16 +16,26 @@ type ExpenseInput = Omit<Expense, 'category' | 'handledBy'> & {
 
 export const useExpensesStore = create<ExpensesState>((set) => ({
   items: [],
-  add: (groupId: string, item: ExpenseInput) => {
+  add: async (groupId: string, item: ExpenseInput) => {
     const remoteData = {
       ...pick(item, ['name', 'amount', 'date']),
       handled_by: item.handledBy?.id,
       category_id: item.category?.id,
     };
-    addExpense(groupId, remoteData, item.participants || []);
+    const inserted = await addExpense(
+      groupId,
+      remoteData,
+      item.participants || []
+    );
     set((state) => ({
-      items: [...state.items, item],
+      items: [...state.items, inserted],
     }));
   },
   set: (items: Expense[]) => set({ items }),
+  remove: (expenseId: string) => {
+    set((state) => ({
+      items: state.items.filter((item) => item.id !== expenseId),
+    }));
+    removeExpense(expenseId);
+  },
 }));

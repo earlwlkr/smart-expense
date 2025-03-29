@@ -74,6 +74,7 @@ export function ExpenseForm({
   const categories = useCategoriesStore((store) => store.categories);
   const members = useMembersStore((store) => store.members);
   const addExpense = useExpensesStore((store) => store.add);
+  const removeExpense = useExpensesStore((store) => store.remove);
   const group = useGroupsStore((store) => store.group);
   const form = useForm<AddExpenseFormValues>({
     resolver: zodResolver(addExpenseFormSchema),
@@ -292,6 +293,8 @@ export function ExpenseForm({
               onClick={() => {
                 // Add your delete logic here
                 console.log('Delete expense:', expense.id);
+                removeExpense(expense.id);
+                setOpen(false);
               }}
             >
               <Trash /> {/* Trash icon */}
