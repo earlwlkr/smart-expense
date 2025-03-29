@@ -11,12 +11,17 @@ import { Expense } from '@/lib/types';
 export function Expenses() {
   const expenses = useExpensesStore((state) => state.items);
   const [open, setOpen] = useState(false);
-  const [expense, setExpense] = useState<Expense>(null);
+  const [expense, setExpense] = useState<Expense | null>(null);
 
   return (
     <div className="flex flex-col w-full pb-4">
       <div className="mt-4 mb-2 flex justify-between items-end">
-        <AddExpenseButton open={open} setOpen={setOpen} expense={expense} setExpense={setExpense} />
+        <AddExpenseButton
+          open={open}
+          setOpen={setOpen}
+          expense={expense}
+          setExpense={setExpense}
+        />
         <div>
           <strong>Total:</strong>{' '}
           {new Intl.NumberFormat('vi-VN', {

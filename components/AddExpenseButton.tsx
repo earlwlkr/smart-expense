@@ -28,8 +28,8 @@ export function AddExpenseButton({
 }: {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
-  expense?: Expense;
-  setExpense: Dispatch<SetStateAction<Expense>>;
+  expense?: Expense | null;
+  setExpense: Dispatch<SetStateAction<Expense | null>>;
 }) {
   const isSmallDevice = useMediaQuery('only screen and (max-width : 768px)');
   const onOpenChange = (open: boolean = false) => {

@@ -69,7 +69,7 @@ export function ExpenseForm({
   expense,
 }: {
   onClose: () => void;
-  expense?: Expense;
+  expense?: Expense | null;
 }) {
   const categories = useCategoriesStore((store) => store.categories);
   const members = useMembersStore((store) => store.members);
@@ -91,7 +91,7 @@ export function ExpenseForm({
   useEffect(() => {
     if (expense) {
       form.setValue('name', expense.name);
-      form.setValue('amount', expense.amount);
+      form.setValue('amount', parseFloat(expense.amount));
       form.setValue('category', expense.category?.id as string);
       form.setValue('handledBy', expense.handledBy?.id as string);
       form.setValue('participants', expense.participants);
