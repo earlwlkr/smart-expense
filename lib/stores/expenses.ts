@@ -6,6 +6,7 @@ import { addExpense, removeExpense, updateExpense } from '../db/expenses';
 type ExpensesState = {
   items: Expense[];
   add: (groupId: string, item: ExpenseInput) => void;
+  update: (expenseId: string, item: ExpenseInput) => void;
   set: (items: Expense[]) => void;
   remove: (expenseId: string) => void;
 };
