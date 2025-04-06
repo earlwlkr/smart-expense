@@ -96,6 +96,7 @@ export function ExpenseForm({
     if (expense) {
       updateExpense(expense.id, {
         ...values,
+        id: expense.id,
         amount: String(values.amount),
         category: categories.find((item) => item.id === values.category),
         handledBy: members.find((item) => item.id === values.handledBy),
