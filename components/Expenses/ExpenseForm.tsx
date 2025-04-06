@@ -74,38 +74,32 @@ export function ExpenseForm({
   const categories = useCategoriesStore((store) => store.categories);
   const members = useMembersStore((store) => store.members);
   const addExpense = useExpensesStore((store) => store.add);
+  const updateExpense = useExpensesStore((store) => store.update);
   const removeExpense = useExpensesStore((store) => store.remove);
   const group = useGroupsStore((store) => store.group);
   const form = useForm<AddExpenseFormValues>({
     resolver: zodResolver(addExpenseFormSchema),
     defaultValues: {
-      name: '',
-      amount: 0,
-      category: '',
-      handledBy: '',
-      participants: members,
-      date: new Date(),
+      name: expense?.name || '',
+      amount: expense?.amount ? Number(expense.amount) : 0,
+      category: expense?.category?.id || categories[0]?.id,
+      handledBy: expense?.handledBy?.id || members[0]?.id,
+      participants: expense?.participants || members,
+      date: expense?.date ? new Date(expense.date) : new Date(),
     },
   });
-
-  useEffect(() => {
-    if (expense) {
-      form.setValue('name', expense.name);
-      form.setValue('amount', parseFloat(expense.amount));
-      form.setValue('category', expense.category?.id as string);
-      form.setValue('handledBy', expense.handledBy?.id as string);
-      form.setValue('participants', expense.participants);
-      form.setValue('date', new Date(expense.date));
-    } else {
-      form.setValue('participants', members);
-    }
-  }, [form, members, expense]);
 
   function onSubmit(values: AddExpenseFormValues) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
     if (expense) {
+      updateExpense(expense.id, {
+        ...values,
+        amount: String(values.amount),
+        category: categories.find((item) => item.id === values.category),
+        handledBy: members.find((item) => item.id === values.handledBy),
+      });
     } else {
       addExpense(group.id, {
         id: Date.now().toString(),

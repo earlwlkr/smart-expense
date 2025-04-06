@@ -87,6 +87,29 @@ export const addExpense = async (
   return inserted as Expense;
 };
 
+export const updateExpense = async (
+  expenseId: string,
+  expense: ExpenseInput,
+  participants: Member[]
+) => {
+  const { data: updated, error } = await supabase
+    .from('expenses')
+    .update({
+      ...expense,
+    })
+    .eq('id', expenseId)
+    .select()
+    .single();
+  await supabase.from('participants').delete().eq('expense_id', expenseId);
+  participants.forEach(async (participant) => {
+    await supabase
+      .from('participants')
+      .insert({ expense_id: expenseId, member_id: participant.id });
+  });
+  updated.participants = participants;
+  return updated as Expense;
+};
+
 export const removeExpense = async (expenseId: string) => {
   const { error } = await supabase
     .from('expenses')
