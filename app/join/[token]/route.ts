@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { addDays } from 'date-fns';
 
 // test URL:
 // http://localhost:3000/join/7847cf33-9442-4718-be25-da4d87db2b7c
@@ -33,8 +34,9 @@ export async function GET(
     .select()
     .eq('id', tokenValue)
     .single();
-  console.log('🚀 ~ token:', token);
-  if (!token || token.disabled || token.created_at < new Date()) {
+  const tokenExpiryDate = addDays(new Date(token.created_at), 7);
+  console.log('🚀 ~ token:', token, tokenExpiryDate, new Date());
+  if (!token || token.disabled || tokenExpiryDate < new Date()) {
     return new NextResponse('Token invalid');
   }
 
