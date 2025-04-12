@@ -25,5 +25,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/login', '/groups/:id*'],
+  matcher: ['/', '/login', '/groups/:id*', '/join/:token*'],
 };
