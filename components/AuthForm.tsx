@@ -18,6 +18,11 @@ export default function AuthForm() {
   const [authMessage, setAuthMessage] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
 
+  // get nextUrl from URL params
+  const location = typeof window !== 'undefined' ? window.location : null;
+  const params = new URLSearchParams(location?.search || '');
+  const nextUrl = params.get('nextUrl') || null;
+
   const handleSignUp = async () => {
     setAuthMessage(null);
     setLoading(true);
@@ -35,13 +40,15 @@ export default function AuthForm() {
     }
     setAuthMessage('Check your email for verification request!');
 
-    // setTimeout(async () => {
     const { data: updateData, error: updateError } = await supabase
       .from('profiles')
       .update({ first_name: firstName })
       .eq('id', data.user?.id);
     console.log('updateData', { updateData, updateError });
-    // }, 1000);
+    if (nextUrl) {
+      router.push(nextUrl);
+      return;
+    }
     router.push('/');
   };
 
@@ -57,6 +64,10 @@ export default function AuthForm() {
       setAuthMessage(error.message);
       return;
     }
+    if (nextUrl) {
+      router.push(nextUrl);
+      return;
+    }
     router.push('/');
   };
 
@@ -67,6 +78,10 @@ export default function AuthForm() {
     setLoading(false);
     if (error) {
       setAuthMessage(error.message);
+      return;
+    }
+    if (nextUrl) {
+      router.push(nextUrl);
       return;
     }
     router.push('/');
