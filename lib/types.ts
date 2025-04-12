@@ -29,3 +29,10 @@ export type Expense = {
   participants: Member[];
   date: Date;
 };
+
+export type Token = {
+  id: string;
+  disabled: boolean;
+  groupId: string;
+  createdAt: Date;
+};

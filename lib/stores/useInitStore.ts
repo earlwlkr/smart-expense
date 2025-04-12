@@ -7,12 +7,15 @@ import { getGroupDetail } from '../db/groups';
 import { useGroupsStore } from './groups';
 import { getCategories } from '../db/categories';
 import { useCategoriesStore } from './categories';
+import { useTokensStore } from './tokens';
+import { getActiveTokens } from '../db/tokens';
 
 export const useInitStore = (groupId: string) => {
   const setGroup = useGroupsStore((store) => store.set);
   const setCategories = useCategoriesStore((store) => store.set);
   const setExpenses = useExpensesStore((store) => store.set);
   const setMembers = useMembersStore((store) => store.update);
+  const setTokens = useTokensStore((store) => store.set);
 
   useEffect(() => {
     const initGroup = async () => {
@@ -31,15 +34,20 @@ export const useInitStore = (groupId: string) => {
       const members = await getMembers(groupId);
       setMembers(members);
     };
+    const initTokens = async () => {
+      const tokens = await getActiveTokens(groupId);
+      setTokens(tokens);
+    };
     const initStore = () => {
       return Promise.all([
         initGroup(),
         initCategories(),
         initExpenses(),
         initMembers(),
+        initTokens(),
       ]);
     };
 
     initStore();
-  }, [groupId, setCategories, setExpenses, setGroup, setMembers]);
+  }, [groupId, setCategories, setExpenses, setGroup, setMembers, setTokens]);
 };

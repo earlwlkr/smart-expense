@@ -7,11 +7,14 @@ import { useGroupsStore } from '@/lib/stores/groups';
 import { useMembersStore } from '@/lib/stores/members';
 import { useRef, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useTokensStore } from '@/lib/stores/tokens';
 
 export function GroupEdit() {
   const group = useGroupsStore((store) => store.group);
 
   const members = useMembersStore((state) => state.members);
+  const tokens = useTokensStore((state) => state.tokens);
+  const addToken = useTokensStore((state) => state.add);
   const updateMembers = useMembersStore((store) => store.update);
   const [tempMembers, setTempMembers] = useState(members);
   const newMemberInputRef = useRef<HTMLInputElement>(null);
@@ -38,11 +41,52 @@ export function GroupEdit() {
   };
 
   return (
-    <Tabs defaultValue="members" className="flex flex-col mt-2">
-      <TabsList className="grid w-full grid-cols-2">
+    <Tabs defaultValue="general" className="flex flex-col mt-2 min-h-[400px]">
+      <TabsList className="grid w-full grid-cols-3">
+        <TabsTrigger value="general">General</TabsTrigger>
         <TabsTrigger value="members">Members</TabsTrigger>
         <TabsTrigger value="categories">Categories</TabsTrigger>
       </TabsList>
+      <TabsContent value="general">
+        <div className="space-y-2">
+          <div>
+            <h2 className="text-lg font-semibold">Share links</h2>
+            {tokens.map((token) => (
+              <div
+                key={token.id}
+                className="flex items-center justify-between max-w-md p-2 rounded-b-none rounded-md"
+              >
+                <Input
+                  value={`${process.env.NEXT_PUBLIC_BASE_URL}/join/${token.id}`}
+                  readOnly
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={async () => {
+                    // copy to clipboard
+                    await navigator.clipboard.writeText(
+                      `${process.env.NEXT_PUBLIC_BASE_URL}/join/${token.id}`
+                    );
+                  }}
+                >
+                  Copy
+                </Button>
+              </div>
+            ))}
+            <div className="flex items-center space-x-2 max-w-md">
+              <Button
+                type="button"
+                onClick={() => {
+                  addToken(group.id);
+                }}
+              >
+                Create
+              </Button>
+            </div>
+          </div>
+        </div>
+      </TabsContent>
       <TabsContent value="members">
         <div className="space-y-2">
           {tempMembers.map((member) => (
