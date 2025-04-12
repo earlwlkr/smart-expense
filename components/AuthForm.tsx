@@ -3,7 +3,7 @@ import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Info, Terminal } from 'lucide-react';
@@ -19,9 +19,8 @@ export default function AuthForm() {
   const [isLoading, setLoading] = useState(false);
 
   // get nextUrl from URL params
-  const location = typeof window !== 'undefined' ? window.location : null;
-  const params = new URLSearchParams(location?.search || '');
-  const nextUrl = params.get('nextUrl') || null;
+  const searchParams = useSearchParams();
+  const nextUrl = searchParams.get('nextUrl');
 
   const handleSignUp = async () => {
     setAuthMessage(null);
