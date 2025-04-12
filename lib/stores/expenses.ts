@@ -18,35 +18,59 @@ type ExpenseInput = Omit<Expense, 'category' | 'handledBy'> & {
 
 export const useExpensesStore = create<ExpensesState>((set) => ({
   items: [],
-  add: async (groupId: string, item: ExpenseInput) => {
+  add: async (groupId: string, localData: ExpenseInput) => {
+    // update local state first
+    set((state) => ({
+      items: [...state.items, localData],
+    }));
+
+    // update remote state
     const remoteData = {
-      ...pick(item, ['name', 'amount', 'date']),
-      handled_by: item.handledBy?.id,
-      category_id: item.category?.id,
+      ...pick(localData, ['name', 'amount', 'date']),
+      handled_by: localData.handledBy?.id,
+      category_id: localData.category?.id,
     };
-    const inserted = await addExpense(
+    const updated = await addExpense(
       groupId,
       remoteData,
-      item.participants || []
+      localData.participants
     );
+    updated.handledBy = localData.handledBy;
+    updated.category = localData.category;
+
+    // update local state again
     set((state) => ({
-      items: [...state.items, inserted],
+      items: state.items.map((item) =>
+        item.id === localData.id ? updated : item
+      ),
     }));
   },
-  update: async (expenseId: string, item: ExpenseInput) => {
+  update: async (expenseId: string, localData: ExpenseInput) => {
+    // update local state first
+    set((state) => ({
+      items: state.items.map((item) =>
+        item.id === expenseId ? localData : item
+      ),
+    }));
+
+    // update remote state
     const remoteData = {
-      ...pick(item, ['name', 'amount', 'date']),
-      handled_by: item.handledBy?.id,
-      category_id: item.category?.id,
+      ...pick(localData, ['name', 'amount', 'date']),
+      handled_by: localData.handledBy?.id,
+      category_id: localData.category?.id,
     };
     const updated = await updateExpense(
       expenseId,
       remoteData,
-      item.participants || []
+      localData.participants
     );
+    updated.handledBy = localData.handledBy;
+    updated.category = localData.category;
+
+    // update local state again
     set((state) => ({
       items: state.items.map((item) =>
-        item.id === expenseId ? updated : item
+        item.id === localData.id ? updated : item
       ),
     }));
   },

@@ -94,9 +94,7 @@ export const updateExpense = async (
 ) => {
   const { data: updated, error } = await supabase
     .from('expenses')
-    .update({
-      ...expense,
-    })
+    .update(expense)
     .eq('id', expenseId)
     .select()
     .single();
