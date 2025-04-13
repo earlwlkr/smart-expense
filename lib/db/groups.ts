@@ -16,12 +16,14 @@ export const getGroupDetail = async (groupId: string) => {
   return data?.[0] || {};
 };
 
-export const addGroup = async (group: Omit<Group, 'id' | 'created_at'>) => {
-  const user = await supabase.auth.getUser();  
+export const addGroup = async (
+  group: Omit<Group, 'id' | 'created_at'>,
+  profileId: string
+) => {
   const { data, error } = await supabase
     .from('groups')
-    .insert({ ...group, profile_id: user.data.user?.id })
-    .select();  
+    .insert({ ...group, profile_id: profileId })
+    .select();
   if (error) return null;
   return data[0] as Group;
 };

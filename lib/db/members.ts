@@ -19,6 +19,10 @@ export const addMember = async (
     .from('members')
     .insert({ ...member, group_id: groupId, profile_id: profileId })
     .select();
+  await supabase
+    .from('group_profiles')
+    .insert({ ...member, group_id: groupId, profile_id: profileId })
+    .select();
   return data;
 };
 

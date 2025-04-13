@@ -64,7 +64,7 @@ export function CreateGroup({ fetchData }: { fetchData: () => Promise<void> }) {
     // ✅ This will be type-safe and validated.
     console.log(values);
     setLoading(true);
-    const created = await addGroup(values);
+    const created = await addGroup(values, currentProfile.id);
     setLoading(false);
     if (!created) return null;
     addMember(
