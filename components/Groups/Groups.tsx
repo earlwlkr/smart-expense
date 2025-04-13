@@ -38,7 +38,7 @@ export function Groups() {
                   {item.name}
                 </CardTitle>
                 <CardDescription className="text-sm text-gray-500">
-                  Created on: {format(new Date(item.created_at), 'PP')}
+                  {format(new Date(item.created_at), 'PP')}
                 </CardDescription>
               </CardHeader>
             </Card>
