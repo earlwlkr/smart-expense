@@ -21,7 +21,8 @@ export const getExpenses = async (groupId: string): Promise<Expense[]> => {
     )
     `
     )
-    .eq('group_id', groupId);
+    .eq('group_id', groupId)
+    .order('created_at');
   const { data: participants } = await supabase
     .from('participants')
     .select(
