@@ -65,6 +65,7 @@ export function CreateGroup({ fetchData }: { fetchData: () => Promise<void> }) {
     console.log(values);
     setLoading(true);
     const created = await addGroup(values);
+    setLoading(false);
     if (!created) return null;
     addMember(
       created.id,
@@ -72,7 +73,6 @@ export function CreateGroup({ fetchData }: { fetchData: () => Promise<void> }) {
       currentProfile.id
     );
     addCategories(created.id, ['Eats', 'Drinks']);
-    setLoading(false);
     setOpen(false);
     // fetchData();
     router.push('/groups/' + created.id);
