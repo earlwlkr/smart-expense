@@ -49,22 +49,24 @@ export function GroupEdit() {
       </TabsList>
       <TabsContent value="general">
         <div className="space-y-2">
+          <h2 className="text-lg font-semibold">Share Links</h2>
           <div>
-            <h2 className="text-lg font-semibold">Share links</h2>
             {tokens.map((token) => (
               <div
                 key={token.id}
-                className="flex items-center justify-between max-w-md p-2 rounded-b-none rounded-md"
+                className="flex items-center justify-between max-w-md py-2 rounded-lg shadow-sm"
               >
                 <Input
                   value={`${process.env.NEXT_PUBLIC_BASE_URL}/join/${token.id}`}
                   readOnly
+                  className="flex-grow"
                 />
                 <Button
                   type="button"
                   variant="ghost"
+                  className="ml-2"
                   onClick={async () => {
-                    // copy to clipboard
+                    // Copy to clipboard
                     await navigator.clipboard.writeText(
                       `${process.env.NEXT_PUBLIC_BASE_URL}/join/${token.id}`
                     );
@@ -74,16 +76,17 @@ export function GroupEdit() {
                 </Button>
               </div>
             ))}
-            <div className="flex items-center space-x-2 max-w-md">
-              <Button
-                type="button"
-                onClick={() => {
-                  addToken(group.id);
-                }}
-              >
-                Create
-              </Button>
-            </div>
+          </div>
+          <div className="flex items-center space-x-2 max-w-md">
+            <Button
+              type="button"
+              className="w-full"
+              onClick={() => {
+                addToken(group.id);
+              }}
+            >
+              Create New Link
+            </Button>
           </div>
         </div>
       </TabsContent>
