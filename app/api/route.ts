@@ -27,7 +27,15 @@ You will only reply with the name, cost, category in JSON format, and nothing el
         }),
       }
     );
-    const result = await response.json();
+    const result = (await response.json()) as {
+      choices: {
+        message: {
+          role: string;
+          content: string;
+        };
+      }[];
+    };
+    console.log('🚀 ~ query ~ result:', result);
     const raw = result.choices[0].message.content;
     console.log('🚀 ~ query ~ raw:', raw);
     const [name, amount, category] = raw
