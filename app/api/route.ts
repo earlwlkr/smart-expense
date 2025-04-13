@@ -7,20 +7,31 @@ You will only reply with the name, cost, category in JSON format, and nothing el
 
   try {
     const response = await fetch(
-      'https://api-inference.huggingface.co/models/google/flan-t5-xxl',
+      'https://router.huggingface.co/fireworks-ai/v1/chat/completions',
       {
         headers: {
           Authorization: `Bearer ${process.env.HF_API_KEY}`,
           'content-type': 'application/json',
         },
         method: 'POST',
-        body: JSON.stringify({ inputs: prompt }),
+        body: JSON.stringify({
+          messages: [
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
+          max_tokens: 512,
+          model: 'accounts/fireworks/models/deepseek-v3-0324',
+          stream: false,
+        }),
       }
     );
-    const result = (await response.json()) as { generated_text: string }[];
-    const raw = (result[0] as any).generated_text;
+    const result = await response.json();
+    const raw = result.choices[0].message.content;
+    console.log('🚀 ~ query ~ raw:', raw);
     const [name, amount, category] = raw
-      .split(',')
+      .split('\n')
       .map((item: string) => item.split('[')[1].replace(/]/g, '').trim());
     return { name, amount, category };
   } catch (error) {
@@ -38,5 +49,6 @@ You will only reply with the name, cost, category in JSON format, and nothing el
 export async function POST(request: Request) {
   const body = await request.json();
   const res = await query(body.q);
+  console.log('🚀 ~ POST ~ res:', res);
   return NextResponse.json(res);
 }
