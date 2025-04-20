@@ -67,7 +67,7 @@ export function CreateGroup({ fetchData }: { fetchData: () => Promise<void> }) {
     const created = await addGroup(values, currentProfile.id);
     setLoading(false);
     if (!created) return null;
-    addMember(
+    await addMember(
       created.id,
       { name: currentProfile.firstName || 'user' },
       currentProfile.id

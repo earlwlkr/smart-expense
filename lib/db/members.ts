@@ -15,12 +15,12 @@ export const addMember = async (
   member: Omit<Member, 'id' | 'created_at'>,
   profileId?: string
 ) => {
-  const { error, data } = await supabase
-    .from('members')
-    .insert({ ...member, group_id: groupId, profile_id: profileId })
-    .select();
   await supabase
     .from('group_profiles')
+    .insert({ group_id: groupId, profile_id: profileId })
+    .select();
+  const { error, data } = await supabase
+    .from('members')
     .insert({ ...member, group_id: groupId, profile_id: profileId })
     .select();
   return data;
