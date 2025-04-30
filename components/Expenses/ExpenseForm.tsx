@@ -52,9 +52,9 @@ const addExpenseFormSchema = z.object({
       significantValue + '.' + decimalValue.slice(0, 2)
     );
     if (isNaN(floatValue) === false) {
-      return floatValue;
+      return String(floatValue);
     }
-    return 0;
+    return '0';
   }),
   // .positive({ message: 'Must be positive' }),
   category: z.string(),
@@ -81,7 +81,7 @@ export function ExpenseForm({
     resolver: zodResolver(addExpenseFormSchema),
     defaultValues: {
       name: expense?.name || '',
-      amount: expense?.amount ? Number(expense.amount) : 0,
+      amount: expense?.amount ? String(expense.amount) : '',
       category: expense?.category?.id || categories[0]?.id,
       handledBy: expense?.handledBy?.id || members[0]?.id,
       participants: expense?.participants || members,
