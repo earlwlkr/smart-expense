@@ -127,14 +127,15 @@ export function GroupEdit() {
                   name: newMemberInputRef.current.value,
                 };
                 setTempMembers([...tempMembers, newMember]);
+                const newMemberName = newMemberInputRef.current.value;
+                newMemberInputRef.current.value = '';
 
                 const added = await addMember(group.id, {
-                  name: newMemberInputRef.current.value,
+                  name: newMemberName,
                 });
                 if (added && added.length > 0) {
                   updateMembers([...members, ...added]);
                 }
-                newMemberInputRef.current.value = '';
               }}
             >
               Add
