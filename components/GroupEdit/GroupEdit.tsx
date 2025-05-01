@@ -122,12 +122,12 @@ export function GroupEdit() {
                 )
                   return;
 
+                const newMemberName = newMemberInputRef.current.value;
                 const newMember = {
                   id: Date.now().toString(),
-                  name: newMemberInputRef.current.value,
+                  name: newMemberName,
                 };
                 setTempMembers([...tempMembers, newMember]);
-                const newMemberName = newMemberInputRef.current.value;
                 newMemberInputRef.current.value = '';
 
                 const added = await addMember(group.id, {
@@ -175,18 +175,18 @@ export function GroupEdit() {
                 )
                   return;
 
+                const newCategoryName = newCategoryInputRef.current.value;
                 const newCategory = {
                   id: Date.now().toString(),
-                  name: newCategoryInputRef.current.value,
+                  name: newCategoryName,
                 };
                 setTempCategories([...tempCategories, newCategory]);
-                const added = await addCategories(group.id, [
-                  newCategoryInputRef.current.value,
-                ]);
-                if (added && added.length > 0) {
-                  updateCategories([...tempCategories, ...added]);
-                }
                 newCategoryInputRef.current.value = '';
+
+                const added = await addCategories(group.id, [newCategoryName]);
+                if (added && added.length > 0) {
+                  updateCategories([...categories, ...added]);
+                }
               }}
             >
               Add
