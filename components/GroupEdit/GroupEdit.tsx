@@ -132,7 +132,7 @@ export function GroupEdit() {
                   name: newMemberInputRef.current.value,
                 });
                 if (added && added.length > 0) {
-                  updateMembers([...tempMembers, ...added]);
+                  updateMembers([...members, ...added]);
                 }
                 newMemberInputRef.current.value = '';
               }}
