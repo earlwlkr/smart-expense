@@ -8,29 +8,8 @@ import { Profile } from '@/lib/types';
 import { getProfile } from '@/lib/db/profiles';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  Bell,
-  CircleUser,
-  Home,
-  LineChart,
-  Menu,
-  Package,
-  Package2,
-  Search,
-  ShoppingCart,
-  Users,
-} from 'lucide-react';
 import { User } from '@supabase/auth-js';
 import { useGroupsStore } from '@/lib/stores/groups';
-import { useInitStore } from '@/lib/stores/useInitStore';
 
 export default function Navbar() {
   const router = useRouter();
@@ -65,7 +44,7 @@ export default function Navbar() {
   };
 
   return (
-    <div className="flex items-center grid grid-cols-3">
+    <div className="grid items-center grid-cols-3">
       <div>
         {pathname.startsWith('/groups/') && (
           <Link href="/">
@@ -78,7 +57,7 @@ export default function Navbar() {
       </div>
       {user && (
         <h1 className="font-semibold text-center md:text-2xl">
-          {group?.name || 'Expenses'}
+          {(pathname.startsWith('/groups/') && group?.name) || 'Expenses'}
         </h1>
       )}
       {user && (
