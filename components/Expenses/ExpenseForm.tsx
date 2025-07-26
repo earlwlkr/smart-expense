@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from '../ui/select';
 import { useMembersStore } from '@/lib/stores/members';
-import { useExpensesStore } from '@/lib/stores/expenses';
+import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -73,9 +73,9 @@ export function ExpenseForm({
 }) {
   const { categories } = useCategoriesStore();
   const members = useMembersStore((store) => store.members);
-  const addExpense = useExpensesStore((store) => store.add);
-  const updateExpense = useExpensesStore((store) => store.update);
-  const removeExpense = useExpensesStore((store) => store.remove);
+  const { add: addExpense } = useExpensesStore();
+  const { update: updateExpense } = useExpensesStore();
+  const { remove: removeExpense } = useExpensesStore();
   const group = useGroupsStore((store) => store.group);
   const form = useForm<AddExpenseFormValues>({
     resolver: zodResolver(addExpenseFormSchema),

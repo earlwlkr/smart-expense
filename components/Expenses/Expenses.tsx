@@ -1,15 +1,14 @@
 'use client';
 
 import * as React from 'react';
-
-import { useExpensesStore } from '@/lib/stores/expenses';
+import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
 import { format } from 'date-fns';
 import { AddExpenseButton } from '@/components/AddExpenseButton';
 import { useState } from 'react';
 import { Expense } from '@/lib/types';
 
 export function Expenses() {
-  const expenses = useExpensesStore((state) => state.items);
+  const { items: expenses } = useExpensesStore();
   const [open, setOpen] = useState(false);
   const [expense, setExpense] = useState<Expense | null>(null);
 

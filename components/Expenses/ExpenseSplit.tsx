@@ -1,4 +1,3 @@
-import { useExpensesStore } from '@/lib/stores/expenses';
 import { useMembersStore } from '@/lib/stores/members';
 import { Expense } from '@/lib/types';
 import {
@@ -11,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
 
 function calculateSplitDetails(expenses: Expense[]) {
   const splitDetails = expenses.reduce((acc, expense) => {
@@ -52,7 +52,7 @@ function calculateSplitDetails(expenses: Expense[]) {
 }
 
 export function ExpenseSplit() {
-  const expenses = useExpensesStore((state) => state.items);
+  const { items: expenses } = useExpensesStore();
   const members = useMembersStore((state) => state.members);
   const splitDetails = calculateSplitDetails(expenses);
   return (

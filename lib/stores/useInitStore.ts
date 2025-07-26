@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { getExpenses } from '../db/expenses';
-import { useExpensesStore } from './expenses';
 import { useMembersStore } from './members';
 import { getMembers } from '../db/members';
 import { getGroupDetail } from '../db/groups';
@@ -9,11 +8,12 @@ import { getCategories } from '../db/categories';
 import { useCategoriesStore } from '../contexts/CategoriesContext';
 import { useTokensStore } from './tokens';
 import { getActiveTokens } from '../db/tokens';
+import { useExpensesStore } from '../contexts/ExpensesContext';
 
 export const useInitStore = (groupId: string) => {
   const setGroup = useGroupsStore((store) => store.set);
   const { set: setCategories } = useCategoriesStore();
-  const setExpenses = useExpensesStore((store) => store.set);
+  const { set: setExpenses } = useExpensesStore();
   const setMembers = useMembersStore((store) => store.update);
   const setTokens = useTokensStore((store) => store.set);
 

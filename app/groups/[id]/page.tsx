@@ -2,6 +2,7 @@
 
 import { GroupDetail } from '@/components/Groups/GroupDetail';
 import { CategoriesProvider } from '@/lib/contexts/CategoriesContext';
+import { ExpensesProvider } from '@/lib/contexts/ExpensesContext';
 
 export default async function Dashboard({
   params,
@@ -11,7 +12,9 @@ export default async function Dashboard({
   const id = (await params).id;
   return (
     <CategoriesProvider>
-      <GroupDetail id={id} />
+      <ExpensesProvider>
+        <GroupDetail id={id} />
+      </ExpensesProvider>
     </CategoriesProvider>
   );
 }
