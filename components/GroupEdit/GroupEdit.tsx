@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { addMember, removeMember } from '@/lib/db/members';
 import { addCategories, removeCategory } from '@/lib/db/categories';
-import { useCategoriesStore } from '@/lib/stores/categories';
+import { useCategoriesStore } from '@/lib/contexts/CategoriesContext';
 import { useGroupsStore } from '@/lib/stores/groups';
 import { useMembersStore } from '@/lib/stores/members';
 import { useRef, useState } from 'react';
@@ -19,8 +19,8 @@ export function GroupEdit() {
   const [tempMembers, setTempMembers] = useState(members);
   const newMemberInputRef = useRef<HTMLInputElement>(null);
 
-  const categories = useCategoriesStore((store) => store.categories);
-  const updateCategories = useCategoriesStore((store) => store.update);
+  const { categories } = useCategoriesStore();
+  const { update: updateCategories } = useCategoriesStore();
   const [tempCategories, setTempCategories] = useState(categories);
   const newCategoryInputRef = useRef<HTMLInputElement>(null);
 
