@@ -10,7 +10,7 @@ import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
 import { getExpenses } from '@/lib/db/expenses';
 import { getMembers } from '@/lib/db/members';
 import { getActiveTokens } from '@/lib/db/tokens';
-import { useTokensStore } from '@/lib/stores/tokens';
+import { useTokens } from '@/lib/contexts/TokensContext';
 import { useEffect } from 'react';
 import { useMembers } from '@/lib/contexts/MembersContext';
 
@@ -20,7 +20,7 @@ export function GroupDetail({ groupId }: { groupId: string }) {
   const { fetchCategories, setCategories } = useCategories();
   const { set: setExpenses } = useExpensesStore();
   const { updateMembers } = useMembers();
-  const setTokens = useTokensStore((store) => store.set);
+  const { setTokens } = useTokens();
 
   useEffect(() => {
     const initExpenses = async () => {

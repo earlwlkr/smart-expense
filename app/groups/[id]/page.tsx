@@ -4,6 +4,7 @@ import { GroupDetail } from '@/components/Groups/GroupDetail';
 import { CategoriesProvider } from '@/lib/contexts/CategoriesContext';
 import { ExpensesProvider } from '@/lib/contexts/ExpensesContext';
 import { MembersProvider } from '@/lib/contexts/MembersContext';
+import { TokensProvider } from '@/lib/contexts/TokensContext';
 
 export default async function Dashboard({
   params,
@@ -15,9 +16,11 @@ export default async function Dashboard({
   return (
     <CategoriesProvider>
       <MembersProvider>
-          <ExpensesProvider>
+        <ExpensesProvider>
+          <TokensProvider>
             <GroupDetail groupId={id} />
-          </ExpensesProvider>
+          </TokensProvider>
+        </ExpensesProvider>
       </MembersProvider>
     </CategoriesProvider>
   );

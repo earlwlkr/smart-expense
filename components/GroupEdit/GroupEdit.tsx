@@ -6,13 +6,12 @@ import { useGroups } from '@/lib/contexts/GroupsContext'; // <-- updated import
 import { useMembers } from '@/lib/contexts/MembersContext';
 import { useRef, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useTokensStore } from '@/lib/stores/tokens';
+import { useTokens } from '@/lib/contexts/TokensContext';
 
 export function GroupEdit() {
   const { currentGroup } = useGroups();
   const { members, updateMembers } = useMembers();
-  const tokens = useTokensStore((state) => state.tokens);
-  const addToken = useTokensStore((state) => state.add);
+  const { tokens, addToken } = useTokens();
   const [tempMembers, setTempMembers] = useState(members);
   const newMemberInputRef = useRef<HTMLInputElement>(null);
 
