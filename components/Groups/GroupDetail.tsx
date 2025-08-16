@@ -25,7 +25,7 @@ export function GroupDetail({ groupId }: { groupId: string }) {
   useEffect(() => {
     if (!groupId) return;
     getGroupDetail(groupId);
-  }, [groupId]);
+  }, [groupId, getGroupDetail]);
 
   useEffect(() => {
     if (!currentGroup) {
@@ -48,7 +48,15 @@ export function GroupDetail({ groupId }: { groupId: string }) {
     initExpenses();
     initMembers();
     initTokens();
-  }, [currentGroup?.id, setCategories, setExpenses, setMembers, setTokens]);
+  }, [
+    currentGroup,
+    currentGroup?.id,
+    fetchCategories,
+    setCategories,
+    setExpenses,
+    setMembers,
+    setTokens,
+  ]);
 
   if (!currentGroup) {
     return <div>No group selected</div>;

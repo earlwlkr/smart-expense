@@ -10,9 +10,6 @@ import { useTokensStore } from '@/lib/stores/tokens';
 
 export function GroupEdit() {
   const { currentGroup } = useGroups(); // <-- use context
-  if (!currentGroup) {
-    return <div>No group selected</div>;
-  }
   const members = useMembersStore((state) => state.members);
   const tokens = useTokensStore((state) => state.tokens);
   const addToken = useTokensStore((state) => state.add);
@@ -38,6 +35,10 @@ export function GroupEdit() {
     setTempCategories(updatedCategories);
     removeCategory(id);
   };
+
+  if (!currentGroup) {
+    return <div>No group selected</div>;
+  }
 
   return (
     <Tabs defaultValue="members" className="flex flex-col mt-2 min-h-[400px]">
@@ -86,7 +87,7 @@ export function GroupEdit() {
                 setTempMembers([...tempMembers, newMember]);
                 newMemberInputRef.current.value = '';
 
-                const added = await addMember(group.id, {
+                const added = await addMember(currentGroup.id, {
                   name: newMemberName,
                 });
                 if (added && added.length > 0) {
@@ -139,7 +140,7 @@ export function GroupEdit() {
                 setTempCategories([...tempCategories, newCategory]);
                 newCategoryInputRef.current.value = '';
 
-                await addCategories(group.id, [newCategoryName]);
+                await addCategories(currentGroup.id, [newCategoryName]);
               }}
             >
               Add
@@ -182,7 +183,7 @@ export function GroupEdit() {
               type="button"
               className="w-full"
               onClick={() => {
-                addToken(group.id);
+                addToken(currentGroup.id);
               }}
             >
               Create New Link
