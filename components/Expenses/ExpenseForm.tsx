@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { useMembersStore } from '@/lib/stores/members';
+import { useMembers } from '@/lib/contexts/MembersContext';
 import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -72,7 +72,7 @@ export function ExpenseForm({
   expense?: Expense | null;
 }) {
   const { categories } = useCategories();
-  const members = useMembersStore((store) => store.members);
+  const { members } = useMembers();
   const { add: addExpense } = useExpensesStore();
   const { update: updateExpense } = useExpensesStore();
   const { remove: removeExpense } = useExpensesStore();

@@ -3,17 +3,16 @@ import { Input } from '@/components/ui/input';
 import { addMember, removeMember } from '@/lib/db/members';
 import { useCategories } from '@/lib/contexts/CategoriesContext';
 import { useGroups } from '@/lib/contexts/GroupsContext'; // <-- updated import
-import { useMembersStore } from '@/lib/stores/members';
+import { useMembers } from '@/lib/contexts/MembersContext';
 import { useRef, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTokensStore } from '@/lib/stores/tokens';
 
 export function GroupEdit() {
-  const { currentGroup } = useGroups(); // <-- use context
-  const members = useMembersStore((state) => state.members);
+  const { currentGroup } = useGroups();
+  const { members, updateMembers } = useMembers();
   const tokens = useTokensStore((state) => state.tokens);
   const addToken = useTokensStore((state) => state.add);
-  const updateMembers = useMembersStore((store) => store.update);
   const [tempMembers, setTempMembers] = useState(members);
   const newMemberInputRef = useRef<HTMLInputElement>(null);
 

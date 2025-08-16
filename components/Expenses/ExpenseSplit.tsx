@@ -1,4 +1,4 @@
-import { useMembersStore } from '@/lib/stores/members';
+import { useMembers } from '@/lib/contexts/MembersContext';
 import { Expense } from '@/lib/types';
 import {
   Table,
@@ -53,7 +53,7 @@ function calculateSplitDetails(expenses: Expense[]) {
 
 export function ExpenseSplit() {
   const { items: expenses } = useExpensesStore();
-  const members = useMembersStore((state) => state.members);
+  const { members } = useMembers();
   const splitDetails = calculateSplitDetails(expenses);
   return (
     <Table>

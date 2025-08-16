@@ -1,60 +1,53 @@
-"use client";
+'use client';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Expenses } from "@/components/Expenses/Expenses";
-import { ExpenseSplit } from "@/components/Expenses/ExpenseSplit";
-import { GroupEditModal } from "@/components/GroupEdit/GroupEditModal";
-import { useGroups } from "@/lib/contexts/GroupsContext";
-import { useCategories } from "@/lib/contexts/CategoriesContext";
-import { useExpensesStore } from "@/lib/contexts/ExpensesContext";
-import { getExpenses } from "@/lib/db/expenses";
-import { getMembers } from "@/lib/db/members";
-import { getActiveTokens } from "@/lib/db/tokens";
-import { useMembersStore } from "@/lib/stores/members";
-import { useTokensStore } from "@/lib/stores/tokens";
-import { useEffect } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Expenses } from '@/components/Expenses/Expenses';
+import { ExpenseSplit } from '@/components/Expenses/ExpenseSplit';
+import { GroupEditModal } from '@/components/GroupEdit/GroupEditModal';
+import { useGroups } from '@/lib/contexts/GroupsContext';
+import { useCategories } from '@/lib/contexts/CategoriesContext';
+import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
+import { getExpenses } from '@/lib/db/expenses';
+import { getMembers } from '@/lib/db/members';
+import { getActiveTokens } from '@/lib/db/tokens';
+import { useTokensStore } from '@/lib/stores/tokens';
+import { useEffect } from 'react';
+import { useMembers } from '@/lib/contexts/MembersContext';
 
 export function GroupDetail({ groupId }: { groupId: string }) {
   const { currentGroup, getGroupDetail } = useGroups();
 
   const { fetchCategories, setCategories } = useCategories();
   const { set: setExpenses } = useExpensesStore();
-  const setMembers = useMembersStore((store) => store.update);
+  const { updateMembers } = useMembers();
   const setTokens = useTokensStore((store) => store.set);
 
   useEffect(() => {
-    if (!groupId) return;
-    getGroupDetail(groupId);
-  }, [groupId, getGroupDetail]);
-
-  useEffect(() => {
-    if (!currentGroup) {
-      return;
-    }
     const initExpenses = async () => {
-      const expenses = await getExpenses(currentGroup.id);
+      const expenses = await getExpenses(groupId);
       setExpenses(expenses);
     };
     const initMembers = async () => {
-      const members = await getMembers(currentGroup.id);
-      setMembers(members);
+      const members = await getMembers(groupId);
+      updateMembers(members);
     };
     const initTokens = async () => {
-      const tokens = await getActiveTokens(currentGroup.id);
+      const tokens = await getActiveTokens(groupId);
       setTokens(tokens);
     };
 
-    fetchCategories(currentGroup.id);
+    getGroupDetail(groupId);
+    fetchCategories(groupId);
     initExpenses();
     initMembers();
     initTokens();
   }, [
-    currentGroup,
-    currentGroup?.id,
+    groupId,
+    getGroupDetail,
     fetchCategories,
     setCategories,
     setExpenses,
-    setMembers,
+    updateMembers,
     setTokens,
   ]);
 

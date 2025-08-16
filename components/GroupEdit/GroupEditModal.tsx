@@ -7,7 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useMembersStore } from '@/lib/stores/members';
+import { useMembers } from '@/lib/contexts/MembersContext';
 import { useState } from 'react';
 import {
   Sheet,
@@ -21,8 +21,7 @@ import { GroupEdit } from './GroupEdit';
 
 export function GroupEditModal() {
   const [open, setOpen] = useState(false);
-  const members = useMembersStore((state) => state.members);
-  const updateMembers = useMembersStore((store) => store.update);
+  const { members, updateMembers } = useMembers();
   const isSmallDevice = useMediaQuery('only screen and (max-width : 768px)');
 
   return isSmallDevice ? (
