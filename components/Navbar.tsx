@@ -9,7 +9,7 @@ import { getProfile } from '@/lib/db/profiles';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import { User } from '@supabase/auth-js';
-import { useGroupsStore } from '@/lib/stores/groups';
+import { useGroups } from '@/lib/contexts/GroupsContext';
 
 export default function Navbar() {
   const router = useRouter();
@@ -17,7 +17,10 @@ export default function Navbar() {
   const supabase = createClient();
   const [user, setUser] = useState<User | null>();
   const [profile, setProfile] = useState<Profile>();
-  const group = useGroupsStore((store) => store.group);
+  const { groups } = useGroups();
+  // Try to get the current group if on a group page
+  const groupId = pathname.startsWith('/groups/') ? pathname.split('/')[2] : null;
+  const group = groupId ? groups.find(g => g.id === groupId) : null;
 
   useEffect(() => {
     const getData = async () => {
