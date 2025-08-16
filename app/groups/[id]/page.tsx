@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { GroupDetail } from '@/components/Groups/GroupDetail';
-import { CategoriesProvider } from '@/lib/contexts/CategoriesContext';
-import { ExpensesProvider } from '@/lib/contexts/ExpensesContext';
+import { GroupDetail } from "@/components/Groups/GroupDetail";
+import { CategoriesProvider } from "@/lib/contexts/CategoriesContext";
+import { ExpensesProvider } from "@/lib/contexts/ExpensesContext";
+import { GroupsProvider } from "@/lib/contexts/GroupsContext";
 
 export default async function Dashboard({
   params,
@@ -11,10 +12,12 @@ export default async function Dashboard({
 }) {
   const id = (await params).id;
   return (
-    <CategoriesProvider>
-      <ExpensesProvider>
-        <GroupDetail id={id} />
-      </ExpensesProvider>
-    </CategoriesProvider>
+    <GroupsProvider groupId={id}>
+      <CategoriesProvider>
+        <ExpensesProvider>
+          <GroupDetail />
+        </ExpensesProvider>
+      </CategoriesProvider>
+    </GroupsProvider>
   );
 }

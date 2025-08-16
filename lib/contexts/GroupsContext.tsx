@@ -1,19 +1,27 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import { Group } from '@/lib/types';
-import * as db from '@/lib/db/groups';
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { Group } from "@/lib/types";
+import * as db from "@/lib/db/groups";
 
 type GroupsContextType = {
   groups: Group[];
+  currentGroup?: Group;
   loading: boolean;
   fetchGroups: () => Promise<void>;
   getGroupDetail: (groupId: string) => Promise<Group | null>;
-  addGroup: (group: Omit<Group, 'id' | 'created_at'>, profileId: string) => Promise<Group | null>;
+  addGroup: (
+    group: Omit<Group, "id" | "created_at">,
+    profileId: string
+  ) => Promise<Group | null>;
 };
 
 const GroupsContext = createContext<GroupsContextType | undefined>(undefined);
 
-export const GroupsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const GroupsProvider: React.FC<{ children: React.ReactNode, groupId: string }> = ({
+  children,
+  groupId,
+}) => {
   const [groups, setGroups] = useState<Group[]>([]);
+  const [currentGroup, setCurrentGroup] = useState<Group>();
   const [loading, setLoading] = useState(false);
 
   const fetchGroups = useCallback(async () => {
@@ -27,19 +35,38 @@ export const GroupsProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setLoading(true);
     const detail = await db.getGroupDetail(groupId);
     setLoading(false);
+    setCurrentGroup(detail);
     return detail || null;
   }, []);
 
-  const addGroup = useCallback(async (group: Omit<Group, 'id' | 'created_at'>, profileId: string) => {
-    setLoading(true);
-    const newGroup = await db.addGroup(group, profileId);
-    if (newGroup) setGroups((prev) => [...prev, newGroup]);
-    setLoading(false);
-    return newGroup;
-  }, []);
+  const addGroup = useCallback(
+    async (group: Omit<Group, "id" | "created_at">, profileId: string) => {
+      setLoading(true);
+      const newGroup = await db.addGroup(group, profileId);
+      if (newGroup) setGroups((prev) => [...prev, newGroup]);
+      setLoading(false);
+      return newGroup;
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (groupId) {
+      getGroupDetail(groupId);
+    }
+  }, [groupId, getGroupDetail]);
 
   return (
-    <GroupsContext.Provider value={{ groups, loading, fetchGroups, getGroupDetail, addGroup }}>
+    <GroupsContext.Provider
+      value={{
+        groups,
+        currentGroup,
+        loading,
+        fetchGroups,
+        getGroupDetail,
+        addGroup,
+      }}
+    >
       {children}
     </GroupsContext.Provider>
   );
@@ -47,6 +74,6 @@ export const GroupsProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
 export const useGroups = () => {
   const ctx = useContext(GroupsContext);
-  if (!ctx) throw new Error('useGroups must be used within a GroupsProvider');
+  if (!ctx) throw new Error("useGroups must be used within a GroupsProvider");
   return ctx;
 };

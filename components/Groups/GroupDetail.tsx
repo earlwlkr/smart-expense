@@ -1,13 +1,53 @@
-'use client';
+"use client";
 
-import { useInitStore } from '@/lib/stores/useInitStore';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Expenses } from '@/components/Expenses/Expenses';
-import { ExpenseSplit } from '@/components/Expenses/ExpenseSplit';
-import { GroupEditModal } from '@/components/GroupEdit/GroupEditModal';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Expenses } from "@/components/Expenses/Expenses";
+import { ExpenseSplit } from "@/components/Expenses/ExpenseSplit";
+import { GroupEditModal } from "@/components/GroupEdit/GroupEditModal";
+import { useGroups } from "@/lib/contexts/GroupsContext";
+import { useCategories } from "@/lib/contexts/CategoriesContext";
+import { useExpensesStore } from "@/lib/contexts/ExpensesContext";
+import { getExpenses } from "@/lib/db/expenses";
+import { getMembers } from "@/lib/db/members";
+import { getActiveTokens } from "@/lib/db/tokens";
+import { useMembersStore } from "@/lib/stores/members";
+import { useTokensStore } from "@/lib/stores/tokens";
+import { useEffect } from "react";
 
-export function GroupDetail({ id }: { id: string }) {
-  useInitStore(id);
+export function GroupDetail() {
+  const { currentGroup } = useGroups();
+  if (!currentGroup) {
+    return <div>No group selected</div>;
+  }
+
+  const { fetchCategories, setCategories } = useCategories();
+  const { set: setExpenses } = useExpensesStore();
+  const setMembers = useMembersStore((store) => store.update);
+  const setTokens = useTokensStore((store) => store.set);
+
+  useEffect(() => {
+    if (!currentGroup) {
+      return;
+    }
+    const initExpenses = async () => {
+      const expenses = await getExpenses(currentGroup.id);
+      setExpenses(expenses);
+    };
+    const initMembers = async () => {
+      const members = await getMembers(currentGroup.id);
+      setMembers(members);
+    };
+    const initTokens = async () => {
+      const tokens = await getActiveTokens(currentGroup.id);
+      setTokens(tokens);
+    };
+
+    fetchCategories(currentGroup.id);
+    initExpenses();
+    initMembers();
+    initTokens();
+  }, [currentGroup?.id, setCategories, setExpenses, setMembers, setTokens]);
+
   return (
     <div className="">
       <div className="flex justify-center mb-2">

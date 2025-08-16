@@ -33,7 +33,7 @@ import {
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Dispatch, SetStateAction, useEffect } from 'react';
-import { useGroupsStore } from '@/lib/stores/groups';
+import { useGroups } from '@/lib/contexts/GroupsContext'; // <-- updated import
 import { CurrencyInput } from '@/components/CurrencyInput';
 import { FancyMultiSelect } from '@/components/ui/fancy-multi-select';
 import { Combobox } from '@/components/Expenses/Combobox';
@@ -76,7 +76,8 @@ export function ExpenseForm({
   const { add: addExpense } = useExpensesStore();
   const { update: updateExpense } = useExpensesStore();
   const { remove: removeExpense } = useExpensesStore();
-  const group = useGroupsStore((store) => store.group);
+  const { currentGroup } = useGroups();
+
   const form = useForm<AddExpenseFormValues>({
     resolver: zodResolver(addExpenseFormSchema),
     defaultValues: {
@@ -101,8 +102,8 @@ export function ExpenseForm({
         category: categories.find((item) => item.id === values.category),
         handledBy: members.find((item) => item.id === values.handledBy),
       });
-    } else {
-      addExpense(group.id, {
+    } else if (currentGroup) {
+      addExpense(currentGroup.id, {
         id: Date.now().toString(),
         ...values,
         amount: String(values.amount),

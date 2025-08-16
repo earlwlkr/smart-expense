@@ -2,15 +2,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { addMember, removeMember } from '@/lib/db/members';
 import { useCategories } from '@/lib/contexts/CategoriesContext';
-import { useGroupsStore } from '@/lib/stores/groups';
+import { useGroups } from '@/lib/contexts/GroupsContext'; // <-- updated import
 import { useMembersStore } from '@/lib/stores/members';
 import { useRef, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTokensStore } from '@/lib/stores/tokens';
 
 export function GroupEdit() {
-  const group = useGroupsStore((store) => store.group);
-
+  const { currentGroup } = useGroups(); // <-- use context
+  if (!currentGroup) {
+    return <div>No group selected</div>;
+  }
   const members = useMembersStore((state) => state.members);
   const tokens = useTokensStore((state) => state.tokens);
   const addToken = useTokensStore((state) => state.add);
