@@ -14,16 +14,18 @@ import { useMembersStore } from "@/lib/stores/members";
 import { useTokensStore } from "@/lib/stores/tokens";
 import { useEffect } from "react";
 
-export function GroupDetail() {
-  const { currentGroup } = useGroups();
-  if (!currentGroup) {
-    return <div>No group selected</div>;
-  }
+export function GroupDetail({ groupId }: { groupId: string }) {
+  const { currentGroup, getGroupDetail } = useGroups();
 
   const { fetchCategories, setCategories } = useCategories();
   const { set: setExpenses } = useExpensesStore();
   const setMembers = useMembersStore((store) => store.update);
   const setTokens = useTokensStore((store) => store.set);
+
+  useEffect(() => {
+    if (!groupId) return;
+    getGroupDetail(groupId);
+  }, [groupId]);
 
   useEffect(() => {
     if (!currentGroup) {
@@ -47,6 +49,10 @@ export function GroupDetail() {
     initMembers();
     initTokens();
   }, [currentGroup?.id, setCategories, setExpenses, setMembers, setTokens]);
+
+  if (!currentGroup) {
+    return <div>No group selected</div>;
+  }
 
   return (
     <div className="">

@@ -1,17 +1,18 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import "./globals.css";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 
-import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from "@/components/ui/toaster";
 
-import { ThemeProvider } from '@/components/ThemeProvider';
-import Navbar from '@/components/Navbar';
+import { ThemeProvider } from "@/components/ThemeProvider";
+import Navbar from "@/components/Navbar";
+import { GroupsProvider } from "@/lib/contexts/GroupsContext";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Playground',
-  description: 'AI Playground',
+  title: "Playground",
+  description: "AI Playground",
 };
 
 export default function RootLayout({
@@ -28,13 +29,15 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="md:flex md:justify-center">
-            <div className="mt-4 mx-4 md:w-[400px]">
-              <Navbar />
-              {children}
-              <Toaster />
+          <GroupsProvider>
+            <div className="md:flex md:justify-center">
+              <div className="mt-4 mx-4 md:w-[400px]">
+                <Navbar />
+                {children}
+                <Toaster />
+              </div>
             </div>
-          </div>
+          </GroupsProvider>
         </ThemeProvider>
       </body>
     </html>

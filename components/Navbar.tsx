@@ -17,10 +17,7 @@ export default function Navbar() {
   const supabase = createClient();
   const [user, setUser] = useState<User | null>();
   const [profile, setProfile] = useState<Profile>();
-  const { groups } = useGroups();
-  // Try to get the current group if on a group page
-  const groupId = pathname.startsWith('/groups/') ? pathname.split('/')[2] : null;
-  const group = groupId ? groups.find(g => g.id === groupId) : null;
+  const { currentGroup } = useGroups();
 
   useEffect(() => {
     const getData = async () => {
@@ -60,7 +57,7 @@ export default function Navbar() {
       </div>
       {user && (
         <h1 className="font-semibold text-center md:text-2xl">
-          {(pathname.startsWith('/groups/') && group?.name) || 'Expenses'}
+          {currentGroup?.name || 'Expenses'}
         </h1>
       )}
       {user && (

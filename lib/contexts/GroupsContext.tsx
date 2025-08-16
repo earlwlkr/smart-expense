@@ -1,4 +1,12 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+'use client';
+
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
 import { Group } from "@/lib/types";
 import * as db from "@/lib/db/groups";
 
@@ -16,9 +24,8 @@ type GroupsContextType = {
 
 const GroupsContext = createContext<GroupsContextType | undefined>(undefined);
 
-export const GroupsProvider: React.FC<{ children: React.ReactNode, groupId: string }> = ({
+export const GroupsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
-  groupId,
 }) => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [currentGroup, setCurrentGroup] = useState<Group>();
@@ -49,12 +56,6 @@ export const GroupsProvider: React.FC<{ children: React.ReactNode, groupId: stri
     },
     []
   );
-
-  useEffect(() => {
-    if (groupId) {
-      getGroupDetail(groupId);
-    }
-  }, [groupId, getGroupDetail]);
 
   return (
     <GroupsContext.Provider
