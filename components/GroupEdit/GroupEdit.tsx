@@ -1,8 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { addMember, removeMember } from '@/lib/db/members';
-import { addCategories, removeCategory } from '@/lib/db/categories';
-import { useCategoriesStore } from '@/lib/contexts/CategoriesContext';
+import { useCategories } from '@/lib/contexts/CategoriesContext';
 import { useGroupsStore } from '@/lib/stores/groups';
 import { useMembersStore } from '@/lib/stores/members';
 import { useRef, useState } from 'react';
@@ -19,8 +18,7 @@ export function GroupEdit() {
   const [tempMembers, setTempMembers] = useState(members);
   const newMemberInputRef = useRef<HTMLInputElement>(null);
 
-  const { categories } = useCategoriesStore();
-  const { update: updateCategories } = useCategoriesStore();
+  const { categories, addCategories, removeCategory } = useCategories();
   const [tempCategories, setTempCategories] = useState(categories);
   const newCategoryInputRef = useRef<HTMLInputElement>(null);
 
@@ -37,7 +35,6 @@ export function GroupEdit() {
     );
     setTempCategories(updatedCategories);
     removeCategory(id);
-    updateCategories(updatedCategories);
   };
 
   return (
@@ -140,10 +137,7 @@ export function GroupEdit() {
                 setTempCategories([...tempCategories, newCategory]);
                 newCategoryInputRef.current.value = '';
 
-                const added = await addCategories(group.id, [newCategoryName]);
-                if (added && added.length > 0) {
-                  updateCategories([...categories, ...added]);
-                }
+                await addCategories(group.id, [newCategoryName]);
               }}
             >
               Add

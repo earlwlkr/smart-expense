@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { useCategoriesStore } from '@/lib/contexts/CategoriesContext';
+import { useCategories } from '@/lib/contexts/CategoriesContext';
 import {
   Select,
   SelectContent,
@@ -71,7 +71,7 @@ export function ExpenseForm({
   onClose: () => void;
   expense?: Expense | null;
 }) {
-  const { categories } = useCategoriesStore();
+  const { categories } = useCategories();
   const members = useMembersStore((store) => store.members);
   const { add: addExpense } = useExpensesStore();
   const { update: updateExpense } = useExpensesStore();
