@@ -15,9 +15,9 @@ export default async function Dashboard({
   return (
     <CategoriesProvider>
       <MembersProvider>
-        <ExpensesProvider>
-          <GroupDetail groupId={id} />
-        </ExpensesProvider>
+          <ExpensesProvider>
+            <GroupDetail groupId={id} />
+          </ExpensesProvider>
       </MembersProvider>
     </CategoriesProvider>
   );

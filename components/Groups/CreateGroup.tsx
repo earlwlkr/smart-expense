@@ -23,7 +23,6 @@ import { useEffect, useState } from 'react';
 import { addGroup } from '@/lib/db/groups';
 import { addMember } from '@/lib/db/members';
 import { getProfile } from '@/lib/db/profiles';
-import { useProfileStore } from '@/lib/stores/profile';
 import { addCategories } from '@/lib/db/categories';
 import { useRouter } from 'next/navigation';
 
@@ -32,10 +31,13 @@ const createGroupFormSchema = z.object({
 });
 type AddExpenseFormValues = z.infer<typeof createGroupFormSchema>;
 
-export function CreateGroup({ fetchData }: { fetchData: () => Promise<void> }) {
+export function CreateGroup() {
   const [open, setOpen] = useState(false);
-  const currentProfile = useProfileStore((store) => store.profile);
-  const setProfile = useProfileStore((store) => store.set);
+  const [profile, setProfile] = useState<{
+    id: string;
+    firstName: string;
+    lastName: string;
+  } | null>(null);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -52,25 +54,27 @@ export function CreateGroup({ fetchData }: { fetchData: () => Promise<void> }) {
       if (!profile) return;
       setProfile(profile);
     };
-    const initStore = () => {
-      return Promise.all([initProfile()]);
-    };
 
-    initStore();
+    initProfile();
   }, [setProfile]);
 
   async function onSubmit(values: AddExpenseFormValues) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
+    if (!profile) {
+      console.error('Profile not found');
+      return;
+    }
+
     setLoading(true);
-    const created = await addGroup(values, currentProfile.id);
+    const created = await addGroup(values, profile.id);
     setLoading(false);
     if (!created) return null;
     await addMember(
       created.id,
-      { name: currentProfile.firstName || 'user' },
-      currentProfile.id
+      { name: profile.firstName || 'user' },
+      profile.id
     );
     addCategories(created.id, ['Eats', 'Drinks']);
     setOpen(false);

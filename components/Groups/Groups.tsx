@@ -25,7 +25,7 @@ export function Groups() {
     <div>
       {/* Create Group Section */}
       <div className="my-3">
-        <CreateGroup fetchData={fetchData} />
+        <CreateGroup />
       </div>
 
       {/* Groups List */}
