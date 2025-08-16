@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { Category } from '../types';
-import * as db from '../db/categories';
+import { Category } from '@/lib/types';
+import * as db from '@/lib/db/categories';
 
 type CategoriesContextType = {
   categories: Category[];
