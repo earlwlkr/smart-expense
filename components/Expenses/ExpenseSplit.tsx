@@ -11,9 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { SearchIcon } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Fragment, useMemo, useState } from 'react';
 
 function calculateSplitDetails(expenses: Expense[]) {
@@ -59,8 +63,7 @@ export function ExpenseSplit() {
   const { items: expenses } = useExpensesStore();
   const { members } = useMembers();
   const splitDetails = calculateSplitDetails(expenses);
-  const [search, setSearch] = useState('');
-  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState('all');
 
   const groups = useMemo(() => {
     return Object.entries(splitDetails).map(([fromId, details]) => {
@@ -82,33 +85,27 @@ export function ExpenseSplit() {
   }, [splitDetails, members]);
 
   const filteredGroups = useMemo(() => {
-    const q = query.toLowerCase();
-    return groups.filter((group) => group.from.toLowerCase().includes(q));
-  }, [groups, query]);
+    if (filter === 'all') return groups;
+    return groups.filter((group) => group.id === filter);
+  }, [groups, filter]);
 
   return (
     <div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          setQuery(search);
-        }}
-        className="mb-4 flex justify-end gap-2"
-      >
-        <div className="relative w-64">
-          <SearchIcon className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search participants..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-8"
-          />
-        </div>
-        <Button type="submit" variant="secondary" size="icon">
-          <SearchIcon className="h-4 w-4" />
-          <span className="sr-only">Search</span>
-        </Button>
-      </form>
+      <div className="mb-4 flex justify-end">
+        <Select onValueChange={setFilter} value={filter}>
+          <SelectTrigger className="w-64">
+            <SelectValue placeholder="Filter by participant" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All participants</SelectItem>
+            {groups.map((group) => (
+              <SelectItem key={group.id} value={group.id}>
+                {group.from}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
