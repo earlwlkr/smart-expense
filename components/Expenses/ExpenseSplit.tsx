@@ -88,17 +88,27 @@ export function ExpenseSplit() {
 
   return (
     <div>
-      <div className="flex justify-end gap-2 mb-4">
-        <Input
-          placeholder="Search..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-48"
-        />
-        <Button type="button" onClick={() => setQuery(search)}>
-          <SearchIcon className="size-4" />
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          setQuery(search);
+        }}
+        className="mb-4 flex justify-end gap-2"
+      >
+        <div className="relative w-64">
+          <SearchIcon className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search participants..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-8"
+          />
+        </div>
+        <Button type="submit" variant="secondary" size="icon">
+          <SearchIcon className="h-4 w-4" />
+          <span className="sr-only">Search</span>
         </Button>
-      </div>
+      </form>
       <Table>
         <TableHeader>
           <TableRow>
