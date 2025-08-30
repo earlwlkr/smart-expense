@@ -1,16 +1,15 @@
 import { useMembers } from '@/lib/contexts/MembersContext';
+import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
 import { Expense } from '@/lib/types';
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
+import { Fragment, useMemo } from 'react';
 
 function calculateSplitDetails(expenses: Expense[]) {
   const splitDetails = expenses.reduce((acc, expense) => {
@@ -55,38 +54,62 @@ export function ExpenseSplit() {
   const { items: expenses } = useExpensesStore();
   const { members } = useMembers();
   const splitDetails = calculateSplitDetails(expenses);
+
+  const groups = useMemo(() => {
+    return Object.entries(splitDetails).map(([fromId, details]) => {
+      const fromMember = members.find((m) => m.id === fromId);
+      const items = Object.entries(details).map(([toId, amount]) => {
+        const toMember = members.find((m) => m.id === toId);
+        return {
+          key: `${fromId}-${toId}`,
+          to: toMember?.name || '',
+          amount,
+        };
+      });
+      return {
+        id: fromId,
+        from: fromMember?.name || '',
+        items,
+      };
+    });
+  }, [splitDetails, members]);
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>From</TableHead>
-          <TableHead>To</TableHead>
-          <TableHead className="text-right">Amount</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {splitDetails &&
-          Object.entries(splitDetails).map(([participantId, details]) => {
-            const participant = members.find((m) => m.id === participantId);
-            return Object.entries(details).map(([payerId, amount]) => {
-              const payer = members.find((m) => m.id === payerId);
-              return (
-                <TableRow key={`${participantId}-${payerId}`}>
-                  <TableCell className="font-medium">
-                    {participant?.name}
-                  </TableCell>
-                  <TableCell>{payer?.name}</TableCell>
+    <div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>From</TableHead>
+            <TableHead>To</TableHead>
+            <TableHead className="text-right">Amount</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {groups.map((group) => (
+            <Fragment key={group.id}>
+              {group.items.map((item, index) => (
+                <TableRow key={item.key}>
+                  {index === 0 && (
+                    <TableCell
+                      rowSpan={group.items.length}
+                      className="font-medium"
+                    >
+                      {group.from}
+                    </TableCell>
+                  )}
+                  <TableCell>{item.to}</TableCell>
                   <TableCell className="text-right">
                     {new Intl.NumberFormat('vi-VN', {
                       style: 'currency',
                       currency: 'VND',
-                    }).format(amount)}
+                    }).format(item.amount)}
                   </TableCell>
                 </TableRow>
-              );
-            });
-          })}
-      </TableBody>
-    </Table>
+              ))}
+            </Fragment>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
