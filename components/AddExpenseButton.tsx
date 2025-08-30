@@ -1,5 +1,8 @@
 'use client';
 
+import { Dispatch, SetStateAction } from 'react';
+import { useMediaQuery } from '@uidotdev/usehooks';
+
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -8,8 +11,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Dispatch, SetStateAction, useState } from 'react';
-import { useMediaQuery } from '@uidotdev/usehooks';
 import {
   Sheet,
   SheetTrigger,
@@ -18,7 +19,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { ExpenseForm } from '@/components/Expenses/ExpenseForm';
-import { Expense } from '@/lib/types';
+import type { Expense } from '@/lib/types';
 
 export function AddExpenseButton({
   open,

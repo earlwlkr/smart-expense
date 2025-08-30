@@ -12,28 +12,35 @@ import {
 import { Fragment, useMemo } from 'react';
 
 function calculateSplitDetails(expenses: Expense[]) {
-  const splitDetails = expenses.reduce((acc, expense) => {
-    expense.participants.forEach((participant) => {
-      if (!expense.handledBy?.id || expense.handledBy?.id === participant.id) {
-        return;
-      }
-      const handledById = expense.handledBy?.id!;
-      acc[participant.id] = {
-        ...acc[participant.id],
-        [handledById]:
-          (acc[participant.id]?.[handledById] || 0) +
-          Number(expense.amount) / expense.participants.length,
-      };
-    });
-    return acc;
-  }, {} as Record<string, Record<string, number>>);
+  const splitDetails = expenses.reduce(
+    (acc, expense) => {
+      expense.participants.forEach((participant) => {
+        if (
+          !expense.handledBy?.id ||
+          expense.handledBy?.id === participant.id
+        ) {
+          return;
+        }
+        const handledById = expense.handledBy?.id;
+        if (!handledById) return;
+        acc[participant.id] = {
+          ...acc[participant.id],
+          [handledById]:
+            (acc[participant.id]?.[handledById] || 0) +
+            Number(expense.amount) / expense.participants.length,
+        };
+      });
+      return acc;
+    },
+    {} as Record<string, Record<string, number>>,
+  );
 
   Object.entries(splitDetails).forEach(([participantId, details]) => {
     Object.keys(details).forEach((payer) => {
       if (splitDetails[payer]?.[participantId] !== undefined) {
         const amount = Math.min(
           splitDetails[participantId][payer],
-          splitDetails[payer][participantId]
+          splitDetails[payer][participantId],
         );
         splitDetails[participantId][payer] -= amount;
         if (splitDetails[participantId][payer] === 0) {

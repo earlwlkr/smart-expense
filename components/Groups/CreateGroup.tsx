@@ -74,7 +74,7 @@ export function CreateGroup() {
     await addMember(
       created.id,
       { name: profile.firstName || 'user' },
-      profile.id
+      profile.id,
     );
     addCategories(created.id, ['Eats', 'Drinks']);
     setOpen(false);

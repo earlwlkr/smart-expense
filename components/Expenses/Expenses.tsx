@@ -29,7 +29,7 @@ export function Expenses() {
           }).format(
             expenses.reduce((sum, item) => {
               return sum + Number(item.amount);
-            }, 0)
+            }, 0),
           )}
         </div>
       </div>
@@ -67,7 +67,7 @@ export function Expenses() {
                 With:{' '}
                 {expense.participants
                   .sort((memberA, memberB) =>
-                    memberA.name.localeCompare(memberB.name)
+                    memberA.name.localeCompare(memberB.name),
                   )
                   .map((p) => p.name)
                   .join(', ')}

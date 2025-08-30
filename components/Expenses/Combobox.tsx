@@ -56,7 +56,7 @@ export function Combobox({
                   value={option.label}
                   onSelect={(selectedLabel) => {
                     const selectedItem = options.find(
-                      (option) => option.label === selectedLabel
+                      (option) => option.label === selectedLabel,
                     );
                     setValue(selectedItem?.value);
                     setOpen(false);
@@ -67,7 +67,7 @@ export function Combobox({
                   <Check
                     className={cn(
                       'ml-auto',
-                      value === option.value ? 'opacity-100' : 'opacity-0'
+                      value === option.value ? 'opacity-100' : 'opacity-0',
                     )}
                   />
                 </CommandItem>

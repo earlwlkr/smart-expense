@@ -8,19 +8,19 @@ const formatCurrencyValue = (value: string) => {
   const [formattedWholeValue, decimalValue = '0'] = value.split('.');
   const significantValue = formattedWholeValue.replace(/,/g, '');
   const floatValue = parseFloat(
-    significantValue + '.' + decimalValue.slice(0, 2)
+    `${significantValue}.${decimalValue.slice(0, 2)}`,
   );
-  if (isNaN(floatValue) === false) {
+  if (Number.isNaN(floatValue) === false) {
     // you can dispatch to your redux store here - floatValue should be
     // a number, that's well formed
 
-    let n = new Intl.NumberFormat('en-EN', {
+    const n = new Intl.NumberFormat('en-EN', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
     }).format(floatValue);
 
     if (value.includes('.') && !n.includes('.')) {
-      return n + '.';
+      return `${n}.`;
     }
     return n;
   }
@@ -30,10 +30,10 @@ const formatCurrencyValue = (value: string) => {
 export const CurrencyInput = React.forwardRef<HTMLInputElement, InputProps>(
   ({ ...props }, ref) => {
     const [value, dispatchValue] = React.useReducer(
-      (state: string, newValue: string) => {
+      (_state: string, newValue: string) => {
         return formatCurrencyValue(newValue);
       },
-      formatCurrencyValue(String(props.value))
+      formatCurrencyValue(String(props.value)),
     );
 
     return (
@@ -51,7 +51,7 @@ export const CurrencyInput = React.forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
       />
     );
-  }
+  },
 );
 
 CurrencyInput.displayName = 'CurrencyInput';

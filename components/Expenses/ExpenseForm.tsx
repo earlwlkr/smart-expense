@@ -49,7 +49,7 @@ const addExpenseFormSchema = z.object({
     const [formattedWholeValue, decimalValue = '0'] = newValue.split('.');
     const significantValue = formattedWholeValue.replace(/,/g, '');
     const floatValue = parseFloat(
-      significantValue + '.' + decimalValue.slice(0, 2)
+      significantValue + '.' + decimalValue.slice(0, 2),
     );
     if (isNaN(floatValue) === false) {
       return String(floatValue);
@@ -251,7 +251,7 @@ export function ExpenseForm({
                       variant={'outline'}
                       className={cn(
                         // 'w-[240px] pl-3 text-left font-normal',
-                        !field.value && 'text-muted-foreground'
+                        !field.value && 'text-muted-foreground',
                       )}
                     >
                       {field.value ? (

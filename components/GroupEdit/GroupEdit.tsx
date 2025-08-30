@@ -28,7 +28,7 @@ export function GroupEdit() {
 
   const handleDeleteCategory = (id: string) => {
     const updatedCategories = tempCategories.filter(
-      (category) => category.id !== id
+      (category) => category.id !== id,
     );
     setTempCategories(updatedCategories);
     removeCategory(id);
@@ -167,7 +167,7 @@ export function GroupEdit() {
                   onClick={async () => {
                     // Copy to clipboard
                     await navigator.clipboard.writeText(
-                      `${process.env.NEXT_PUBLIC_BASE_URL}/join/${token.id}`
+                      `${process.env.NEXT_PUBLIC_BASE_URL}/join/${token.id}`,
                     );
                   }}
                 >
