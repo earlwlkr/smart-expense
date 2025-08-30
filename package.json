@@ -55,6 +55,7 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.2.2",
     "@types/lodash-es": "^4.17.12",
     "encoding": "^0.1.13"
   }
