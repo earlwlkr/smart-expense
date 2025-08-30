@@ -1,4 +1,5 @@
 import { useMembers } from '@/lib/contexts/MembersContext';
+import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
 import { Expense } from '@/lib/types';
 import {
   Table,
@@ -10,7 +11,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { SearchIcon } from 'lucide-react';
+import { Fragment, useMemo, useState } from 'react';
 
 function calculateSplitDetails(expenses: Expense[]) {
   const splitDetails = expenses.reduce((acc, expense) => {
@@ -55,38 +59,80 @@ export function ExpenseSplit() {
   const { items: expenses } = useExpensesStore();
   const { members } = useMembers();
   const splitDetails = calculateSplitDetails(expenses);
+  const [search, setSearch] = useState('');
+  const [query, setQuery] = useState('');
+
+  const groups = useMemo(() => {
+    return Object.entries(splitDetails).map(([fromId, details]) => {
+      const fromMember = members.find((m) => m.id === fromId);
+      const items = Object.entries(details).map(([toId, amount]) => {
+        const toMember = members.find((m) => m.id === toId);
+        return {
+          key: `${fromId}-${toId}`,
+          to: toMember?.name || '',
+          amount,
+        };
+      });
+      return {
+        id: fromId,
+        from: fromMember?.name || '',
+        items,
+      };
+    });
+  }, [splitDetails, members]);
+
+  const filteredGroups = useMemo(() => {
+    const q = query.toLowerCase();
+    return groups.filter((group) => group.from.toLowerCase().includes(q));
+  }, [groups, query]);
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>From</TableHead>
-          <TableHead>To</TableHead>
-          <TableHead className="text-right">Amount</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {splitDetails &&
-          Object.entries(splitDetails).map(([participantId, details]) => {
-            const participant = members.find((m) => m.id === participantId);
-            return Object.entries(details).map(([payerId, amount]) => {
-              const payer = members.find((m) => m.id === payerId);
-              return (
-                <TableRow key={`${participantId}-${payerId}`}>
-                  <TableCell className="font-medium">
-                    {participant?.name}
-                  </TableCell>
-                  <TableCell>{payer?.name}</TableCell>
+    <div>
+      <div className="flex justify-end gap-2 mb-4">
+        <Input
+          placeholder="Search..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-48"
+        />
+        <Button type="button" onClick={() => setQuery(search)}>
+          <SearchIcon className="size-4" />
+        </Button>
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>From</TableHead>
+            <TableHead>To</TableHead>
+            <TableHead className="text-right">Amount</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredGroups.map((group) => (
+            <Fragment key={group.id}>
+              {group.items.map((item, index) => (
+                <TableRow key={item.key}>
+                  {index === 0 && (
+                    <TableCell
+                      rowSpan={group.items.length}
+                      className="font-medium"
+                    >
+                      {group.from}
+                    </TableCell>
+                  )}
+                  <TableCell>{item.to}</TableCell>
                   <TableCell className="text-right">
                     {new Intl.NumberFormat('vi-VN', {
                       style: 'currency',
                       currency: 'VND',
-                    }).format(amount)}
+                    }).format(item.amount)}
                   </TableCell>
                 </TableRow>
-              );
-            });
-          })}
-      </TableBody>
-    </Table>
+              ))}
+            </Fragment>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
