@@ -1,11 +1,11 @@
 'use client';
 
-import * as React from 'react';
-import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
 import { format } from 'date-fns';
-import { AddExpenseButton } from '@/components/AddExpenseButton';
+import * as React from 'react';
 import { useState } from 'react';
-import { Expense } from '@/lib/types';
+import { AddExpenseButton } from '@/components/AddExpenseButton';
+import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
+import type { Expense } from '@/lib/types';
 
 export function Expenses() {
   const { items: expenses } = useExpensesStore();

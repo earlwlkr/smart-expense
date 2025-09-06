@@ -1,8 +1,8 @@
 'use client';
 
-import { Dispatch, SetStateAction, memo } from 'react';
 import { useMediaQuery } from '@uidotdev/usehooks';
-
+import { type Dispatch, memo, type SetStateAction } from 'react';
+import { ExpenseForm } from '@/components/Expenses/ExpenseForm';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -13,12 +13,11 @@ import {
 } from '@/components/ui/dialog';
 import {
   Sheet,
-  SheetTrigger,
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetTrigger,
 } from '@/components/ui/sheet';
-import { ExpenseForm } from '@/components/Expenses/ExpenseForm';
 import type { Expense } from '@/lib/types';
 
 interface AddExpenseButtonProps {

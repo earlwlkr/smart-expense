@@ -1,5 +1,7 @@
 'use client';
 
+import { useMediaQuery } from '@uidotdev/usehooks';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -7,16 +9,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useMembers } from '@/lib/contexts/MembersContext';
-import { useState } from 'react';
 import {
   Sheet,
-  SheetTrigger,
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetTrigger,
 } from '@/components/ui/sheet';
-import { useMediaQuery } from '@uidotdev/usehooks';
+import { useMembers } from '@/lib/contexts/MembersContext';
 import { GroupEdit } from './GroupEdit';
 
 export function GroupEditModal() {

@@ -1,12 +1,12 @@
+import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { addMember, removeMember } from '@/lib/db/members';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCategories } from '@/lib/contexts/CategoriesContext';
 import { useGroups } from '@/lib/contexts/GroupsContext'; // <-- updated import
 import { useMembers } from '@/lib/contexts/MembersContext';
-import { useRef, useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTokens } from '@/lib/contexts/TokensContext';
+import { addMember, removeMember } from '@/lib/db/members';
 
 export function GroupEdit() {
   const { currentGroup } = useGroups();

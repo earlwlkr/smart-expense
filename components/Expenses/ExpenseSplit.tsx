@@ -1,6 +1,4 @@
-import { useMembers } from '@/lib/contexts/MembersContext';
-import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
-import { Expense } from '@/lib/types';
+import { Fragment, useMemo } from 'react';
 import {
   Table,
   TableBody,
@@ -9,7 +7,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Fragment, useMemo } from 'react';
+import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
+import { useMembers } from '@/lib/contexts/MembersContext';
+import type { Expense } from '@/lib/types';
 
 function calculateSplitDetails(expenses: Expense[]) {
   const splitDetails = expenses.reduce(

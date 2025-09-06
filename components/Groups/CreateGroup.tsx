@@ -1,3 +1,8 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -8,23 +13,18 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from '../ui/form';
-import { useEffect, useState } from 'react';
+import { addCategories } from '@/lib/db/categories';
 import { addGroup } from '@/lib/db/groups';
 import { addMember } from '@/lib/db/members';
 import { getProfile } from '@/lib/db/profiles';
-import { addCategories } from '@/lib/db/categories';
-import { useRouter } from 'next/navigation';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../ui/form';
 
 const createGroupFormSchema = z.object({
   name: z.string().min(2).max(50),
@@ -56,7 +56,7 @@ export function CreateGroup() {
     };
 
     initProfile();
-  }, [setProfile]);
+  }, []);
 
   async function onSubmit(values: AddExpenseFormValues) {
     // Do something with the form values.
@@ -79,7 +79,7 @@ export function CreateGroup() {
     addCategories(created.id, ['Eats', 'Drinks']);
     setOpen(false);
     // fetchData();
-    router.push('/groups/' + created.id);
+    router.push(`/groups/${created.id}`);
   }
 
   return (

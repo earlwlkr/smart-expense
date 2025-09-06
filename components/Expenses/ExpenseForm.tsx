@@ -1,7 +1,35 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { format } from 'date-fns';
+import { Calendar as CalendarIcon, Trash } from 'lucide-react'; // Import the trash icon
+import { Dispatch, SetStateAction, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { CurrencyInput } from '@/components/CurrencyInput';
+import { Combobox } from '@/components/Expenses/Combobox';
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import { DialogFooter } from '@/components/ui/dialog';
+import { FancyMultiSelect } from '@/components/ui/fancy-multi-select';
 import { Input } from '@/components/ui/input';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useCategories } from '@/lib/contexts/CategoriesContext';
+import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
+import { useGroups } from '@/lib/contexts/GroupsContext'; // <-- updated import
+import { useMembers } from '@/lib/contexts/MembersContext';
+import type { Expense } from '@/lib/types';
+import { cn } from '@/lib/utils';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../ui/form';
 import {
   Select,
   SelectContent,
@@ -10,35 +38,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { useMembers } from '@/lib/contexts/MembersContext';
-import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
-import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from '../ui/form';
-import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Calendar as CalendarIcon } from 'lucide-react';
-import { Calendar } from '@/components/ui/calendar';
-import { Dispatch, SetStateAction, useEffect } from 'react';
-import { useGroups } from '@/lib/contexts/GroupsContext'; // <-- updated import
-import { CurrencyInput } from '@/components/CurrencyInput';
-import { FancyMultiSelect } from '@/components/ui/fancy-multi-select';
-import { Combobox } from '@/components/Expenses/Combobox';
-import { Expense } from '@/lib/types';
-import { Trash } from 'lucide-react'; // Import the trash icon
 
 const addExpenseFormSchema = z.object({
   name: z

@@ -1,13 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { format } from 'date-fns';
 
 import Link from 'next/link';
+import { useCallback, useEffect, useState } from 'react';
 import { getGroups } from '@/lib/db/groups';
-import { CreateGroup } from './CreateGroup';
-import { Group } from '@/lib/types';
+import type { Group } from '@/lib/types';
 import { Card, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { format } from 'date-fns';
+import { CreateGroup } from './CreateGroup';
 
 export function Groups() {
   const [groups, setGroups] = useState<Group[]>([]);

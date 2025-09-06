@@ -1,23 +1,23 @@
 'use client';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Expenses } from '@/components/Expenses/Expenses';
+import { useEffect } from 'react';
 import { ExpenseSplit } from '@/components/Expenses/ExpenseSplit';
+import { Expenses } from '@/components/Expenses/Expenses';
 import { GroupEditModal } from '@/components/GroupEdit/GroupEditModal';
-import { useGroups } from '@/lib/contexts/GroupsContext';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCategories } from '@/lib/contexts/CategoriesContext';
 import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
+import { useGroups } from '@/lib/contexts/GroupsContext';
+import { useMembers } from '@/lib/contexts/MembersContext';
+import { useTokens } from '@/lib/contexts/TokensContext';
 import { getExpenses } from '@/lib/db/expenses';
 import { getMembers } from '@/lib/db/members';
 import { getActiveTokens } from '@/lib/db/tokens';
-import { useTokens } from '@/lib/contexts/TokensContext';
-import { useEffect } from 'react';
-import { useMembers } from '@/lib/contexts/MembersContext';
 
 export function GroupDetail({ groupId }: { groupId: string }) {
   const { currentGroup, getGroupDetail } = useGroups();
 
-  const { fetchCategories, setCategories } = useCategories();
+  const { fetchCategories } = useCategories();
   const { set: setExpenses } = useExpensesStore();
   const { updateMembers } = useMembers();
   const { setTokens } = useTokens();
@@ -45,7 +45,6 @@ export function GroupDetail({ groupId }: { groupId: string }) {
     groupId,
     getGroupDetail,
     fetchCategories,
-    setCategories,
     setExpenses,
     updateMembers,
     setTokens,

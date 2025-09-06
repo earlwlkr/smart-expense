@@ -1,15 +1,15 @@
 'use client';
 
-import { createClient } from '@/lib/supabase/client';
+import type { User } from '@supabase/auth-js';
+import { ChevronLeft } from 'lucide-react';
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Button } from './ui/button';
-import { Profile } from '@/lib/types';
-import { getProfile } from '@/lib/db/profiles';
-import Link from 'next/link';
-import { ChevronLeft } from 'lucide-react';
-import { User } from '@supabase/auth-js';
 import { useGroups } from '@/lib/contexts/GroupsContext';
+import { getProfile } from '@/lib/db/profiles';
+import { createClient } from '@/lib/supabase/client';
+import type { Profile } from '@/lib/types';
+import { Button } from './ui/button';
 
 export default function Navbar() {
   const router = useRouter();
