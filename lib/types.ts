@@ -36,3 +36,11 @@ export type Token = {
   groupId: string;
   createdAt: Date;
 };
+
+export type ShareToken = {
+  id: string;
+  disabled: boolean;
+  groupId: string;
+  createdAt: Date;
+  expiresAt: Date | null;
+};
