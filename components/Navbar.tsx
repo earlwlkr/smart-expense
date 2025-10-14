@@ -18,6 +18,7 @@ export default function Navbar() {
   const [user, setUser] = useState<User | null>();
   const [profile, setProfile] = useState<Profile>();
   const { currentGroup } = useGroups();
+  const isSharePage = pathname.startsWith('/share/');
 
   useEffect(() => {
     const getData = async () => {
@@ -55,12 +56,12 @@ export default function Navbar() {
           </Link>
         )}
       </div>
-      {user && (
+      {user && !isSharePage && (
         <h1 className="font-semibold text-center md:text-2xl">
           {currentGroup?.name || 'Expenses'}
         </h1>
       )}
-      {user && (
+      {user && !isSharePage && (
         <div className="py-2 text-right">
           <Button
             type="button"
