@@ -6,12 +6,14 @@ import { useCategories } from '@/lib/contexts/CategoriesContext';
 import { useGroups } from '@/lib/contexts/GroupsContext'; // <-- updated import
 import { useMembers } from '@/lib/contexts/MembersContext';
 import { useTokens } from '@/lib/contexts/TokensContext';
+import { useShareTokens } from '@/lib/contexts/ShareTokensContext';
 import { addMember, removeMember } from '@/lib/db/members';
 
 export function GroupEdit() {
   const { currentGroup } = useGroups();
   const { members, updateMembers } = useMembers();
   const { tokens, addToken } = useTokens();
+  const { shareTokens, addShareToken, revokeShareToken } = useShareTokens();
   const [tempMembers, setTempMembers] = useState(members);
   const newMemberInputRef = useRef<HTMLInputElement>(null);
 
@@ -40,10 +42,11 @@ export function GroupEdit() {
 
   return (
     <Tabs defaultValue="members" className="flex flex-col mt-2 min-h-[400px]">
-      <TabsList className="grid w-full grid-cols-3">
+      <TabsList className="grid w-full grid-cols-4">
         <TabsTrigger value="members">Members</TabsTrigger>
         <TabsTrigger value="categories">Categories</TabsTrigger>
         <TabsTrigger value="invite">Invite</TabsTrigger>
+        <TabsTrigger value="share">Share</TabsTrigger>
       </TabsList>
       <TabsContent value="members">
         <div className="space-y-2">
@@ -185,6 +188,58 @@ export function GroupEdit() {
               }}
             >
               Create New Link
+            </Button>
+          </div>
+        </div>
+      </TabsContent>
+      <TabsContent value="share">
+        <div className="space-y-2">
+          <h2 className="text-lg font-semibold">Read-only Links</h2>
+          <p className="text-sm text-muted-foreground">
+            Anyone with these links can view the group&apos;s expenses without
+            needing an account.
+          </p>
+          <div>
+            {shareTokens.map((token) => (
+              <div
+                key={token.id}
+                className="flex flex-wrap items-center gap-2 max-w-xl py-2"
+              >
+                <Input
+                  value={`${process.env.NEXT_PUBLIC_BASE_URL}/share/${token.id}`}
+                  readOnly
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(
+                      `${process.env.NEXT_PUBLIC_BASE_URL}/share/${token.id}`,
+                    );
+                  }}
+                >
+                  Copy
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => revokeShareToken(token.id)}
+                >
+                  Disable
+                </Button>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center space-x-2 max-w-md">
+            <Button
+              type="button"
+              className="w-full"
+              onClick={() => {
+                addShareToken(currentGroup.id);
+              }}
+            >
+              Create Share Link
             </Button>
           </div>
         </div>
