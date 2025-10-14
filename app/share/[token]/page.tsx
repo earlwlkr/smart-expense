@@ -24,8 +24,14 @@ type ExpenseRow = {
   name: string;
   amount: string;
   date: string;
-  categories: { id: string; name: string } | null;
-  handled_by: { id: string; name: string } | null;
+  categories:
+    | { id: string; name: string }
+    | { id: string; name: string }[]
+    | null;
+  handled_by:
+    | { id: string; name: string }
+    | { id: string; name: string }[]
+    | null;
 };
 
 type ParticipantRow = {
@@ -104,10 +110,12 @@ export default async function SharePage({
     .order('date');
 
   const expenseIds = expensesData?.map((expense) => expense.id) || [];
-  const { data: participantsData } = await supabase
-    .from('participants')
-    .select(
-      `
+  const participantsResponse =
+    expenseIds.length > 0
+      ? await supabase
+          .from('participants')
+          .select(
+            `
         id,
         expense_id,
         members (
@@ -115,30 +123,39 @@ export default async function SharePage({
           name
         )
       `,
-    )
-    .in('expense_id', expenseIds);
+          )
+          .in('expense_id', expenseIds)
+      : { data: [] };
+  const participantsData = (participantsResponse.data ?? []) as ParticipantRow[];
 
-  const expenseRows = (expensesData as ExpenseRow[]) || [];
-  const participantRows = (participantsData as ParticipantRow[]) || [];
+  const expenseRows = (expensesData ?? []) as ExpenseRow[];
+  const participantRows = participantsData;
 
   const expenses: Expense[] = expenseRows.map((expense) => ({
       id: expense.id,
       name: expense.name,
       amount: expense.amount,
       date: new Date(expense.date),
-      category: expense.categories || undefined,
-      handledBy: expense.handled_by || undefined,
+      category: Array.isArray(expense.categories)
+        ? expense.categories[0]
+        : expense.categories || undefined,
+      handledBy: Array.isArray(expense.handled_by)
+        ? expense.handled_by[0]
+        : expense.handled_by || undefined,
       participants:
         participantRows
           .filter((participant) => participant.expense_id === expense.id)
           .map((participant) => {
             const member = participant.members;
+            if (!member) {
+              return null;
+            }
             if (Array.isArray(member)) {
-              return member[0];
+              return member[0] ?? null;
             }
             return member;
           })
-          .filter(Boolean) || [],
+          .filter((member): member is Member => member !== null),
     }));
 
   const members: Member[] = (membersData as Member[]) || [];
