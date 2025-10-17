@@ -12,7 +12,6 @@ type ShareTokenRow = {
   id: string;
   group_id: string;
   disabled: boolean;
-  expires_at: string | null;
   groups?: {
     id: string;
     name: string;
@@ -55,7 +54,6 @@ export default async function SharePage({
         id,
         group_id,
         disabled,
-        expires_at,
         groups (
           id,
           name
@@ -71,11 +69,7 @@ export default async function SharePage({
     notFound();
   }
 
-  const expiresAt = shareToken.expires_at
-    ? new Date(shareToken.expires_at)
-    : null;
-
-  if (shareToken.disabled || (expiresAt && expiresAt < new Date())) {
+  if (shareToken.disabled) {
     notFound();
   }
 

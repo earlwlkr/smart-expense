@@ -14,7 +14,7 @@ import { useShareTokens } from '@/lib/contexts/ShareTokensContext';
 import { getExpenses } from '@/lib/db/expenses';
 import { getMembers } from '@/lib/db/members';
 import { getActiveTokens } from '@/lib/db/tokens';
-import { getActiveShareTokens } from '@/lib/db/shareTokens';
+import { getShareToken } from '@/lib/db/shareTokens';
 
 export function GroupDetail({ groupId }: { groupId: string }) {
   const { currentGroup, getGroupDetail } = useGroups();
@@ -23,7 +23,7 @@ export function GroupDetail({ groupId }: { groupId: string }) {
   const { set: setExpenses } = useExpensesStore();
   const { updateMembers } = useMembers();
   const { setTokens } = useTokens();
-  const { setShareTokens } = useShareTokens();
+  const { setShareToken } = useShareTokens();
 
   useEffect(() => {
     const initExpenses = async () => {
@@ -38,9 +38,9 @@ export function GroupDetail({ groupId }: { groupId: string }) {
       const tokens = await getActiveTokens(groupId);
       setTokens(tokens);
     };
-    const initShareTokens = async () => {
-      const tokens = await getActiveShareTokens(groupId);
-      setShareTokens(tokens);
+    const initShareToken = async () => {
+      const token = await getShareToken(groupId);
+      setShareToken(token);
     };
 
     getGroupDetail(groupId);
@@ -48,7 +48,7 @@ export function GroupDetail({ groupId }: { groupId: string }) {
     initExpenses();
     initMembers();
     initTokens();
-    initShareTokens();
+    initShareToken();
   }, [
     groupId,
     getGroupDetail,
@@ -56,7 +56,7 @@ export function GroupDetail({ groupId }: { groupId: string }) {
     setExpenses,
     updateMembers,
     setTokens,
-    setShareTokens,
+    setShareToken,
   ]);
 
   if (!currentGroup) {

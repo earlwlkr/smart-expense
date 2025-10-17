@@ -42,5 +42,4 @@ export type ShareToken = {
   disabled: boolean;
   groupId: string;
   createdAt: Date;
-  expiresAt: Date | null;
 };

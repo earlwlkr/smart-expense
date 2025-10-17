@@ -1,4 +1,3 @@
-import { addDays } from 'date-fns';
 import { ShareToken } from '@/lib/types';
 import supabase from './init';
 
@@ -7,34 +6,27 @@ const mapToken = (item: any): ShareToken => ({
   groupId: item.group_id,
   disabled: item.disabled,
   createdAt: new Date(item.created_at),
-  expiresAt: item.expires_at ? new Date(item.expires_at) : null,
 });
 
-export const getActiveShareTokens = async (
+const fetchLatestShareToken = async (
   groupId: string,
-): Promise<ShareToken[]> => {
+): Promise<ShareToken | null> => {
   const { data } = await supabase
     .from('share_tokens')
     .select()
     .eq('group_id', groupId)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(1);
 
-  const now = new Date();
+  const tokenRow = data?.[0];
 
-  return (
-    data?.map(mapToken).filter((token) => {
-      if (token.disabled) return false;
-      if (!token.expiresAt) return true;
-      return token.expiresAt > now;
-    }) || []
-  );
+  return tokenRow ? mapToken(tokenRow) : null;
 };
 
-export const createShareToken = async (groupId: string) => {
-  const expiresAt = addDays(new Date(), 30);
+const createShareToken = async (groupId: string): Promise<ShareToken> => {
   const { data, error } = await supabase
     .from('share_tokens')
-    .insert({ group_id: groupId, expires_at: expiresAt.toISOString() })
+    .insert({ group_id: groupId })
     .select()
     .single();
 
@@ -45,9 +37,57 @@ export const createShareToken = async (groupId: string) => {
   return mapToken(data);
 };
 
-export const disableShareToken = async (tokenId: string) => {
-  await supabase
+export const getShareToken = async (groupId: string): Promise<ShareToken> => {
+  const existingToken = await fetchLatestShareToken(groupId);
+
+  if (existingToken) {
+    return existingToken;
+  }
+
+  return createShareToken(groupId);
+};
+
+const setShareTokenDisabled = async (
+  tokenId: string,
+  disabled: boolean,
+): Promise<ShareToken> => {
+  const { data, error } = await supabase
+    .from('share_tokens')
+    .update({ disabled })
+    .eq('id', tokenId)
+    .select()
+    .single();
+
+  if (!data) {
+    throw new Error(error?.message || 'Failed to update share token');
+  }
+
+  return mapToken(data);
+};
+
+export const disableShareToken = async (
+  groupId: string,
+): Promise<ShareToken | null> => {
+  const { error } = await supabase
     .from('share_tokens')
     .update({ disabled: true })
-    .eq('id', tokenId);
+    .eq('group_id', groupId);
+
+  if (error) {
+    throw new Error(error.message || 'Failed to disable share tokens');
+  }
+
+  return fetchLatestShareToken(groupId);
+};
+
+export const enableShareToken = async (
+  groupId: string,
+): Promise<ShareToken> => {
+  const token = await getShareToken(groupId);
+
+  if (!token.disabled) {
+    return token;
+  }
+
+  return setShareTokenDisabled(token.id, false);
 };

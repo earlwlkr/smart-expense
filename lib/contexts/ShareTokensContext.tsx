@@ -1,15 +1,15 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
 import { ShareToken } from '@/lib/types';
 import {
-  createShareToken,
-  disableShareToken,
+  disableShareToken as disableShareTokenDb,
+  enableShareToken as enableShareTokenDb,
 } from '@/lib/db/shareTokens';
 
 type ShareTokensContextType = {
-  shareTokens: ShareToken[];
-  setShareTokens: (tokens: ShareToken[]) => void;
-  addShareToken: (groupId: string) => Promise<void>;
-  revokeShareToken: (tokenId: string) => Promise<void>;
+  shareToken: ShareToken | null;
+  setShareToken: (token: ShareToken | null) => void;
+  enableShareToken: (groupId: string) => Promise<void>;
+  disableShareToken: (groupId: string) => Promise<void>;
 };
 
 const ShareTokensContext =
@@ -18,21 +18,30 @@ const ShareTokensContext =
 export const ShareTokensProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [shareTokens, setShareTokens] = useState<ShareToken[]>([]);
+  const [shareToken, setShareTokenState] = useState<ShareToken | null>(null);
 
-  const addShareToken = useCallback(async (groupId: string) => {
-    const token = await createShareToken(groupId);
-    setShareTokens((prev) => [...prev, token]);
+  const setShareToken = useCallback((token: ShareToken | null) => {
+    setShareTokenState(token);
   }, []);
 
-  const revokeShareToken = useCallback(async (tokenId: string) => {
-    await disableShareToken(tokenId);
-    setShareTokens((prev) => prev.filter((token) => token.id !== tokenId));
+  const enableShareToken = useCallback(async (groupId: string) => {
+    const token = await enableShareTokenDb(groupId);
+    setShareTokenState(token);
+  }, []);
+
+  const disableShareToken = useCallback(async (groupId: string) => {
+    const token = await disableShareTokenDb(groupId);
+    setShareTokenState(token);
   }, []);
 
   return (
     <ShareTokensContext.Provider
-      value={{ shareTokens, setShareTokens, addShareToken, revokeShareToken }}
+      value={{
+        shareToken,
+        setShareToken,
+        enableShareToken,
+        disableShareToken,
+      }}
     >
       {children}
     </ShareTokensContext.Provider>
