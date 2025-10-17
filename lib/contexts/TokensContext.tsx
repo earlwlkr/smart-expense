@@ -1,11 +1,15 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { Token } from '@/lib/types';
-import { createToken } from '@/lib/db/tokens';
+import {
+  disableInviteToken as disableInviteTokenDb,
+  enableInviteToken as enableInviteTokenDb,
+} from '@/lib/db/tokens';
 
 type TokensContextType = {
-  tokens: Token[];
-  addToken: (groupId: string) => Promise<void>;
-  setTokens: (tokens: Token[]) => void;
+  inviteToken: Token | null;
+  setInviteToken: (token: Token | null) => void;
+  enableInviteToken: (groupId: string) => Promise<void>;
+  disableInviteToken: (groupId: string) => Promise<void>;
 };
 
 const TokensContext = createContext<TokensContextType | undefined>(undefined);
@@ -13,15 +17,26 @@ const TokensContext = createContext<TokensContextType | undefined>(undefined);
 export const TokensProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [tokens, setTokens] = useState<Token[]>([]);
+  const [inviteToken, setInviteTokenState] = useState<Token | null>(null);
 
-  const addToken = useCallback(async (groupId: string) => {
-    const created = await createToken(groupId);
-    setTokens((prev) => [...prev, created]);
+  const setInviteToken = useCallback((token: Token | null) => {
+    setInviteTokenState(token);
+  }, []);
+
+  const enableInviteToken = useCallback(async (groupId: string) => {
+    const token = await enableInviteTokenDb(groupId);
+    setInviteTokenState(token);
+  }, []);
+
+  const disableInviteToken = useCallback(async (groupId: string) => {
+    const token = await disableInviteTokenDb(groupId);
+    setInviteTokenState(token);
   }, []);
 
   return (
-    <TokensContext.Provider value={{ tokens, addToken, setTokens }}>
+    <TokensContext.Provider
+      value={{ inviteToken, setInviteToken, enableInviteToken, disableInviteToken }}
+    >
       {children}
     </TokensContext.Provider>
   );

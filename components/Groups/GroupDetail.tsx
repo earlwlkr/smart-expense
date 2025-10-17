@@ -13,7 +13,7 @@ import { useTokens } from '@/lib/contexts/TokensContext';
 import { useShareTokens } from '@/lib/contexts/ShareTokensContext';
 import { getExpenses } from '@/lib/db/expenses';
 import { getMembers } from '@/lib/db/members';
-import { getActiveTokens } from '@/lib/db/tokens';
+import { getInviteToken } from '@/lib/db/tokens';
 import { getShareToken } from '@/lib/db/shareTokens';
 
 export function GroupDetail({ groupId }: { groupId: string }) {
@@ -22,7 +22,7 @@ export function GroupDetail({ groupId }: { groupId: string }) {
   const { fetchCategories } = useCategories();
   const { set: setExpenses } = useExpensesStore();
   const { updateMembers } = useMembers();
-  const { setTokens } = useTokens();
+  const { setInviteToken } = useTokens();
   const { setShareToken } = useShareTokens();
 
   useEffect(() => {
@@ -34,9 +34,9 @@ export function GroupDetail({ groupId }: { groupId: string }) {
       const members = await getMembers(groupId);
       updateMembers(members);
     };
-    const initTokens = async () => {
-      const tokens = await getActiveTokens(groupId);
-      setTokens(tokens);
+    const initInviteToken = async () => {
+      const token = await getInviteToken(groupId);
+      setInviteToken(token);
     };
     const initShareToken = async () => {
       const token = await getShareToken(groupId);
@@ -47,7 +47,7 @@ export function GroupDetail({ groupId }: { groupId: string }) {
     fetchCategories(groupId);
     initExpenses();
     initMembers();
-    initTokens();
+    initInviteToken();
     initShareToken();
   }, [
     groupId,
@@ -55,7 +55,7 @@ export function GroupDetail({ groupId }: { groupId: string }) {
     fetchCategories,
     setExpenses,
     updateMembers,
-    setTokens,
+    setInviteToken,
     setShareToken,
   ]);
 

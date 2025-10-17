@@ -12,7 +12,7 @@ import { addMember, removeMember } from '@/lib/db/members';
 export function GroupEdit() {
   const { currentGroup } = useGroups();
   const { members, updateMembers } = useMembers();
-  const { tokens, addToken } = useTokens();
+  const { inviteToken, enableInviteToken, disableInviteToken } = useTokens();
   const { shareToken, enableShareToken, disableShareToken } = useShareTokens();
   const [tempMembers, setTempMembers] = useState(members);
   const newMemberInputRef = useRef<HTMLInputElement>(null);
@@ -42,11 +42,10 @@ export function GroupEdit() {
 
   return (
     <Tabs defaultValue="members" className="flex flex-col mt-2 min-h-[400px]">
-      <TabsList className="grid w-full grid-cols-4">
+      <TabsList className="grid w-full grid-cols-3">
         <TabsTrigger value="members">Members</TabsTrigger>
         <TabsTrigger value="categories">Categories</TabsTrigger>
-        <TabsTrigger value="invite">Invite</TabsTrigger>
-        <TabsTrigger value="share">Share</TabsTrigger>
+        <TabsTrigger value="access">Access</TabsTrigger>
       </TabsList>
       <TabsContent value="members">
         <div className="space-y-2">
@@ -149,108 +148,127 @@ export function GroupEdit() {
           </div>
         </div>
       </TabsContent>
-      <TabsContent value="invite">
-        <div className="space-y-2">
-          <h2 className="text-lg font-semibold">Invite Links</h2>
-          <div>
-            {tokens.map((token) => (
-              <div
-                key={token.id}
-                className="flex items-center justify-between max-w-md py-2 rounded-lg shadow-sm"
-              >
-                <Input
-                  value={`${process.env.NEXT_PUBLIC_BASE_URL}/join/${token.id}`}
-                  readOnly
-                  className="flex-grow"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="ml-2"
-                  onClick={async () => {
-                    // Copy to clipboard
-                    await navigator.clipboard.writeText(
-                      `${process.env.NEXT_PUBLIC_BASE_URL}/join/${token.id}`,
-                    );
-                  }}
-                >
-                  Copy
-                </Button>
-              </div>
-            ))}
-          </div>
-          <div className="flex items-center space-x-2 max-w-md">
-            <Button
-              type="button"
-              className="w-full"
-              onClick={() => {
-                addToken(currentGroup.id);
-              }}
-            >
-              Create New Link
-            </Button>
-          </div>
-        </div>
-      </TabsContent>
-      <TabsContent value="share">
-        <div className="space-y-2">
-          <h2 className="text-lg font-semibold">Read-only Links</h2>
-          <p className="text-sm text-muted-foreground">
-            Anyone with these links can view the group&apos;s expenses without
-            needing an account.
-          </p>
-          {shareToken ? (
-            <>
-              <div className="flex flex-wrap items-center gap-2 max-w-xl py-2">
-                <Input
-                  value={`${process.env.NEXT_PUBLIC_BASE_URL}/share/${shareToken.id}`}
-                  readOnly
-                  className="flex-1"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={async () => {
-                    await navigator.clipboard.writeText(
-                      `${process.env.NEXT_PUBLIC_BASE_URL}/share/${shareToken.id}`,
-                    );
-                  }}
-                >
-                  Copy
-                </Button>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Status: {shareToken.disabled ? 'Disabled' : 'Enabled'}
-              </p>
+      <TabsContent value="access">
+        <div className="space-y-8">
+          <div className="space-y-2">
+            <h2 className="text-lg font-semibold">Invite Links</h2>
+            <p className="text-sm text-muted-foreground">
+              Invite members to join the group with a single reusable link.
+            </p>
+            {inviteToken ? (
+              <>
+                <div className="flex flex-wrap items-center gap-2 max-w-xl py-2">
+                  <Input
+                    value={`${process.env.NEXT_PUBLIC_BASE_URL}/join/${inviteToken.id}`}
+                    readOnly
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(
+                        `${process.env.NEXT_PUBLIC_BASE_URL}/join/${inviteToken.id}`,
+                      );
+                    }}
+                  >
+                    Copy
+                  </Button>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Status: {inviteToken.disabled ? 'Disabled' : 'Enabled'}
+                </p>
+                <div className="flex items-center space-x-2 max-w-md">
+                  <Button
+                    type="button"
+                    className="w-full"
+                    onClick={() => {
+                      if (inviteToken.disabled) {
+                        enableInviteToken(currentGroup.id);
+                      } else {
+                        disableInviteToken(currentGroup.id);
+                      }
+                    }}
+                  >
+                    {inviteToken.disabled
+                      ? 'Enable Invite Link'
+                      : 'Disable Invite Link'}
+                  </Button>
+                </div>
+              </>
+            ) : (
               <div className="flex items-center space-x-2 max-w-md">
                 <Button
                   type="button"
                   className="w-full"
                   onClick={() => {
-                    if (shareToken.disabled) {
-                      enableShareToken(currentGroup.id);
-                    } else {
-                      disableShareToken(currentGroup.id);
-                    }
+                    enableInviteToken(currentGroup.id);
                   }}
                 >
-                  {shareToken.disabled ? 'Enable Share Link' : 'Disable Share Link'}
+                  Enable Invite Link
                 </Button>
               </div>
-            </>
-          ) : (
-            <div className="flex items-center space-x-2 max-w-md">
-              <Button
-                type="button"
-                className="w-full"
-                onClick={() => {
-                  enableShareToken(currentGroup.id);
-                }}
-              >
-                Enable Share Link
-              </Button>
-            </div>
-          )}
+            )}
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-lg font-semibold">Read-only Links</h2>
+            <p className="text-sm text-muted-foreground">
+              Anyone with these links can view the group&apos;s expenses without
+              needing an account.
+            </p>
+            {shareToken ? (
+              <>
+                <div className="flex flex-wrap items-center gap-2 max-w-xl py-2">
+                  <Input
+                    value={`${process.env.NEXT_PUBLIC_BASE_URL}/share/${shareToken.id}`}
+                    readOnly
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(
+                        `${process.env.NEXT_PUBLIC_BASE_URL}/share/${shareToken.id}`,
+                      );
+                    }}
+                  >
+                    Copy
+                  </Button>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Status: {shareToken.disabled ? 'Disabled' : 'Enabled'}
+                </p>
+                <div className="flex items-center space-x-2 max-w-md">
+                  <Button
+                    type="button"
+                    className="w-full"
+                    onClick={() => {
+                      if (shareToken.disabled) {
+                        enableShareToken(currentGroup.id);
+                      } else {
+                        disableShareToken(currentGroup.id);
+                      }
+                    }}
+                  >
+                    {shareToken.disabled ? 'Enable Share Link' : 'Disable Share Link'}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center space-x-2 max-w-md">
+                <Button
+                  type="button"
+                  className="w-full"
+                  onClick={() => {
+                    enableShareToken(currentGroup.id);
+                  }}
+                >
+                  Enable Share Link
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </TabsContent>
     </Tabs>
