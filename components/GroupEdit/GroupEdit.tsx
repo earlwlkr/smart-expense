@@ -230,7 +230,7 @@ export function GroupEdit() {
                     if (shareToken.disabled) {
                       enableShareToken(currentGroup.id);
                     } else {
-                      disableShareToken(shareToken.id);
+                      disableShareToken(currentGroup.id);
                     }
                   }}
                 >

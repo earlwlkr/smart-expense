@@ -8,6 +8,21 @@ const mapToken = (item: any): ShareToken => ({
   createdAt: new Date(item.created_at),
 });
 
+const fetchLatestShareToken = async (
+  groupId: string,
+): Promise<ShareToken | null> => {
+  const { data } = await supabase
+    .from('share_tokens')
+    .select()
+    .eq('group_id', groupId)
+    .order('created_at', { ascending: false })
+    .limit(1);
+
+  const tokenRow = data?.[0];
+
+  return tokenRow ? mapToken(tokenRow) : null;
+};
+
 const createShareToken = async (groupId: string): Promise<ShareToken> => {
   const { data, error } = await supabase
     .from('share_tokens')
@@ -23,17 +38,10 @@ const createShareToken = async (groupId: string): Promise<ShareToken> => {
 };
 
 export const getShareToken = async (groupId: string): Promise<ShareToken> => {
-  const { data } = await supabase
-    .from('share_tokens')
-    .select()
-    .eq('group_id', groupId)
-    .order('created_at', { ascending: false })
-    .limit(1);
+  const existingToken = await fetchLatestShareToken(groupId);
 
-  const tokenRow = data?.[0];
-
-  if (tokenRow) {
-    return mapToken(tokenRow);
+  if (existingToken) {
+    return existingToken;
   }
 
   return createShareToken(groupId);
@@ -57,8 +65,20 @@ const setShareTokenDisabled = async (
   return mapToken(data);
 };
 
-export const disableShareToken = async (tokenId: string) =>
-  setShareTokenDisabled(tokenId, true);
+export const disableShareToken = async (
+  groupId: string,
+): Promise<ShareToken | null> => {
+  const { error } = await supabase
+    .from('share_tokens')
+    .update({ disabled: true })
+    .eq('group_id', groupId);
+
+  if (error) {
+    throw new Error(error.message || 'Failed to disable share tokens');
+  }
+
+  return fetchLatestShareToken(groupId);
+};
 
 export const enableShareToken = async (
   groupId: string,

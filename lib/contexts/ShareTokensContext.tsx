@@ -9,7 +9,7 @@ type ShareTokensContextType = {
   shareToken: ShareToken | null;
   setShareToken: (token: ShareToken | null) => void;
   enableShareToken: (groupId: string) => Promise<void>;
-  disableShareToken: (tokenId: string) => Promise<void>;
+  disableShareToken: (groupId: string) => Promise<void>;
 };
 
 const ShareTokensContext =
@@ -29,8 +29,8 @@ export const ShareTokensProvider: React.FC<{ children: React.ReactNode }> = ({
     setShareTokenState(token);
   }, []);
 
-  const disableShareToken = useCallback(async (tokenId: string) => {
-    const token = await disableShareTokenDb(tokenId);
+  const disableShareToken = useCallback(async (groupId: string) => {
+    const token = await disableShareTokenDb(groupId);
     setShareTokenState(token);
   }, []);
 
