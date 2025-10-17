@@ -37,15 +37,9 @@ const createShareToken = async (groupId: string): Promise<ShareToken> => {
   return mapToken(data);
 };
 
-export const getShareToken = async (groupId: string): Promise<ShareToken> => {
-  const existingToken = await fetchLatestShareToken(groupId);
-
-  if (existingToken) {
-    return existingToken;
-  }
-
-  return createShareToken(groupId);
-};
+export const getShareToken = async (
+  groupId: string,
+): Promise<ShareToken | null> => fetchLatestShareToken(groupId);
 
 const setShareTokenDisabled = async (
   tokenId: string,
@@ -83,7 +77,11 @@ export const disableShareToken = async (
 export const enableShareToken = async (
   groupId: string,
 ): Promise<ShareToken> => {
-  const token = await getShareToken(groupId);
+  const token = await fetchLatestShareToken(groupId);
+
+  if (!token) {
+    return createShareToken(groupId);
+  }
 
   if (!token.disabled) {
     return token;
