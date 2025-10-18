@@ -114,7 +114,7 @@ export function GroupStats() {
 
   return (
     <div className="flex flex-col gap-6 py-4">
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="flex flex-col gap-4">
         <Card>
           <CardHeader>
             <CardDescription>Total spent</CardDescription>
@@ -144,7 +144,7 @@ export function GroupStats() {
           </CardHeader>
         </Card>
       </div>
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="flex flex-col gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="text-xl">Spend by payer</CardTitle>
