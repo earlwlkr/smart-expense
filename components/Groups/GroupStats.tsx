@@ -26,18 +26,22 @@ const currencyFormatter = new Intl.NumberFormat('vi-VN', {
 export function GroupStats() {
   const { items: expenses } = useExpensesStore();
 
-  const stats = useMemo(() => {
-    const totalsByPayer = new Map<
-      string,
-      { id: string; name: string; amount: number }
-    >();
-    const totalsByCategory = new Map<
-      string,
-      { id: string; name: string; amount: number }
-    >();
+  type Aggregate = { id: string; name: string; amount: number };
+  type Stats = {
+    totalAmount: number;
+    largestExpense: Aggregate | null;
+    average: number;
+    count: number;
+    payerTotals: Aggregate[];
+    categoryTotals: Aggregate[];
+  };
+
+  const stats = useMemo<Stats>(() => {
+    const totalsByPayer = new Map<string, Aggregate>();
+    const totalsByCategory = new Map<string, Aggregate>();
 
     let totalAmount = 0;
-    let largestExpense: { id: string; name: string; amount: number } | null = null;
+    let largestExpense: Aggregate | null = null;
 
     expenses.forEach((expense) => {
       const amount = Number(expense.amount) || 0;
