@@ -7,13 +7,18 @@ export const getGroups = async (): Promise<Group[]> => {
   return data || [];
 };
 
-export const getGroupDetail = async (groupId: string) => {
+export const getGroupDetail = async (groupId: string): Promise<Group | null> => {
   const { data, error } = await supabase
     .from('groups')
     .select()
     .eq('id', groupId);
 
-  return data?.[0] || {};
+  if (error) {
+    console.error('Failed to fetch group detail', error);
+    return null;
+  }
+
+  return (data?.[0] as Group) ?? null;
 };
 
 export const addGroup = async (

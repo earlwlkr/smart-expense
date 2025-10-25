@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -12,14 +12,35 @@ import { addMember, removeMember } from '@/lib/db/members';
 export function GroupEdit() {
   const { currentGroup } = useGroups();
   const { members, updateMembers } = useMembers();
-  const { inviteToken, enableInviteToken, disableInviteToken } = useTokens();
-  const { shareToken, enableShareToken, disableShareToken } = useShareTokens();
+  const {
+    inviteToken,
+    enableInviteToken,
+    disableInviteToken,
+    isLoading: inviteTokenLoading,
+  } = useTokens();
+  const {
+    shareToken,
+    enableShareToken,
+    disableShareToken,
+    isLoading: shareTokenLoading,
+  } = useShareTokens();
   const [tempMembers, setTempMembers] = useState(members);
   const newMemberInputRef = useRef<HTMLInputElement>(null);
 
-  const { categories, addCategories, removeCategory } = useCategories();
+  const { categories, addCategories, removeCategory, loading: categoriesLoading } =
+    useCategories();
   const [tempCategories, setTempCategories] = useState(categories);
   const newCategoryInputRef = useRef<HTMLInputElement>(null);
+  const [isAddingMember, setIsAddingMember] = useState(false);
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+
+  useEffect(() => {
+    setTempMembers(members);
+  }, [members]);
+
+  useEffect(() => {
+    setTempCategories(categories);
+  }, [categories]);
 
   const handleDeleteMember = (id: string) => {
     const updatedMembers = tempMembers.filter((member) => member.id !== id);
@@ -34,6 +55,73 @@ export function GroupEdit() {
     );
     setTempCategories(updatedCategories);
     removeCategory(id);
+  };
+
+  const handleAddMember = async () => {
+    if (!currentGroup || !newMemberInputRef.current) return;
+    const name = newMemberInputRef.current.value.trim();
+    if (!name) return;
+
+    setIsAddingMember(true);
+    try {
+      const added = await addMember(currentGroup.id, { name });
+      if (added && added.length > 0) {
+        setTempMembers((prev) => {
+          const updated = [...prev, ...added];
+          updateMembers(updated);
+          return updated;
+        });
+      }
+      newMemberInputRef.current.value = '';
+    } finally {
+      setIsAddingMember(false);
+    }
+  };
+
+  const handleAddCategory = async () => {
+    if (!currentGroup || !newCategoryInputRef.current) return;
+    const name = newCategoryInputRef.current.value.trim();
+    if (!name) return;
+
+    setIsAddingCategory(true);
+    try {
+      await addCategories(currentGroup.id, [name]);
+      setTempCategories((prev) => [
+        ...prev,
+        { id: Date.now().toString(), name },
+      ]);
+      newCategoryInputRef.current.value = '';
+    } finally {
+      setIsAddingCategory(false);
+    }
+  };
+
+  const handleToggleInviteToken = async () => {
+    if (!currentGroup) return;
+    if (inviteToken && !inviteToken.disabled) {
+      await disableInviteToken(currentGroup.id);
+    } else {
+      await enableInviteToken(currentGroup.id);
+    }
+  };
+
+  const handleEnableInviteToken = async () => {
+    if (!currentGroup) return;
+    await enableInviteToken(currentGroup.id);
+  };
+
+  const handleToggleShareToken = async () => {
+    if (!currentGroup) return;
+    if (shareToken && !shareToken.disabled) {
+      await disableShareToken(currentGroup.id);
+    } else {
+      await enableShareToken(currentGroup.id);
+    }
+  };
+
+  const handleEnableShareToken = async () => {
+    if (!currentGroup) return;
+    await enableShareToken(currentGroup.id);
   };
 
   if (!currentGroup) {
@@ -72,30 +160,10 @@ export function GroupEdit() {
             />
             <Button
               type="button"
-              onClick={async () => {
-                if (
-                  !newMemberInputRef.current ||
-                  !newMemberInputRef.current.value
-                )
-                  return;
-
-                const newMemberName = newMemberInputRef.current.value;
-                const newMember = {
-                  id: Date.now().toString(),
-                  name: newMemberName,
-                };
-                setTempMembers([...tempMembers, newMember]);
-                newMemberInputRef.current.value = '';
-
-                const added = await addMember(currentGroup.id, {
-                  name: newMemberName,
-                });
-                if (added && added.length > 0) {
-                  updateMembers([...members, ...added]);
-                }
-              }}
+              disabled={isAddingMember}
+              onClick={handleAddMember}
             >
-              Add
+              {isAddingMember ? 'Adding…' : 'Add'}
             </Button>
           </div>
         </div>
@@ -125,25 +193,10 @@ export function GroupEdit() {
             />
             <Button
               type="button"
-              onClick={async () => {
-                if (
-                  !newCategoryInputRef.current ||
-                  !newCategoryInputRef.current.value
-                )
-                  return;
-
-                const newCategoryName = newCategoryInputRef.current.value;
-                const newCategory = {
-                  id: Date.now().toString(),
-                  name: newCategoryName,
-                };
-                setTempCategories([...tempCategories, newCategory]);
-                newCategoryInputRef.current.value = '';
-
-                await addCategories(currentGroup.id, [newCategoryName]);
-              }}
+              onClick={handleAddCategory}
+              disabled={isAddingCategory || categoriesLoading}
             >
-              Add
+              {isAddingCategory || categoriesLoading ? 'Adding…' : 'Add'}
             </Button>
           </div>
         </div>
@@ -182,17 +235,14 @@ export function GroupEdit() {
                   <Button
                     type="button"
                     className="w-full"
-                    onClick={() => {
-                      if (inviteToken.disabled) {
-                        enableInviteToken(currentGroup.id);
-                      } else {
-                        disableInviteToken(currentGroup.id);
-                      }
-                    }}
+                    onClick={handleToggleInviteToken}
+                    disabled={inviteTokenLoading}
                   >
-                    {inviteToken.disabled
-                      ? 'Enable Invite Link'
-                      : 'Disable Invite Link'}
+                    {inviteTokenLoading
+                      ? 'Working…'
+                      : inviteToken.disabled
+                        ? 'Enable Invite Link'
+                        : 'Disable Invite Link'}
                   </Button>
                 </div>
               </>
@@ -201,11 +251,10 @@ export function GroupEdit() {
                 <Button
                   type="button"
                   className="w-full"
-                  onClick={() => {
-                    enableInviteToken(currentGroup.id);
-                  }}
+                  onClick={handleEnableInviteToken}
+                  disabled={inviteTokenLoading}
                 >
-                  Enable Invite Link
+                  {inviteTokenLoading ? 'Working…' : 'Enable Invite Link'}
                 </Button>
               </div>
             )}
@@ -243,15 +292,14 @@ export function GroupEdit() {
                   <Button
                     type="button"
                     className="w-full"
-                    onClick={() => {
-                      if (shareToken.disabled) {
-                        enableShareToken(currentGroup.id);
-                      } else {
-                        disableShareToken(currentGroup.id);
-                      }
-                    }}
+                    onClick={handleToggleShareToken}
+                    disabled={shareTokenLoading}
                   >
-                    {shareToken.disabled ? 'Enable Share Link' : 'Disable Share Link'}
+                    {shareTokenLoading
+                      ? 'Working…'
+                      : shareToken.disabled
+                        ? 'Enable Share Link'
+                        : 'Disable Share Link'}
                   </Button>
                 </div>
               </>
@@ -260,11 +308,10 @@ export function GroupEdit() {
                 <Button
                   type="button"
                   className="w-full"
-                  onClick={() => {
-                    enableShareToken(currentGroup.id);
-                  }}
+                  onClick={handleEnableShareToken}
+                  disabled={shareTokenLoading}
                 >
-                  Enable Share Link
+                  {shareTokenLoading ? 'Working…' : 'Enable Share Link'}
                 </Button>
               </div>
             )}

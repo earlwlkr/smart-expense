@@ -5,6 +5,7 @@ import { ExpenseSplit } from '@/components/Expenses/ExpenseSplit';
 import { Expenses } from '@/components/Expenses/Expenses';
 import { GroupEditModal } from '@/components/GroupEdit/GroupEditModal';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Icons } from '@/components/ui/icons';
 import { useCategories } from '@/lib/contexts/CategoriesContext';
 import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
 import { useGroups } from '@/lib/contexts/GroupsContext';
@@ -17,50 +18,74 @@ import { getInviteToken } from '@/lib/db/tokens';
 import { getShareToken } from '@/lib/db/shareTokens';
 
 export function GroupDetail({ groupId }: { groupId: string }) {
-  const { currentGroup, getGroupDetail } = useGroups();
+  const { currentGroup, getGroupDetail, loading: groupsLoading } = useGroups();
 
   const { fetchCategories } = useCategories();
-  const { set: setExpenses } = useExpensesStore();
+  const { set: setExpenses, setLoading: setExpensesLoading } = useExpensesStore();
   const { updateMembers } = useMembers();
   const { setInviteToken } = useTokens();
   const { setShareToken } = useShareTokens();
 
   useEffect(() => {
-    const initExpenses = async () => {
-      const expenses = await getExpenses(groupId);
-      setExpenses(expenses);
-    };
-    const initMembers = async () => {
-      const members = await getMembers(groupId);
-      updateMembers(members);
-    };
-    const initInviteToken = async () => {
-      const token = await getInviteToken(groupId);
-      setInviteToken(token);
-    };
-    const initShareToken = async () => {
-      const token = await getShareToken(groupId);
-      setShareToken(token);
+    let isActive = true;
+
+    const loadGroupData = async () => {
+      await getGroupDetail(groupId);
+      await fetchCategories(groupId);
+
+      setExpensesLoading(true);
+      try {
+        const [expenses, members, inviteToken, shareToken] = await Promise.all([
+          getExpenses(groupId),
+          getMembers(groupId),
+          getInviteToken(groupId),
+          getShareToken(groupId),
+        ]);
+
+        if (!isActive) return;
+
+        setExpenses(expenses);
+        updateMembers(members);
+        setInviteToken(inviteToken);
+        setShareToken(shareToken);
+      } finally {
+        if (isActive) {
+          setExpensesLoading(false);
+        }
+      }
     };
 
-    getGroupDetail(groupId);
-    fetchCategories(groupId);
-    initExpenses();
-    initMembers();
-    initInviteToken();
-    initShareToken();
+    void loadGroupData();
+
+    return () => {
+      isActive = false;
+    };
   }, [
     groupId,
     getGroupDetail,
     fetchCategories,
     setExpenses,
+    setExpensesLoading,
     updateMembers,
     setInviteToken,
     setShareToken,
   ]);
 
+  if (groupsLoading && !currentGroup) {
+    return (
+      <div className="flex items-center justify-center gap-2 py-10 text-sm text-muted-foreground">
+        <Icons.spinner className="h-4 w-4 animate-spin" />
+        Loading group...
+      </div>
+    );
+  }
+
   if (!currentGroup) {
-    return <div>No group selected</div>;
+    return (
+      <div className="py-10 text-center text-sm text-muted-foreground">
+        No group selected.
+      </div>
+    );
   }
 
   return (

@@ -10,9 +10,10 @@ import {
 import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
 import { useMembers } from '@/lib/contexts/MembersContext';
 import { calculateSplitDetails } from '@/lib/utils/expenseSplit';
+import { Icons } from '@/components/ui/icons';
 
 export function ExpenseSplit() {
-  const { items: expenses } = useExpensesStore();
+  const { items: expenses, loading } = useExpensesStore();
   const { members } = useMembers();
   const splitDetails = calculateSplitDetails(expenses);
 
@@ -34,6 +35,23 @@ export function ExpenseSplit() {
       };
     });
   }, [splitDetails, members]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center gap-2 py-10 text-sm text-muted-foreground">
+        <Icons.spinner className="h-4 w-4 animate-spin" />
+        Calculating split...
+      </div>
+    );
+  }
+
+  if (groups.length === 0) {
+    return (
+      <div className="py-10 text-center text-sm text-muted-foreground">
+        No expenses yet to calculate a split.
+      </div>
+    );
+  }
 
   return (
     <div>

@@ -14,9 +14,10 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { addCategories } from '@/lib/db/categories';
-import { addGroup } from '@/lib/db/groups';
 import { addMember } from '@/lib/db/members';
 import { getProfile } from '@/lib/db/profiles';
+import { useGroups } from '@/lib/contexts/GroupsContext';
+import { Icons } from '@/components/ui/icons';
 import {
   Form,
   FormControl,
@@ -39,7 +40,8 @@ export function CreateGroup() {
     lastName: string;
   } | null>(null);
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { addGroup: createGroup } = useGroups();
 
   const form = useForm<AddExpenseFormValues>({
     resolver: zodResolver(createGroupFormSchema),
@@ -67,25 +69,35 @@ export function CreateGroup() {
       return;
     }
 
-    setLoading(true);
-    const created = await addGroup(values, profile.id);
-    setLoading(false);
-    if (!created) return null;
-    await addMember(
-      created.id,
-      { name: profile.firstName || 'user' },
-      profile.id,
-    );
-    addCategories(created.id, ['Eats', 'Drinks']);
-    setOpen(false);
-    // fetchData();
-    router.push(`/groups/${created.id}`);
+    setIsSubmitting(true);
+    try {
+      const created = await createGroup({ name: values.name }, profile.id);
+      if (!created) {
+        return;
+      }
+      await Promise.all([
+        addMember(
+          created.id,
+          { name: profile.firstName || 'user' },
+          profile.id,
+        ),
+        addCategories(created.id, ['Eats', 'Drinks']),
+      ]);
+      setOpen(false);
+      router.push(`/groups/${created.id}`);
+    } catch (error) {
+      console.error('Failed to create group', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Create Group</Button>
+        <Button variant="outline" disabled={isSubmitting}>
+          Create Group
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -109,7 +121,11 @@ export function CreateGroup() {
                 <FormItem className="grid grid-cols-4 items-center gap-4 space-y-0">
                   <FormLabel className="text-right">Name</FormLabel>
                   <FormControl className="col-span-3">
-                    <Input placeholder="description" {...field} />
+                    <Input
+                      placeholder="description"
+                      disabled={isSubmitting}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -117,8 +133,11 @@ export function CreateGroup() {
             />
 
             <DialogFooter>
-              <Button type="submit" disabled={loading}>
-                {loading ? 'Saving...' : 'Save changes'}
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting && (
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {isSubmitting ? 'Creating...' : 'Save changes'}
               </Button>
             </DialogFooter>
           </form>

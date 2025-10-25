@@ -10,6 +10,7 @@ type ShareTokensContextType = {
   setShareToken: (token: ShareToken | null) => void;
   enableShareToken: (groupId: string) => Promise<void>;
   disableShareToken: (groupId: string) => Promise<void>;
+  isLoading: boolean;
 };
 
 const ShareTokensContext =
@@ -19,19 +20,30 @@ export const ShareTokensProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [shareToken, setShareTokenState] = useState<ShareToken | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const setShareToken = useCallback((token: ShareToken | null) => {
     setShareTokenState(token);
   }, []);
 
   const enableShareToken = useCallback(async (groupId: string) => {
-    const token = await enableShareTokenDb(groupId);
-    setShareTokenState(token);
+    setIsLoading(true);
+    try {
+      const token = await enableShareTokenDb(groupId);
+      setShareTokenState(token);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   const disableShareToken = useCallback(async (groupId: string) => {
-    const token = await disableShareTokenDb(groupId);
-    setShareTokenState(token);
+    setIsLoading(true);
+    try {
+      const token = await disableShareTokenDb(groupId);
+      setShareTokenState(token);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   return (
@@ -41,6 +53,7 @@ export const ShareTokensProvider: React.FC<{ children: React.ReactNode }> = ({
         setShareToken,
         enableShareToken,
         disableShareToken,
+        isLoading,
       }}
     >
       {children}
