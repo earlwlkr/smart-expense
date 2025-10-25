@@ -5,14 +5,13 @@ import React, {
   useContext,
   useState,
   useCallback,
-  useEffect,
 } from "react";
 import { Group } from "@/lib/types";
 import * as db from "@/lib/db/groups";
 
 type GroupsContextType = {
   groups: Group[];
-  currentGroup?: Group;
+  currentGroup: Group | null;
   loading: boolean;
   fetchGroups: () => Promise<void>;
   getGroupDetail: (groupId: string) => Promise<Group | null>;
@@ -28,31 +27,48 @@ export const GroupsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [groups, setGroups] = useState<Group[]>([]);
-  const [currentGroup, setCurrentGroup] = useState<Group>();
+  const [currentGroup, setCurrentGroup] = useState<Group | null>(null);
   const [loading, setLoading] = useState(false);
 
   const fetchGroups = useCallback(async () => {
     setLoading(true);
-    const data = await db.getGroups();
-    setGroups(data);
-    setLoading(false);
+    try {
+      const data = await db.getGroups();
+      setGroups(data);
+    } catch (error) {
+      console.error("Failed to load groups", error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const getGroupDetail = useCallback(async (groupId: string) => {
     setLoading(true);
-    const detail = await db.getGroupDetail(groupId);
-    setLoading(false);
-    setCurrentGroup(detail);
-    return detail || null;
+    try {
+      const detail = await db.getGroupDetail(groupId);
+      setCurrentGroup(detail);
+      return detail || null;
+    } catch (error) {
+      console.error("Failed to load group", error);
+      return null;
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const addGroup = useCallback(
     async (group: Omit<Group, "id" | "created_at">, profileId: string) => {
       setLoading(true);
-      const newGroup = await db.addGroup(group, profileId);
-      if (newGroup) setGroups((prev) => [...prev, newGroup]);
-      setLoading(false);
-      return newGroup;
+      try {
+        const newGroup = await db.addGroup(group, profileId);
+        if (newGroup) setGroups((prev) => [...prev, newGroup]);
+        return newGroup;
+      } catch (error) {
+        console.error("Failed to create group", error);
+        return null;
+      } finally {
+        setLoading(false);
+      }
     },
     []
   );

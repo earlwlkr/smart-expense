@@ -6,9 +6,10 @@ import { useState } from 'react';
 import { AddExpenseButton } from '@/components/AddExpenseButton';
 import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
 import type { Expense } from '@/lib/types';
+import { Icons } from '@/components/ui/icons';
 
 export function Expenses() {
-  const { items: expenses } = useExpensesStore();
+  const { items: expenses, loading } = useExpensesStore();
   const [open, setOpen] = useState(false);
   const [expense, setExpense] = useState<Expense | null>(null);
 
@@ -20,6 +21,7 @@ export function Expenses() {
           setOpen={setOpen}
           expense={expense}
           setExpense={setExpense}
+          disabled={loading}
         />
         <div>
           <strong>Total:</strong>{' '}
@@ -34,48 +36,60 @@ export function Expenses() {
         </div>
       </div>
       <div className="rounded-md border">
-        {expenses.map((expense) => (
-          <div
-            key={expense.id}
-            className="p-4 border-b"
-            onClick={() => {
-              setExpense(expense);
-              setOpen(true);
-            }}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-lg font-medium">{expense.name}</div>
-                <div className="text-sm text-muted-foreground">
-                  {format(new Date(expense.date), 'PP')}
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-lg font-medium">
-                  {new Intl.NumberFormat('vi-VN', {
-                    style: 'currency',
-                    currency: 'VND',
-                  }).format(Number(expense.amount))}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {expense.category?.name}
-                </div>
-              </div>
-            </div>
-            <div className="mt-2 text-sm text-muted-foreground">
-              <div>
-                With:{' '}
-                {expense.participants
-                  .sort((memberA, memberB) =>
-                    memberA.name.localeCompare(memberB.name),
-                  )
-                  .map((p) => p.name)
-                  .join(', ')}
-              </div>
-              <div>By: {expense.handledBy?.name}</div>
-            </div>
+        {loading && (
+          <div className="flex items-center justify-center gap-2 py-10 text-sm text-muted-foreground">
+            <Icons.spinner className="h-4 w-4 animate-spin" />
+            Loading expenses...
           </div>
-        ))}
+        )}
+        {!loading && expenses.length === 0 && (
+          <div className="py-10 text-center text-sm text-muted-foreground">
+            No expenses yet. Add your first one to see it here.
+          </div>
+        )}
+        {!loading &&
+          expenses.map((expense) => (
+            <div
+              key={expense.id}
+              className="cursor-pointer border-b p-4"
+              onClick={() => {
+                setExpense(expense);
+                setOpen(true);
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-lg font-medium">{expense.name}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {format(new Date(expense.date), 'PP')}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-lg font-medium">
+                    {new Intl.NumberFormat('vi-VN', {
+                      style: 'currency',
+                      currency: 'VND',
+                    }).format(Number(expense.amount))}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {expense.category?.name}
+                  </div>
+                </div>
+              </div>
+              <div className="mt-2 text-sm text-muted-foreground">
+                <div>
+                  With:{' '}
+                  {expense.participants
+                    .sort((memberA, memberB) =>
+                      memberA.name.localeCompare(memberB.name),
+                    )
+                    .map((p) => p.name)
+                    .join(', ')}
+                </div>
+                <div>By: {expense.handledBy?.name}</div>
+              </div>
+            </div>
+          ))}
       </div>
     </div>
   );

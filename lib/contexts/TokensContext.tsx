@@ -10,6 +10,7 @@ type TokensContextType = {
   setInviteToken: (token: Token | null) => void;
   enableInviteToken: (groupId: string) => Promise<void>;
   disableInviteToken: (groupId: string) => Promise<void>;
+  isLoading: boolean;
 };
 
 const TokensContext = createContext<TokensContextType | undefined>(undefined);
@@ -18,24 +19,41 @@ export const TokensProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [inviteToken, setInviteTokenState] = useState<Token | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const setInviteToken = useCallback((token: Token | null) => {
     setInviteTokenState(token);
   }, []);
 
   const enableInviteToken = useCallback(async (groupId: string) => {
-    const token = await enableInviteTokenDb(groupId);
-    setInviteTokenState(token);
+    setIsLoading(true);
+    try {
+      const token = await enableInviteTokenDb(groupId);
+      setInviteTokenState(token);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   const disableInviteToken = useCallback(async (groupId: string) => {
-    const token = await disableInviteTokenDb(groupId);
-    setInviteTokenState(token);
+    setIsLoading(true);
+    try {
+      const token = await disableInviteTokenDb(groupId);
+      setInviteTokenState(token);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   return (
     <TokensContext.Provider
-      value={{ inviteToken, setInviteToken, enableInviteToken, disableInviteToken }}
+      value={{
+        inviteToken,
+        setInviteToken,
+        enableInviteToken,
+        disableInviteToken,
+        isLoading,
+      }}
     >
       {children}
     </TokensContext.Provider>

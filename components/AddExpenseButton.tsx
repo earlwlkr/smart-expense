@@ -25,6 +25,7 @@ interface AddExpenseButtonProps {
   setOpen: Dispatch<SetStateAction<boolean>>;
   expense: Expense | null;
   setExpense: Dispatch<SetStateAction<Expense | null>>;
+  disabled?: boolean;
 }
 
 const ExpenseFormWrapper = memo(
@@ -43,6 +44,7 @@ export function AddExpenseButton({
   setOpen,
   expense,
   setExpense,
+  disabled = false,
 }: AddExpenseButtonProps) {
   const isSmallDevice = useMediaQuery('only screen and (max-width : 768px)');
 
@@ -56,7 +58,11 @@ export function AddExpenseButton({
     onOpenChange,
   };
 
-  const triggerButton = <Button variant="outline">Add expense</Button>;
+  const triggerButton = (
+    <Button variant="outline" disabled={disabled}>
+      Add expense
+    </Button>
+  );
 
   if (isSmallDevice) {
     return (

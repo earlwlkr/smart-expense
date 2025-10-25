@@ -25,82 +25,106 @@ export default function AuthForm() {
   const handleSignUp = async () => {
     setAuthMessage(null);
     setLoading(true);
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${location.origin}/auth/callback`,
-      },
-    });
-    setLoading(false);
-    if (error) {
-      setAuthMessage(error.message);
-      return;
-    }
-    setAuthMessage('Check your email for verification request!');
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${location.origin}/auth/callback`,
+        },
+      });
+      if (error) {
+        setAuthMessage(error.message);
+        return;
+      }
+      setAuthMessage('Check your email for verification request!');
 
-    const { data: updateData, error: updateError } = await supabase
-      .from('profiles')
-      .update({ first_name: firstName })
-      .eq('id', data.user?.id);
-    console.log('updateData', { updateData, updateError });
-    if (nextUrl) {
-      router.push(nextUrl);
-      return;
+      const { data: updateData, error: updateError } = await supabase
+        .from('profiles')
+        .update({ first_name: firstName })
+        .eq('id', data.user?.id);
+      console.log('updateData', { updateData, updateError });
+      if (nextUrl) {
+        router.push(nextUrl);
+        return;
+      }
+      router.push('/');
+    } catch (error) {
+      console.error('Failed to sign up', error);
+      setAuthMessage('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    router.push('/');
   };
 
   const handleSignIn = async () => {
     setAuthMessage(null);
     setLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    setLoading(false);
-    if (error) {
-      setAuthMessage(error.message);
-      return;
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) {
+        setAuthMessage(error.message);
+        return;
+      }
+      if (nextUrl) {
+        router.push(nextUrl);
+        return;
+      }
+      router.push('/');
+    } catch (error) {
+      console.error('Failed to sign in', error);
+      setAuthMessage('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    if (nextUrl) {
-      router.push(nextUrl);
-      return;
-    }
-    router.push('/');
   };
 
   const handleSignInAnonymously = async () => {
     setAuthMessage(null);
     setLoading(true);
-    const { data, error } = await supabase.auth.signInAnonymously();
-    setLoading(false);
-    if (error) {
-      setAuthMessage(error.message);
-      return;
+    try {
+      const { data, error } = await supabase.auth.signInAnonymously();
+      if (error) {
+        setAuthMessage(error.message);
+        return;
+      }
+      if (nextUrl) {
+        router.push(nextUrl);
+        return;
+      }
+      router.push('/');
+    } catch (error) {
+      console.error('Failed to sign in anonymously', error);
+      setAuthMessage('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    if (nextUrl) {
-      router.push(nextUrl);
-      return;
-    }
-    router.push('/');
   };
 
   const handleSignInWithFacebook = async () => {
     setAuthMessage(null);
     setLoading(true);
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'facebook',
-      options: {
-        redirectTo: 'https://smart-expense-one.vercel.app/auth/callback',
-      },
-    });
-    setLoading(false);
-    if (error) {
-      setAuthMessage(error.message);
-      return;
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'facebook',
+        options: {
+          redirectTo: 'https://smart-expense-one.vercel.app/auth/callback',
+        },
+      });
+      if (error) {
+        setAuthMessage(error.message);
+        return;
+      }
+      router.refresh();
+    } catch (error) {
+      console.error('Failed to sign in with Facebook', error);
+      setAuthMessage('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    router.refresh();
   };
 
   const handleSignOut = async () => {
