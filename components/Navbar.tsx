@@ -10,6 +10,7 @@ import { getProfile } from '@/lib/db/profiles';
 import { createClient } from '@/lib/supabase/client';
 import type { Profile } from '@/lib/types';
 import { Button } from './ui/button';
+import { UpdateProfileNameDialog } from './UpdateProfileNameDialog';
 
 export default function Navbar() {
   const router = useRouter();
@@ -30,10 +31,8 @@ export default function Navbar() {
       } else {
         setUser(null);
       }
-      const profile = await getProfile();
-      if (profile) {
-        setProfile(profile);
-      }
+      const nextProfile = await getProfile();
+      setProfile(nextProfile ?? undefined);
     };
 
     getData();
@@ -62,12 +61,16 @@ export default function Navbar() {
         </h1>
       )}
       {user && !isSharePage && (
-        <div className="py-2 text-right">
+        <div className="flex items-center justify-end gap-2 py-2 text-right">
+          <UpdateProfileNameDialog
+            profile={profile}
+            onUpdated={(updatedProfile) => setProfile(updatedProfile)}
+          />
           <Button
             type="button"
             variant="link"
             onClick={handleSignOut}
-            className="inline pt-1 h-6"
+            className="inline h-6 px-0 pt-1"
           >
             Sign out
           </Button>
