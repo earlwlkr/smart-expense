@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { ExpenseSplit } from '@/components/Expenses/ExpenseSplit';
 import { Expenses } from '@/components/Expenses/Expenses';
 import { GroupEditModal } from '@/components/GroupEdit/GroupEditModal';
+import { GroupStats } from '@/components/Groups/GroupStats';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Icons } from '@/components/ui/icons';
 import { useCategories } from '@/lib/contexts/CategoriesContext';
@@ -94,15 +95,19 @@ export function GroupDetail({ groupId }: { groupId: string }) {
         <GroupEditModal />
       </div>
       <Tabs defaultValue="expenses" className="mt-2">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="expenses">Expenses</TabsTrigger>
           <TabsTrigger value="split">Split</TabsTrigger>
+          <TabsTrigger value="stats">Stats</TabsTrigger>
         </TabsList>
         <TabsContent value="expenses">
           <Expenses />
         </TabsContent>
         <TabsContent value="split">
           <ExpenseSplit />
+        </TabsContent>
+        <TabsContent value="stats">
+          <GroupStats />
         </TabsContent>
       </Tabs>
     </div>
