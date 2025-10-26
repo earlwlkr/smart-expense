@@ -1,5 +1,5 @@
 import { PageLoading } from '@/components/ui/page-loading';
 
 export default function Loading() {
-  return <PageLoading message="Loading group..." />;
+  return <PageLoading message="Loading application..." />;
 }

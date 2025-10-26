@@ -1,12 +1,11 @@
-import { Info, Terminal } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useId } from 'react';
 import { Button } from '@/components/ui/button';
-import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { createClient } from '@/lib/supabase/client';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { Alert, AlertDescription } from './ui/alert';
 
 export default function AuthForm() {
   const router = useRouter();
@@ -17,6 +16,9 @@ export default function AuthForm() {
   const [firstName, setFirstName] = useState('');
   const [authMessage, setAuthMessage] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
+  const firstNameId = useId();
+  const emailId = useId();
+  const passwordId = useId();
 
   // get nextUrl from URL params
   const searchParams = useSearchParams();
@@ -25,7 +27,7 @@ export default function AuthForm() {
   const handleSignUp = async () => {
     setAuthMessage(null);
     setLoading(true);
-    const { data, error } = await supabase.auth.signUp({
+    const { data: _data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -54,7 +56,7 @@ export default function AuthForm() {
   const handleSignIn = async () => {
     setAuthMessage(null);
     setLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data: _data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -68,44 +70,6 @@ export default function AuthForm() {
       return;
     }
     router.push('/');
-  };
-
-  const handleSignInAnonymously = async () => {
-    setAuthMessage(null);
-    setLoading(true);
-    const { data, error } = await supabase.auth.signInAnonymously();
-    setLoading(false);
-    if (error) {
-      setAuthMessage(error.message);
-      return;
-    }
-    if (nextUrl) {
-      router.push(nextUrl);
-      return;
-    }
-    router.push('/');
-  };
-
-  const handleSignInWithFacebook = async () => {
-    setAuthMessage(null);
-    setLoading(true);
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'facebook',
-      options: {
-        redirectTo: 'https://smart-expense-one.vercel.app/auth/callback',
-      },
-    });
-    setLoading(false);
-    if (error) {
-      setAuthMessage(error.message);
-      return;
-    }
-    router.refresh();
-  };
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.refresh();
   };
 
   return (
@@ -125,14 +89,14 @@ export default function AuthForm() {
         <form className="flex flex-col space-y-4">
           {signup && (
             <Input
-              id="firstName"
+              id={firstNameId}
               placeholder="first name"
               disabled={isLoading}
               onChange={(event) => setFirstName(event.target.value)}
             />
           )}
           <Input
-            id="email"
+            id={emailId}
             placeholder="email"
             type="email"
             autoCapitalize="none"
@@ -142,7 +106,7 @@ export default function AuthForm() {
             onChange={(event) => setEmail(event.target.value)}
           />
           <Input
-            id="password"
+            id={passwordId}
             placeholder="password"
             type="password"
             disabled={isLoading}
@@ -154,9 +118,7 @@ export default function AuthForm() {
             disabled={isLoading}
             onClick={signup ? handleSignUp : handleSignIn}
           >
-            {isLoading && (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-            )}
+            {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
             {!signup ? 'Login' : 'Sign up'}
           </Button>
           {authMessage && (

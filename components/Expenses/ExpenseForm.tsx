@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon, Trash } from 'lucide-react'; // Import the trash icon
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { CurrencyInput } from '@/components/CurrencyInput';
@@ -11,6 +11,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { DialogFooter } from '@/components/ui/dialog';
 import { FancyMultiSelect } from '@/components/ui/fancy-multi-select';
 import { Input } from '@/components/ui/input';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import {
   Popover,
   PopoverContent,
@@ -50,7 +51,7 @@ const addExpenseFormSchema = z.object({
     const floatValue = parseFloat(
       significantValue + '.' + decimalValue.slice(0, 2),
     );
-    if (isNaN(floatValue) === false) {
+    if (Number.isNaN(floatValue) === false) {
       return String(floatValue);
     }
     return '0';
@@ -76,6 +77,8 @@ export function ExpenseForm({
   const { update: updateExpense } = useExpensesStore();
   const { remove: removeExpense } = useExpensesStore();
   const { currentGroup } = useGroups();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const form = useForm<AddExpenseFormValues>({
     resolver: zodResolver(addExpenseFormSchema),
@@ -89,28 +92,35 @@ export function ExpenseForm({
     },
   });
 
-  function onSubmit(values: AddExpenseFormValues) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-    if (expense) {
-      updateExpense(expense.id, {
-        ...values,
-        id: expense.id,
-        amount: String(values.amount),
-        category: categories.find((item) => item.id === values.category),
-        handledBy: members.find((item) => item.id === values.handledBy),
-      });
-    } else if (currentGroup) {
-      addExpense(currentGroup.id, {
-        id: Date.now().toString(),
-        ...values,
-        amount: String(values.amount),
-        category: categories.find((item) => item.id === values.category),
-        handledBy: members.find((item) => item.id === values.handledBy),
-      });
+  async function onSubmit(values: AddExpenseFormValues) {
+    setIsSubmitting(true);
+    try {
+      // Do something with the form values.
+      // ✅ This will be type-safe and validated.
+      console.log(values);
+      if (expense) {
+        await updateExpense(expense.id, {
+          ...values,
+          id: expense.id,
+          amount: String(values.amount),
+          category: categories.find((item) => item.id === values.category),
+          handledBy: members.find((item) => item.id === values.handledBy),
+        });
+      } else if (currentGroup) {
+        await addExpense(currentGroup.id, {
+          id: Date.now().toString(),
+          ...values,
+          amount: String(values.amount),
+          category: categories.find((item) => item.id === values.category),
+          handledBy: members.find((item) => item.id === values.handledBy),
+        });
+      }
+      onClose();
+    } catch (error) {
+      console.error('Error submitting expense:', error);
+    } finally {
+      setIsSubmitting(false);
     }
-    onClose();
   }
 
   return (
@@ -288,18 +298,38 @@ export function ExpenseForm({
             <Button
               variant="destructive"
               className="flex items-center"
-              onClick={() => {
-                // Add your delete logic here
-                console.log('Delete expense:', expense.id);
-                removeExpense(expense.id);
-                onClose();
+              disabled={isDeleting || isSubmitting}
+              onClick={async () => {
+                setIsDeleting(true);
+                try {
+                  console.log('Delete expense:', expense.id);
+                  await removeExpense(expense.id);
+                  onClose();
+                } catch (error) {
+                  console.error('Error deleting expense:', error);
+                } finally {
+                  setIsDeleting(false);
+                }
               }}
             >
-              <Trash /> {/* Trash icon */}
-              <span>Delete</span>
+              {isDeleting ? (
+                <LoadingSpinner size="sm" className="mr-2" />
+              ) : (
+                <Trash className="mr-2 h-4 w-4" />
+              )}
+              <span>{isDeleting ? 'Deleting...' : 'Delete'}</span>
             </Button>
           )}
-          <Button type="submit">Save changes</Button>
+          <Button type="submit" disabled={isSubmitting || isDeleting}>
+            {isSubmitting ? (
+              <>
+                <LoadingSpinner size="sm" className="mr-2" />
+                Saving...
+              </>
+            ) : (
+              'Save changes'
+            )}
+          </Button>
         </DialogFooter>
       </form>
     </Form>

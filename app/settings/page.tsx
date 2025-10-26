@@ -13,6 +13,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { PageLoading } from '@/components/ui/page-loading';
 import { getProfile, updateProfile } from '@/lib/db/profiles';
 import { createClient } from '@/lib/supabase/client';
 import type { Profile } from '@/lib/types';
@@ -85,10 +87,7 @@ export default function SettingsPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
-            <div className="h-32 bg-gray-200 rounded"></div>
-          </div>
+          <PageLoading message="Loading your profile..." />
         </div>
       </div>
     );
@@ -168,7 +167,7 @@ export default function SettingsPage() {
               >
                 {isSaving ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <LoadingSpinner size="sm" className="mr-2" />
                     Saving...
                   </>
                 ) : (

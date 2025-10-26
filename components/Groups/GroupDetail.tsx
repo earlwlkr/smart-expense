@@ -15,9 +15,10 @@ import { getExpenses } from '@/lib/db/expenses';
 import { getMembers } from '@/lib/db/members';
 import { getInviteToken } from '@/lib/db/tokens';
 import { getShareToken } from '@/lib/db/shareTokens';
+import { ComponentLoading } from '@/components/ui/component-loading';
 
 export function GroupDetail({ groupId }: { groupId: string }) {
-  const { currentGroup, getGroupDetail } = useGroups();
+  const { currentGroup, getGroupDetail, loading } = useGroups();
 
   const { fetchCategories } = useCategories();
   const { set: setExpenses } = useExpensesStore();
@@ -59,27 +60,34 @@ export function GroupDetail({ groupId }: { groupId: string }) {
     setShareToken,
   ]);
 
-  if (!currentGroup) {
-    return <div>No group selected</div>;
-  }
-
   return (
-    <div className="">
-      <div className="flex justify-center mb-2">
-        <GroupEditModal />
-      </div>
-      <Tabs defaultValue="expenses" className="mt-2">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="expenses">Expenses</TabsTrigger>
-          <TabsTrigger value="split">Split</TabsTrigger>
-        </TabsList>
-        <TabsContent value="expenses">
-          <Expenses />
-        </TabsContent>
-        <TabsContent value="split">
-          <ExpenseSplit />
-        </TabsContent>
-      </Tabs>
-    </div>
+    <ComponentLoading
+      isLoading={loading}
+      loadingMessage="Loading group details..."
+    >
+      {!currentGroup ? (
+        <div className="text-center text-muted-foreground py-8">
+          No group selected
+        </div>
+      ) : (
+        <div className="">
+          <div className="flex justify-center mb-2">
+            <GroupEditModal />
+          </div>
+          <Tabs defaultValue="expenses" className="mt-2">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="expenses">Expenses</TabsTrigger>
+              <TabsTrigger value="split">Split</TabsTrigger>
+            </TabsList>
+            <TabsContent value="expenses">
+              <Expenses />
+            </TabsContent>
+            <TabsContent value="split">
+              <ExpenseSplit />
+            </TabsContent>
+          </Tabs>
+        </div>
+      )}
+    </ComponentLoading>
   );
 }

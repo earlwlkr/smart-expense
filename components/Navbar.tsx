@@ -18,6 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
+import { LoadingSpinner } from './ui/loading-spinner';
 
 export default function Navbar() {
   const router = useRouter();
@@ -25,6 +26,7 @@ export default function Navbar() {
   const supabase = createClient();
   const [user, setUser] = useState<User | null>();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const { currentGroup } = useGroups();
   const isSharePage = pathname.startsWith('/share/');
 
@@ -50,8 +52,15 @@ export default function Navbar() {
   }, [supabase.auth]);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push('/login');
+    setIsSigningOut(true);
+    try {
+      await supabase.auth.signOut();
+      router.push('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    } finally {
+      setIsSigningOut(false);
+    }
   };
 
   return (
@@ -96,10 +105,15 @@ export default function Navbar() {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={handleSignOut}
+                disabled={isSigningOut}
                 className="text-red-600"
               >
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign out
+                {isSigningOut ? (
+                  <LoadingSpinner size="sm" className="mr-2" />
+                ) : (
+                  <LogOut className="mr-2 h-4 w-4" />
+                )}
+                {isSigningOut ? 'Signing out...' : 'Sign out'}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

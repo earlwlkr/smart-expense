@@ -13,6 +13,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { addCategories } from '@/lib/db/categories';
 import { addGroup } from '@/lib/db/groups';
 import { addMember } from '@/lib/db/members';
@@ -118,7 +119,14 @@ export function CreateGroup() {
 
             <DialogFooter>
               <Button type="submit" disabled={loading}>
-                {loading ? 'Saving...' : 'Save changes'}
+                {loading ? (
+                  <>
+                    <LoadingSpinner size="sm" className="mr-2" />
+                    Saving...
+                  </>
+                ) : (
+                  'Save changes'
+                )}
               </Button>
             </DialogFooter>
           </form>
