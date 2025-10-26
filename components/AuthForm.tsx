@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { createClient } from '@/lib/supabase/client';
 import { Alert, AlertDescription } from './ui/alert';
+import { Icons } from './ui/icons';
 
 export default function AuthForm() {
   const router = useRouter();
@@ -44,7 +45,7 @@ export default function AuthForm() {
     const { data: updateData, error: updateError } = await supabase
       .from('profiles')
       .update({ first_name: firstName })
-      .eq('id', data.user?.id);
+      .eq('id', _data.user?.id);
     console.log('updateData', { updateData, updateError });
     if (nextUrl) {
       router.push(nextUrl);
@@ -147,7 +148,7 @@ export default function AuthForm() {
           {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}{' '}
           {signup ? 'Login' : 'Sign up'}
         </Button>
-        <Button
+        {/* <Button
           variant="outline"
           type="button"
           disabled={isLoading}
@@ -155,7 +156,7 @@ export default function AuthForm() {
         >
           {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}{' '}
           Sign in anonymously
-        </Button>
+        </Button> */}
         {/* <Button
           variant="outline"
           type="button"
