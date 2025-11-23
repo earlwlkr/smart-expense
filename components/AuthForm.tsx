@@ -1,20 +1,20 @@
-import { Info } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useId } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { createClient } from '@/lib/supabase/client';
-import { Alert, AlertDescription } from './ui/alert';
-import { Icons } from './ui/icons';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { createClient } from "@/lib/supabase/client";
+import { Info } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useId, useState } from "react";
+import { Alert, AlertDescription } from "./ui/alert";
+import { Icons } from "./ui/icons";
 
 export default function AuthForm() {
   const router = useRouter();
   const [signup, setSignUp] = useState(false);
   const supabase = createClient();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
   const [authMessage, setAuthMessage] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
   const firstNameId = useId();
@@ -23,7 +23,7 @@ export default function AuthForm() {
 
   // get nextUrl from URL params
   const searchParams = useSearchParams();
-  const nextUrl = searchParams.get('nextUrl');
+  const nextUrl = searchParams.get("nextUrl");
 
   const handleSignUp = async () => {
     setAuthMessage(null);
@@ -40,18 +40,18 @@ export default function AuthForm() {
       setAuthMessage(error.message);
       return;
     }
-    setAuthMessage('Check your email for verification request!');
+    setAuthMessage("Check your email for verification request!");
 
     const { data: updateData, error: updateError } = await supabase
-      .from('profiles')
+      .from("profiles")
       .update({ first_name: firstName })
-      .eq('id', _data.user?.id);
-    console.log('updateData', { updateData, updateError });
+      .eq("id", _data.user?.id);
+    console.log("updateData", { updateData, updateError });
     if (nextUrl) {
       router.push(nextUrl);
       return;
     }
-    router.push('/');
+    router.push("/");
   };
 
   const handleSignIn = async () => {
@@ -70,15 +70,15 @@ export default function AuthForm() {
       router.push(nextUrl);
       return;
     }
-    router.push('/');
+    router.push("/");
   };
 
   return (
     <>
       <div className="flex flex-col space-y-2 text-center">
         <h1 className="text-2xl font-semibold tracking-tight">
-          {!signup && 'Login'}
-          {signup && 'Create an account'}
+          {!signup && "Login"}
+          {signup && "Create an account"}
         </h1>
         {signup && (
           <p className="text-sm text-muted-foreground">
@@ -120,7 +120,7 @@ export default function AuthForm() {
             onClick={signup ? handleSignUp : handleSignIn}
           >
             {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
-            {!signup ? 'Login' : 'Sign up'}
+            {!signup ? "Login" : "Sign up"}
           </Button>
           {authMessage && (
             <Alert>
@@ -145,8 +145,8 @@ export default function AuthForm() {
           disabled={isLoading}
           onClick={() => setSignUp(!signup)}
         >
-          {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}{' '}
-          {signup ? 'Login' : 'Sign up'}
+          {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}{" "}
+          {signup ? "Login" : "Sign up"}
         </Button>
         {/* <Button
           variant="outline"

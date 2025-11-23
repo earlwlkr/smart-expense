@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import type { User } from '@supabase/auth-js';
-import { ChevronLeft, Settings, LogOut, User as UserIcon } from 'lucide-react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useGroups } from '@/lib/contexts/GroupsContext';
-import { getProfile } from '@/lib/db/profiles';
-import { createClient } from '@/lib/supabase/client';
-import type { Profile } from '@/lib/types';
-import { Button } from './ui/button';
+import { useGroups } from "@/lib/contexts/GroupsContext";
+import { getProfile } from "@/lib/db/profiles";
+import { createClient } from "@/lib/supabase/client";
+import type { Profile } from "@/lib/types";
+import type { User } from "@supabase/supabase-js";
+import { ChevronLeft, LogOut, Settings, User as UserIcon } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,8 +17,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu';
-import { LoadingSpinner } from './ui/loading-spinner';
+} from "./ui/dropdown-menu";
+import { LoadingSpinner } from "./ui/loading-spinner";
 
 export default function Navbar() {
   const router = useRouter();
@@ -28,7 +28,7 @@ export default function Navbar() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const { currentGroup } = useGroups();
-  const isSharePage = pathname.startsWith('/share/');
+  const isSharePage = pathname.startsWith("/share/");
 
   useEffect(() => {
     const getData = async () => {
@@ -55,9 +55,9 @@ export default function Navbar() {
     setIsSigningOut(true);
     try {
       await supabase.auth.signOut();
-      router.push('/login');
+      router.push("/login");
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error("Error signing out:", error);
     } finally {
       setIsSigningOut(false);
     }
@@ -66,7 +66,7 @@ export default function Navbar() {
   return (
     <div className="flex items-center justify-between">
       <div className="flex-1">
-        {pathname.startsWith('/groups/') && (
+        {pathname.startsWith("/groups/") && (
           <Link href="/">
             <Button type="button" variant="link">
               <ChevronLeft />
@@ -77,7 +77,7 @@ export default function Navbar() {
       </div>
       {user && !isSharePage && (
         <h1 className="font-semibold text-center md:text-2xl flex-1">
-          {currentGroup?.name || 'Expenses'}
+          {currentGroup?.name || "Expenses"}
         </h1>
       )}
       {user && !isSharePage && (
@@ -92,8 +92,8 @@ export default function Navbar() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>
                 {profile
-                  ? `${profile.firstName} ${profile.lastName || ''}`.trim()
-                  : 'My Account'}
+                  ? `${profile.firstName} ${profile.lastName || ""}`.trim()
+                  : "My Account"}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
@@ -113,7 +113,7 @@ export default function Navbar() {
                 ) : (
                   <LogOut className="mr-2 h-4 w-4" />
                 )}
-                {isSigningOut ? 'Signing out...' : 'Sign out'}
+                {isSigningOut ? "Signing out..." : "Sign out"}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

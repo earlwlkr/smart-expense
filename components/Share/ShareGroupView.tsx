@@ -1,6 +1,3 @@
-import { Fragment } from 'react';
-import { format } from 'date-fns';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Table,
   TableBody,
@@ -8,9 +5,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import type { Expense, Member } from '@/lib/types';
-import { calculateSplitDetails } from '@/lib/utils/expenseSplit';
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { Expense, Member } from "@/lib/types";
+import { calculateSplitDetails } from "@/lib/utils/expenseSplit";
+import { format } from "date-fns";
+import { Fragment } from "react";
 
 type ShareGroupViewProps = {
   groupName: string;
@@ -38,14 +38,14 @@ export function ShareGroupView({
           const toMember = members.find((member) => member.id === toId);
           return {
             id: `${fromId}-${toId}`,
-            to: toMember?.name || '',
+            to: toMember?.name || "",
             amount,
           };
         });
 
       return {
         id: fromId,
-        from: fromMember?.name || '',
+        from: fromMember?.name || "",
         items,
       };
     })
@@ -60,10 +60,10 @@ export function ShareGroupView({
           group.
         </p>
         <p className="text-sm text-muted-foreground">
-          Total expenses:{' '}
-          {new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
+          Total expenses:{" "}
+          {new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
           }).format(totalAmount)}
         </p>
       </header>
@@ -93,14 +93,14 @@ export function ShareGroupView({
                     <div>
                       <p className="text-lg font-medium">{expense.name}</p>
                       <p className="text-sm text-muted-foreground">
-                        {format(new Date(expense.date), 'PP')}
+                        {format(new Date(expense.date), "PP")}
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="text-lg font-semibold">
-                        {new Intl.NumberFormat('vi-VN', {
-                          style: 'currency',
-                          currency: 'VND',
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
                         }).format(Number(expense.amount))}
                       </p>
                       {expense.category?.name ? (
@@ -112,13 +112,13 @@ export function ShareGroupView({
                   </div>
                   <div className="flex flex-col gap-1 text-sm text-muted-foreground">
                     <p>
-                      With:{' '}
+                      With:{" "}
                       {expense.participants
                         .map((participant) => participant.name)
                         .sort((a, b) => a.localeCompare(b))
-                        .join(', ')}
+                        .join(", ")}
                     </p>
-                    <p>Paid by: {expense.handledBy?.name || 'Not specified'}</p>
+                    <p>Paid by: {expense.handledBy?.name || "Not specified"}</p>
                   </div>
                 </div>
               ))
@@ -162,9 +162,9 @@ export function ShareGroupView({
                         )}
                         <TableCell>{item.to}</TableCell>
                         <TableCell className="text-right">
-                          {new Intl.NumberFormat('vi-VN', {
-                            style: 'currency',
-                            currency: 'VND',
+                          {new Intl.NumberFormat("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
                           }).format(item.amount)}
                         </TableCell>
                       </TableRow>

@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import { Member } from '../types';
+import type React from "react";
+import { createContext, useCallback, useContext, useState } from "react";
+import type { Member } from "../types";
 
 type MembersContextType = {
   members: Member[];
@@ -26,6 +27,6 @@ export const MembersProvider: React.FC<{ children: React.ReactNode }> = ({
 
 export const useMembers = () => {
   const ctx = useContext(MembersContext);
-  if (!ctx) throw new Error('useMembers must be used within a MembersProvider');
+  if (!ctx) throw new Error("useMembers must be used within a MembersProvider");
   return ctx;
 };

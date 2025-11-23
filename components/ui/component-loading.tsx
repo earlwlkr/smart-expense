@@ -1,10 +1,10 @@
-import { LoadingSpinner } from './loading-spinner';
+import { LoadingSpinner } from "./loading-spinner";
 
 interface ComponentLoadingProps {
   isLoading: boolean;
   children: React.ReactNode;
   loadingMessage?: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   className?: string;
 }
 
@@ -12,8 +12,8 @@ export function ComponentLoading({
   isLoading,
   children,
   loadingMessage,
-  size = 'sm',
-  className = '',
+  size = "sm",
+  className = "",
 }: ComponentLoadingProps) {
   if (isLoading) {
     return (

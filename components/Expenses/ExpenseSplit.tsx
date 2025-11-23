@@ -1,4 +1,3 @@
-import { Fragment, useMemo } from 'react';
 import {
   Table,
   TableBody,
@@ -6,10 +5,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
-import { useMembers } from '@/lib/contexts/MembersContext';
-import { calculateSplitDetails } from '@/lib/utils/expenseSplit';
+} from "@/components/ui/table";
+import { useExpensesStore } from "@/lib/contexts/ExpensesContext";
+import { useMembers } from "@/lib/contexts/MembersContext";
+import { calculateSplitDetails } from "@/lib/utils/expenseSplit";
+import { Fragment, useMemo } from "react";
 
 export function ExpenseSplit() {
   const { items: expenses } = useExpensesStore();
@@ -23,13 +23,13 @@ export function ExpenseSplit() {
         const toMember = members.find((m) => m.id === toId);
         return {
           key: `${fromId}-${toId}`,
-          to: toMember?.name || '',
+          to: toMember?.name || "",
           amount,
         };
       });
       return {
         id: fromId,
-        from: fromMember?.name || '',
+        from: fromMember?.name || "",
         items,
       };
     });
@@ -60,9 +60,9 @@ export function ExpenseSplit() {
                   )}
                   <TableCell>{item.to}</TableCell>
                   <TableCell className="text-right">
-                    {new Intl.NumberFormat('vi-VN', {
-                      style: 'currency',
-                      currency: 'VND',
+                    {new Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
                     }).format(item.amount)}
                   </TableCell>
                 </TableRow>

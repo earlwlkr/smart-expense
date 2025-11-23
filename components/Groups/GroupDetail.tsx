@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { ExpenseSplit } from '@/components/Expenses/ExpenseSplit';
-import { Expenses } from '@/components/Expenses/Expenses';
-import { GroupEditModal } from '@/components/GroupEdit/GroupEditModal';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useCategories } from '@/lib/contexts/CategoriesContext';
-import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
-import { useGroups } from '@/lib/contexts/GroupsContext';
-import { useMembers } from '@/lib/contexts/MembersContext';
-import { useTokens } from '@/lib/contexts/TokensContext';
-import { useShareTokens } from '@/lib/contexts/ShareTokensContext';
-import { getExpenses } from '@/lib/db/expenses';
-import { getMembers } from '@/lib/db/members';
-import { getInviteToken } from '@/lib/db/tokens';
-import { getShareToken } from '@/lib/db/shareTokens';
-import { ComponentLoading } from '@/components/ui/component-loading';
+import { ExpenseSplit } from "@/components/Expenses/ExpenseSplit";
+import { Expenses } from "@/components/Expenses/Expenses";
+import { GroupEditModal } from "@/components/GroupEdit/GroupEditModal";
+import { ComponentLoading } from "@/components/ui/component-loading";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useCategories } from "@/lib/contexts/CategoriesContext";
+import { useExpensesStore } from "@/lib/contexts/ExpensesContext";
+import { useGroups } from "@/lib/contexts/GroupsContext";
+import { useMembers } from "@/lib/contexts/MembersContext";
+import { useShareTokens } from "@/lib/contexts/ShareTokensContext";
+import { useTokens } from "@/lib/contexts/TokensContext";
+import { getExpenses } from "@/lib/db/expenses";
+import { getMembers } from "@/lib/db/members";
+import { getShareToken } from "@/lib/db/shareTokens";
+import { getInviteToken } from "@/lib/db/tokens";
+import { useEffect } from "react";
 
 export function GroupDetail({ groupId }: { groupId: string }) {
   const { currentGroup, getGroupDetail, loading } = useGroups();

@@ -1,5 +1,5 @@
-import { ShareToken } from '@/lib/types';
-import supabase from './init';
+import type { ShareToken } from "@/lib/types";
+import supabase from "./init";
 
 const mapToken = (item: any): ShareToken => ({
   id: item.id.toString(),
@@ -12,10 +12,10 @@ const fetchLatestShareToken = async (
   groupId: string,
 ): Promise<ShareToken | null> => {
   const { data } = await supabase
-    .from('share_tokens')
+    .from("share_tokens")
     .select()
-    .eq('group_id', groupId)
-    .order('created_at', { ascending: false })
+    .eq("group_id", groupId)
+    .order("created_at", { ascending: false })
     .limit(1);
 
   const tokenRow = data?.[0];
@@ -25,13 +25,13 @@ const fetchLatestShareToken = async (
 
 const createShareToken = async (groupId: string): Promise<ShareToken> => {
   const { data, error } = await supabase
-    .from('share_tokens')
+    .from("share_tokens")
     .insert({ group_id: groupId })
     .select()
     .single();
 
   if (!data) {
-    throw new Error(error?.message || 'Failed to create share token');
+    throw new Error(error?.message || "Failed to create share token");
   }
 
   return mapToken(data);
@@ -46,14 +46,14 @@ const setShareTokenDisabled = async (
   disabled: boolean,
 ): Promise<ShareToken> => {
   const { data, error } = await supabase
-    .from('share_tokens')
+    .from("share_tokens")
     .update({ disabled })
-    .eq('id', tokenId)
+    .eq("id", tokenId)
     .select()
     .single();
 
   if (!data) {
-    throw new Error(error?.message || 'Failed to update share token');
+    throw new Error(error?.message || "Failed to update share token");
   }
 
   return mapToken(data);
@@ -63,12 +63,12 @@ export const disableShareToken = async (
   groupId: string,
 ): Promise<ShareToken | null> => {
   const { error } = await supabase
-    .from('share_tokens')
+    .from("share_tokens")
     .update({ disabled: true })
-    .eq('group_id', groupId);
+    .eq("group_id", groupId);
 
   if (error) {
-    throw new Error(error.message || 'Failed to disable share tokens');
+    throw new Error(error.message || "Failed to disable share tokens");
   }
 
   return fetchLatestShareToken(groupId);

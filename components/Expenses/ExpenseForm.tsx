@@ -1,28 +1,28 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { format } from 'date-fns';
-import { Calendar as CalendarIcon, Trash } from 'lucide-react'; // Import the trash icon
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { CurrencyInput } from '@/components/CurrencyInput';
-import { Combobox } from '@/components/Expenses/Combobox';
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import { DialogFooter } from '@/components/ui/dialog';
-import { FancyMultiSelect } from '@/components/ui/fancy-multi-select';
-import { Input } from '@/components/ui/input';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { CurrencyInput } from "@/components/CurrencyInput";
+import { Combobox } from "@/components/Expenses/Combobox";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { DialogFooter } from "@/components/ui/dialog";
+import { FancyMultiSelect } from "@/components/ui/fancy-multi-select";
+import { Input } from "@/components/ui/input";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { useCategories } from '@/lib/contexts/CategoriesContext';
-import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
-import { useGroups } from '@/lib/contexts/GroupsContext'; // <-- updated import
-import { useMembers } from '@/lib/contexts/MembersContext';
-import type { Expense } from '@/lib/types';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/popover";
+import { useCategories } from "@/lib/contexts/CategoriesContext";
+import { useExpensesStore } from "@/lib/contexts/ExpensesContext";
+import { useGroups } from "@/lib/contexts/GroupsContext"; // <-- updated import
+import { useMembers } from "@/lib/contexts/MembersContext";
+import type { Expense } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon, Trash } from "lucide-react"; // Import the trash icon
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import {
   Form,
   FormControl,
@@ -30,7 +30,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../ui/form';
+} from "../ui/form";
 import {
   Select,
   SelectContent,
@@ -38,23 +38,23 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select';
+} from "../ui/select";
 
 const addExpenseFormSchema = z.object({
   name: z
     .string()
-    .min(2, { message: 'Must be more than 2 characters' })
+    .min(2, { message: "Must be more than 2 characters" })
     .max(50),
   amount: z.string().transform((newValue) => {
-    const [formattedWholeValue, decimalValue = '0'] = newValue.split('.');
-    const significantValue = formattedWholeValue.replace(/,/g, '');
-    const floatValue = parseFloat(
-      significantValue + '.' + decimalValue.slice(0, 2),
+    const [formattedWholeValue, decimalValue = "0"] = newValue.split(".");
+    const significantValue = formattedWholeValue.replace(/,/g, "");
+    const floatValue = Number.parseFloat(
+      significantValue + "." + decimalValue.slice(0, 2),
     );
     if (Number.isNaN(floatValue) === false) {
       return String(floatValue);
     }
-    return '0';
+    return "0";
   }),
   // .positive({ message: 'Must be positive' }),
   category: z.string(),
@@ -83,8 +83,8 @@ export function ExpenseForm({
   const form = useForm<AddExpenseFormValues>({
     resolver: zodResolver(addExpenseFormSchema),
     defaultValues: {
-      name: expense?.name || '',
-      amount: expense?.amount ? String(expense.amount) : '',
+      name: expense?.name || "",
+      amount: expense?.amount ? String(expense.amount) : "",
       category: expense?.category?.id || categories[0]?.id,
       handledBy: expense?.handledBy?.id || members[0]?.id,
       participants: expense?.participants || members,
@@ -117,7 +117,7 @@ export function ExpenseForm({
       }
       onClose();
     } catch (error) {
-      console.error('Error submitting expense:', error);
+      console.error("Error submitting expense:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -127,7 +127,7 @@ export function ExpenseForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit, (errors) => {
-          console.log('form errors', errors);
+          console.log("form errors", errors);
         })}
         className="space-y-4 mt-4"
       >
@@ -257,14 +257,14 @@ export function ExpenseForm({
                 <PopoverTrigger asChild>
                   <FormControl className="col-span-3">
                     <Button
-                      variant={'outline'}
+                      variant={"outline"}
                       className={cn(
                         // 'w-[240px] pl-3 text-left font-normal',
-                        !field.value && 'text-muted-foreground',
+                        !field.value && "text-muted-foreground",
                       )}
                     >
                       {field.value ? (
-                        format(field.value, 'PPP')
+                        format(field.value, "PPP")
                       ) : (
                         <span>Pick a date</span>
                       )}
@@ -278,7 +278,7 @@ export function ExpenseForm({
                     selected={field.value}
                     onSelect={field.onChange}
                     disabled={(date) =>
-                      date > new Date() || date < new Date('1900-01-01')
+                      date > new Date() || date < new Date("1900-01-01")
                     }
                     initialFocus
                   />
@@ -291,7 +291,7 @@ export function ExpenseForm({
 
         <DialogFooter
           className={`flex ${
-            expense ? 'sm:justify-between' : 'sm:justify-end'
+            expense ? "sm:justify-between" : "sm:justify-end"
           }`}
         >
           {expense && (
@@ -302,11 +302,11 @@ export function ExpenseForm({
               onClick={async () => {
                 setIsDeleting(true);
                 try {
-                  console.log('Delete expense:', expense.id);
+                  console.log("Delete expense:", expense.id);
                   await removeExpense(expense.id);
                   onClose();
                 } catch (error) {
-                  console.error('Error deleting expense:', error);
+                  console.error("Error deleting expense:", error);
                 } finally {
                   setIsDeleting(false);
                 }
@@ -317,7 +317,7 @@ export function ExpenseForm({
               ) : (
                 <Trash className="mr-2 h-4 w-4" />
               )}
-              <span>{isDeleting ? 'Deleting...' : 'Delete'}</span>
+              <span>{isDeleting ? "Deleting..." : "Delete"}</span>
             </Button>
           )}
           <Button type="submit" disabled={isSubmitting || isDeleting}>
@@ -327,7 +327,7 @@ export function ExpenseForm({
                 Saving...
               </>
             ) : (
-              'Save changes'
+              "Save changes"
             )}
           </Button>
         </DialogFooter>

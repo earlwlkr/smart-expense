@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import { Category } from '@/lib/types';
-import * as db from '@/lib/db/categories';
+import * as db from "@/lib/db/categories";
+import type { Category } from "@/lib/types";
+import type React from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 
 type CategoriesContextType = {
   categories: Category[];
@@ -11,9 +12,13 @@ type CategoriesContextType = {
   removeCategory: (categoryId: string) => Promise<void>;
 };
 
-const CategoriesContext = createContext<CategoriesContextType | undefined>(undefined);
+const CategoriesContext = createContext<CategoriesContextType | undefined>(
+  undefined,
+);
 
-export const CategoriesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const CategoriesProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -24,12 +29,15 @@ export const CategoriesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setLoading(false);
   }, []);
 
-  const addCategories = useCallback(async (groupId: string, names: string[]) => {
-    setLoading(true);
-    await db.addCategories(groupId, names);
-    await fetchCategories(groupId);
-    setLoading(false);
-  }, [fetchCategories]);
+  const addCategories = useCallback(
+    async (groupId: string, names: string[]) => {
+      setLoading(true);
+      await db.addCategories(groupId, names);
+      await fetchCategories(groupId);
+      setLoading(false);
+    },
+    [fetchCategories],
+  );
 
   const removeCategory = useCallback(async (categoryId: string) => {
     setLoading(true);
@@ -41,7 +49,14 @@ export const CategoriesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   return (
     <CategoriesContext.Provider
-      value={{ categories, loading, fetchCategories, addCategories, removeCategory, setCategories }}
+      value={{
+        categories,
+        loading,
+        fetchCategories,
+        addCategories,
+        removeCategory,
+        setCategories,
+      }}
     >
       {children}
     </CategoriesContext.Provider>
@@ -50,6 +65,7 @@ export const CategoriesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
 export const useCategories = () => {
   const ctx = useContext(CategoriesContext);
-  if (!ctx) throw new Error('useCategories must be used within a CategoriesProvider');
+  if (!ctx)
+    throw new Error("useCategories must be used within a CategoriesProvider");
   return ctx;
 };

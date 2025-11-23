@@ -1,13 +1,13 @@
-import { useRef, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useCategories } from '@/lib/contexts/CategoriesContext';
-import { useGroups } from '@/lib/contexts/GroupsContext';
-import { useMembers } from '@/lib/contexts/MembersContext';
-import { useTokens } from '@/lib/contexts/TokensContext';
-import { useShareTokens } from '@/lib/contexts/ShareTokensContext';
-import { addMember, removeMember } from '@/lib/db/members';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useCategories } from "@/lib/contexts/CategoriesContext";
+import { useGroups } from "@/lib/contexts/GroupsContext";
+import { useMembers } from "@/lib/contexts/MembersContext";
+import { useShareTokens } from "@/lib/contexts/ShareTokensContext";
+import { useTokens } from "@/lib/contexts/TokensContext";
+import { addMember, removeMember } from "@/lib/db/members";
+import { useRef, useState } from "react";
 
 export function GroupEdit() {
   const { currentGroup } = useGroups();
@@ -85,7 +85,7 @@ export function GroupEdit() {
                   name: newMemberName,
                 };
                 setTempMembers([...tempMembers, newMember]);
-                newMemberInputRef.current.value = '';
+                newMemberInputRef.current.value = "";
 
                 const added = await addMember(currentGroup.id, {
                   name: newMemberName,
@@ -138,7 +138,7 @@ export function GroupEdit() {
                   name: newCategoryName,
                 };
                 setTempCategories([...tempCategories, newCategory]);
-                newCategoryInputRef.current.value = '';
+                newCategoryInputRef.current.value = "";
 
                 await addCategories(currentGroup.id, [newCategoryName]);
               }}
@@ -176,7 +176,7 @@ export function GroupEdit() {
                   </Button>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Status: {inviteToken.disabled ? 'Disabled' : 'Enabled'}
+                  Status: {inviteToken.disabled ? "Disabled" : "Enabled"}
                 </p>
                 <div className="flex items-center space-x-2 max-w-md">
                   <Button
@@ -191,8 +191,8 @@ export function GroupEdit() {
                     }}
                   >
                     {inviteToken.disabled
-                      ? 'Enable Invite Link'
-                      : 'Disable Invite Link'}
+                      ? "Enable Invite Link"
+                      : "Disable Invite Link"}
                   </Button>
                 </div>
               </>
@@ -237,7 +237,7 @@ export function GroupEdit() {
                   </Button>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Status: {shareToken.disabled ? 'Disabled' : 'Enabled'}
+                  Status: {shareToken.disabled ? "Disabled" : "Enabled"}
                 </p>
                 <div className="flex items-center space-x-2 max-w-md">
                   <Button
@@ -251,7 +251,9 @@ export function GroupEdit() {
                       }
                     }}
                   >
-                    {shareToken.disabled ? 'Enable Share Link' : 'Disable Share Link'}
+                    {shareToken.disabled
+                      ? "Enable Share Link"
+                      : "Disable Share Link"}
                   </Button>
                 </div>
               </>

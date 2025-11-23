@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useEffect,
-} from "react";
-import { Group } from "@/lib/types";
 import * as db from "@/lib/db/groups";
+import type { Group } from "@/lib/types";
+import type React from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 type GroupsContextType = {
   groups: Group[];
@@ -18,7 +19,7 @@ type GroupsContextType = {
   getGroupDetail: (groupId: string) => Promise<Group | null>;
   addGroup: (
     group: Omit<Group, "id" | "created_at">,
-    profileId: string
+    profileId: string,
   ) => Promise<Group | null>;
 };
 
@@ -54,7 +55,7 @@ export const GroupsProvider: React.FC<{ children: React.ReactNode }> = ({
       setLoading(false);
       return newGroup;
     },
-    []
+    [],
   );
 
   return (

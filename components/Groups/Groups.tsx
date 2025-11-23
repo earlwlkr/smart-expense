@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { format } from 'date-fns';
+import { format } from "date-fns";
 
-import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
-import { getGroups } from '@/lib/db/groups';
-import type { Group } from '@/lib/types';
-import { Card, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { ComponentLoading } from '../ui/component-loading';
-import { CreateGroup } from './CreateGroup';
+import { getGroups } from "@/lib/db/groups";
+import type { Group } from "@/lib/types";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { ComponentLoading } from "../ui/component-loading";
+import { CreateGroup } from "./CreateGroup";
 
 export function Groups() {
   const [groups, setGroups] = useState<Group[]>([]);
@@ -20,7 +20,7 @@ export function Groups() {
       const data = await getGroups();
       setGroups(data);
     } catch (error) {
-      console.error('Error fetching groups:', error);
+      console.error("Error fetching groups:", error);
     } finally {
       setIsLoading(false);
     }
@@ -56,7 +56,7 @@ export function Groups() {
                       {item.name}
                     </CardTitle>
                     <CardDescription className="text-sm text-gray-500">
-                      {format(new Date(item.created_at), 'PP')}
+                      {format(new Date(item.created_at), "PP")}
                     </CardDescription>
                   </CardHeader>
                 </Card>

@@ -1,36 +1,36 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useId } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { PageLoading } from '@/components/ui/page-loading';
-import { getProfile, updateProfile } from '@/lib/db/profiles';
-import { createClient } from '@/lib/supabase/client';
-import type { Profile } from '@/lib/types';
-import { ArrowLeft, Check } from 'lucide-react';
-import Link from 'next/link';
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { PageLoading } from "@/components/ui/page-loading";
+import { getProfile, updateProfile } from "@/lib/db/profiles";
+import { createClient } from "@/lib/supabase/client";
+import type { Profile } from "@/lib/types";
+import { ArrowLeft, Check } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useId, useState } from "react";
 
 export default function SettingsPage() {
   const router = useRouter();
   const supabase = createClient();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{
-    type: 'success' | 'error';
+    type: "success" | "error";
     text: string;
   } | null>(null);
   const firstNameId = useId();
@@ -46,8 +46,8 @@ export default function SettingsPage() {
           setLastName(profileData.lastName);
         }
       } catch (error) {
-        console.error('Error loading profile:', error);
-        setMessage({ type: 'error', text: 'Failed to load profile' });
+        console.error("Error loading profile:", error);
+        setMessage({ type: "error", text: "Failed to load profile" });
       } finally {
         setIsLoading(false);
       }
@@ -69,10 +69,10 @@ export default function SettingsPage() {
       });
 
       setProfile(updatedProfile);
-      setMessage({ type: 'success', text: 'Profile updated successfully!' });
+      setMessage({ type: "success", text: "Profile updated successfully!" });
     } catch (error) {
-      console.error('Error updating profile:', error);
-      setMessage({ type: 'error', text: 'Failed to update profile' });
+      console.error("Error updating profile:", error);
+      setMessage({ type: "error", text: "Failed to update profile" });
     } finally {
       setIsSaving(false);
     }
@@ -80,7 +80,7 @@ export default function SettingsPage() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.push('/login');
+    router.push("/login");
   };
 
   if (isLoading) {
@@ -142,16 +142,16 @@ export default function SettingsPage() {
             {message && (
               <Alert
                 className={
-                  message.type === 'success'
-                    ? 'border-green-200 bg-green-50'
-                    : 'border-red-200 bg-red-50'
+                  message.type === "success"
+                    ? "border-green-200 bg-green-50"
+                    : "border-red-200 bg-red-50"
                 }
               >
                 <AlertDescription
                   className={
-                    message.type === 'success'
-                      ? 'text-green-800'
-                      : 'text-red-800'
+                    message.type === "success"
+                      ? "text-green-800"
+                      : "text-red-800"
                   }
                 >
                   {message.text}

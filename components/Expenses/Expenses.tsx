@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { format } from 'date-fns';
-import * as React from 'react';
-import { useState } from 'react';
-import { AddExpenseButton } from '@/components/AddExpenseButton';
-import { useExpensesStore } from '@/lib/contexts/ExpensesContext';
-import type { Expense } from '@/lib/types';
+import { AddExpenseButton } from "@/components/AddExpenseButton";
+import { useExpensesStore } from "@/lib/contexts/ExpensesContext";
+import type { Expense } from "@/lib/types";
+import { format } from "date-fns";
+import * as React from "react";
+import { useState } from "react";
 
 export function Expenses() {
   const { items: expenses } = useExpensesStore();
@@ -22,10 +22,10 @@ export function Expenses() {
           setExpense={setExpense}
         />
         <div>
-          <strong>Total:</strong>{' '}
-          {new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
+          <strong>Total:</strong>{" "}
+          {new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
           }).format(
             expenses.reduce((sum, item) => {
               return sum + Number(item.amount);
@@ -47,14 +47,14 @@ export function Expenses() {
               <div>
                 <div className="text-lg font-medium">{expense.name}</div>
                 <div className="text-sm text-muted-foreground">
-                  {format(new Date(expense.date), 'PP')}
+                  {format(new Date(expense.date), "PP")}
                 </div>
               </div>
               <div className="text-right">
                 <div className="text-lg font-medium">
-                  {new Intl.NumberFormat('vi-VN', {
-                    style: 'currency',
-                    currency: 'VND',
+                  {new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
                   }).format(Number(expense.amount))}
                 </div>
                 <div className="text-sm text-muted-foreground">
@@ -64,13 +64,13 @@ export function Expenses() {
             </div>
             <div className="mt-2 text-sm text-muted-foreground">
               <div>
-                With:{' '}
+                With:{" "}
                 {expense.participants
                   .sort((memberA, memberB) =>
                     memberA.name.localeCompare(memberB.name),
                   )
                   .map((p) => p.name)
-                  .join(', ')}
+                  .join(", ")}
               </div>
               <div>By: {expense.handledBy?.name}</div>
             </div>

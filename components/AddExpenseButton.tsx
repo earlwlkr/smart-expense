@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import { useMediaQuery } from '@uidotdev/usehooks';
-import { type Dispatch, memo, type SetStateAction } from 'react';
-import { ExpenseForm } from '@/components/Expenses/ExpenseForm';
-import { Button } from '@/components/ui/button';
+import { ExpenseForm } from "@/components/Expenses/ExpenseForm";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
-import type { Expense } from '@/lib/types';
+} from "@/components/ui/sheet";
+import type { Expense } from "@/lib/types";
+import { useMediaQuery } from "@uidotdev/usehooks";
+import { type Dispatch, type SetStateAction, memo } from "react";
 
 interface AddExpenseButtonProps {
   open: boolean;
@@ -36,7 +36,7 @@ const ExpenseFormWrapper = memo(
     expense: Expense | null;
   }) => <ExpenseForm onClose={onClose} expense={expense} />,
 );
-ExpenseFormWrapper.displayName = 'ExpenseFormWrapper';
+ExpenseFormWrapper.displayName = "ExpenseFormWrapper";
 
 export function AddExpenseButton({
   open,
@@ -44,9 +44,9 @@ export function AddExpenseButton({
   expense,
   setExpense,
 }: AddExpenseButtonProps) {
-  const isSmallDevice = useMediaQuery('only screen and (max-width : 768px)');
+  const isSmallDevice = useMediaQuery("only screen and (max-width : 768px)");
 
-  const onOpenChange = (open: boolean = false) => {
+  const onOpenChange = (open = false) => {
     setExpense(null);
     setOpen(open);
   };

@@ -1,4 +1,4 @@
-import type { Expense } from '@/lib/types';
+import type { Expense } from "@/lib/types";
 
 export type SplitDetails = Record<string, Record<string, number>>;
 

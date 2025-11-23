@@ -1,11 +1,11 @@
-import { Category } from '../types';
-import supabase from './init';
+import type { Category } from "../types";
+import supabase from "./init";
 
 export const getCategories = async (groupId: string): Promise<Category[]> => {
   const { data, error } = await supabase
-    .from('categories')
+    .from("categories")
     .select()
-    .eq('group_id', groupId);
+    .eq("group_id", groupId);
   return (
     data?.map((item) => ({ id: item.id.toString(), name: item.name })) || []
   );
@@ -13,7 +13,7 @@ export const getCategories = async (groupId: string): Promise<Category[]> => {
 
 export const addCategories = async (groupId: string, categories: string[]) => {
   const { error, data } = await supabase
-    .from('categories')
+    .from("categories")
     .insert(categories.map((name) => ({ name, group_id: groupId })))
     .select();
   return data;
@@ -21,7 +21,7 @@ export const addCategories = async (groupId: string, categories: string[]) => {
 
 export const removeCategory = async (categoryId: string) => {
   const { error } = await supabase
-    .from('categories')
+    .from("categories")
     .delete()
-    .eq('id', categoryId);
+    .eq("id", categoryId);
 };

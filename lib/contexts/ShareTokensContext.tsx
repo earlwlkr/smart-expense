@@ -1,9 +1,10 @@
-import React, { createContext, useCallback, useContext, useState } from 'react';
-import { ShareToken } from '@/lib/types';
 import {
   disableShareToken as disableShareTokenDb,
   enableShareToken as enableShareTokenDb,
-} from '@/lib/db/shareTokens';
+} from "@/lib/db/shareTokens";
+import type { ShareToken } from "@/lib/types";
+import type React from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 
 type ShareTokensContextType = {
   shareToken: ShareToken | null;
@@ -12,8 +13,9 @@ type ShareTokensContextType = {
   disableShareToken: (groupId: string) => Promise<void>;
 };
 
-const ShareTokensContext =
-  createContext<ShareTokensContextType | undefined>(undefined);
+const ShareTokensContext = createContext<ShareTokensContextType | undefined>(
+  undefined,
+);
 
 export const ShareTokensProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -51,7 +53,7 @@ export const ShareTokensProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useShareTokens = () => {
   const ctx = useContext(ShareTokensContext);
   if (!ctx) {
-    throw new Error('useShareTokens must be used within a ShareTokensProvider');
+    throw new Error("useShareTokens must be used within a ShareTokensProvider");
   }
   return ctx;
 };

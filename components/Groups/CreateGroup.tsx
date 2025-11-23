@@ -1,9 +1,4 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,13 +6,18 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { addCategories } from '@/lib/db/categories';
-import { addGroup } from '@/lib/db/groups';
-import { addMember } from '@/lib/db/members';
-import { getProfile } from '@/lib/db/profiles';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { addCategories } from "@/lib/db/categories";
+import { addGroup } from "@/lib/db/groups";
+import { addMember } from "@/lib/db/members";
+import { getProfile } from "@/lib/db/profiles";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import {
   Form,
   FormControl,
@@ -25,7 +25,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../ui/form';
+} from "../ui/form";
 
 const createGroupFormSchema = z.object({
   name: z.string().min(2).max(50),
@@ -45,7 +45,7 @@ export function CreateGroup() {
   const form = useForm<AddExpenseFormValues>({
     resolver: zodResolver(createGroupFormSchema),
     defaultValues: {
-      name: '',
+      name: "",
     },
   });
 
@@ -64,7 +64,7 @@ export function CreateGroup() {
     // ✅ This will be type-safe and validated.
     console.log(values);
     if (!profile) {
-      console.error('Profile not found');
+      console.error("Profile not found");
       return;
     }
 
@@ -74,10 +74,10 @@ export function CreateGroup() {
     if (!created) return null;
     await addMember(
       created.id,
-      { name: profile.firstName || 'user' },
+      { name: profile.firstName || "user" },
       profile.id,
     );
-    addCategories(created.id, ['Eats', 'Drinks']);
+    addCategories(created.id, ["Eats", "Drinks"]);
     setOpen(false);
     // fetchData();
     router.push(`/groups/${created.id}`);
@@ -99,7 +99,7 @@ export function CreateGroup() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit, (errors) => {
-              console.log('form errors', errors);
+              console.log("form errors", errors);
             })}
             className="space-y-4 py-4"
           >
@@ -125,7 +125,7 @@ export function CreateGroup() {
                     Saving...
                   </>
                 ) : (
-                  'Save changes'
+                  "Save changes"
                 )}
               </Button>
             </DialogFooter>

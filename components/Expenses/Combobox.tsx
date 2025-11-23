@@ -1,6 +1,4 @@
-import { Check, ChevronsUpDown } from 'lucide-react';
-import * as React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -8,13 +6,15 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Check, ChevronsUpDown } from "lucide-react";
+import * as React from "react";
 
 export function Combobox({
   options,
@@ -39,7 +39,7 @@ export function Combobox({
         >
           {value
             ? options.find((option) => option.value === value)?.label
-            : 'Select...'}
+            : "Select..."}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -59,14 +59,14 @@ export function Combobox({
                     );
                     setValue(selectedItem?.value);
                     setOpen(false);
-                    onChange?.(selectedItem?.value || '');
+                    onChange?.(selectedItem?.value || "");
                   }}
                 >
                   {option.label}
                   <Check
                     className={cn(
-                      'ml-auto',
-                      value === option.value ? 'opacity-100' : 'opacity-0',
+                      "ml-auto",
+                      value === option.value ? "opacity-100" : "opacity-0",
                     )}
                   />
                 </CommandItem>

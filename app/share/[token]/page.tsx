@@ -1,8 +1,8 @@
-import { cookies } from 'next/headers';
-import { notFound } from 'next/navigation';
-import { ShareGroupView } from '@/components/Share/ShareGroupView';
-import { createClient } from '@/lib/supabase/server';
-import type { Expense, Member } from '@/lib/types';
+import { ShareGroupView } from "@/components/Share/ShareGroupView";
+import { createClient } from "@/lib/supabase/server";
+import type { Expense, Member } from "@/lib/types";
+import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
 
 type SharePageParams = {
   token: string;
@@ -48,7 +48,7 @@ export default async function SharePage({
   const supabase = createClient(cookieStore);
 
   const { data: tokenRow } = await supabase
-    .from('share_tokens')
+    .from("share_tokens")
     .select(
       `
         id,
@@ -60,7 +60,7 @@ export default async function SharePage({
         )
       `,
     )
-    .eq('id', token)
+    .eq("id", token)
     .single();
 
   const shareToken = tokenRow as ShareTokenRow | null;
@@ -74,16 +74,16 @@ export default async function SharePage({
   }
 
   const groupId = shareToken.group_id;
-  const groupName = shareToken.groups?.name || 'Shared group';
+  const groupName = shareToken.groups?.name || "Shared group";
 
   const { data: membersData } = await supabase
-    .from('members')
-    .select('id, name')
-    .eq('group_id', groupId)
-    .order('name');
+    .from("members")
+    .select("id, name")
+    .eq("group_id", groupId)
+    .order("name");
 
   const { data: expensesData } = await supabase
-    .from('expenses')
+    .from("expenses")
     .select(
       `
         id,
@@ -100,14 +100,14 @@ export default async function SharePage({
         )
       `,
     )
-    .eq('group_id', groupId)
-    .order('date');
+    .eq("group_id", groupId)
+    .order("date");
 
   const expenseIds = expensesData?.map((expense) => expense.id) || [];
   const participantsResponse =
     expenseIds.length > 0
       ? await supabase
-          .from('participants')
+          .from("participants")
           .select(
             `
         id,
@@ -118,43 +118,47 @@ export default async function SharePage({
         )
       `,
           )
-          .in('expense_id', expenseIds)
+          .in("expense_id", expenseIds)
       : { data: [] };
-  const participantsData = (participantsResponse.data ?? []) as ParticipantRow[];
+  const participantsData = (participantsResponse.data ??
+    []) as ParticipantRow[];
 
   const expenseRows = (expensesData ?? []) as ExpenseRow[];
   const participantRows = participantsData;
 
   const expenses: Expense[] = expenseRows.map((expense) => ({
-      id: expense.id,
-      name: expense.name,
-      amount: expense.amount,
-      date: new Date(expense.date),
-      category: Array.isArray(expense.categories)
-        ? expense.categories[0]
-        : expense.categories || undefined,
-      handledBy: Array.isArray(expense.handled_by)
-        ? expense.handled_by[0]
-        : expense.handled_by || undefined,
-      participants:
-        participantRows
-          .filter((participant) => participant.expense_id === expense.id)
-          .map((participant) => {
-            const member = participant.members;
-            if (!member) {
-              return null;
-            }
-            if (Array.isArray(member)) {
-              return member[0] ?? null;
-            }
-            return member;
-          })
-          .filter((member): member is Member => member !== null),
-    }));
+    id: expense.id,
+    name: expense.name,
+    amount: expense.amount,
+    date: new Date(expense.date),
+    category: Array.isArray(expense.categories)
+      ? expense.categories[0]
+      : expense.categories || undefined,
+    handledBy: Array.isArray(expense.handled_by)
+      ? expense.handled_by[0]
+      : expense.handled_by || undefined,
+    participants: participantRows
+      .filter((participant) => participant.expense_id === expense.id)
+      .map((participant) => {
+        const member = participant.members;
+        if (!member) {
+          return null;
+        }
+        if (Array.isArray(member)) {
+          return member[0] ?? null;
+        }
+        return member;
+      })
+      .filter((member): member is Member => member !== null),
+  }));
 
   const members: Member[] = (membersData as Member[]) || [];
 
   return (
-    <ShareGroupView groupName={groupName} expenses={expenses} members={members} />
+    <ShareGroupView
+      groupName={groupName}
+      expenses={expenses}
+      members={members}
+    />
   );
 }

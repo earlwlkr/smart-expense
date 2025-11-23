@@ -1,4 +1,4 @@
-import supabase from './init';
+import supabase from "./init";
 
 export const getProfile = async () => {
   const {
@@ -8,9 +8,9 @@ export const getProfile = async () => {
   if (!user) return null;
 
   const { data, error } = await supabase
-    .from('profiles')
+    .from("profiles")
     .select()
-    .eq('id', user.id)
+    .eq("id", user.id)
     .single();
 
   if (error) return null;
@@ -27,7 +27,7 @@ export const updateProfile = async (updates: {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error('User not authenticated');
+    throw new Error("User not authenticated");
   }
 
   // Only include fields that are provided
@@ -40,9 +40,9 @@ export const updateProfile = async (updates: {
   }
 
   const { data, error } = await supabase
-    .from('profiles')
+    .from("profiles")
     .update(updateData)
-    .eq('id', user.id)
+    .eq("id", user.id)
     .select();
 
   if (error) {

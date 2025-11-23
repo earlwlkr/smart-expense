@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import { Token } from '@/lib/types';
 import {
   disableInviteToken as disableInviteTokenDb,
   enableInviteToken as enableInviteTokenDb,
-} from '@/lib/db/tokens';
+} from "@/lib/db/tokens";
+import type { Token } from "@/lib/types";
+import type React from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 
 type TokensContextType = {
   inviteToken: Token | null;
@@ -35,7 +36,12 @@ export const TokensProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <TokensContext.Provider
-      value={{ inviteToken, setInviteToken, enableInviteToken, disableInviteToken }}
+      value={{
+        inviteToken,
+        setInviteToken,
+        enableInviteToken,
+        disableInviteToken,
+      }}
     >
       {children}
     </TokensContext.Provider>
@@ -44,6 +50,6 @@ export const TokensProvider: React.FC<{ children: React.ReactNode }> = ({
 
 export const useTokens = () => {
   const ctx = useContext(TokensContext);
-  if (!ctx) throw new Error('useTokens must be used within a TokensProvider');
+  if (!ctx) throw new Error("useTokens must be used within a TokensProvider");
   return ctx;
 };

@@ -1,27 +1,27 @@
-import { Group } from '../types';
-import supabase from './init';
+import type { Group } from "../types";
+import supabase from "./init";
 
 export const getGroups = async (): Promise<Group[]> => {
-  const { data, error } = await supabase.from('groups').select();
+  const { data, error } = await supabase.from("groups").select();
 
   return data || [];
 };
 
 export const getGroupDetail = async (groupId: string) => {
   const { data, error } = await supabase
-    .from('groups')
+    .from("groups")
     .select()
-    .eq('id', groupId);
+    .eq("id", groupId);
 
   return data?.[0] || {};
 };
 
 export const addGroup = async (
-  group: Omit<Group, 'id' | 'created_at'>,
-  profileId: string
+  group: Omit<Group, "id" | "created_at">,
+  profileId: string,
 ) => {
   const { data, error } = await supabase
-    .from('groups')
+    .from("groups")
     .insert({ ...group, profile_id: profileId })
     .select();
   if (error) return null;

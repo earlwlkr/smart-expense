@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from "react";
 
 interface UseDataLoadingOptions<T> {
   fetchFn: () => Promise<T>;
@@ -22,7 +22,7 @@ export function useDataLoading<T>({
       const result = await fetchFn();
       setData(result);
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('An error occurred');
+      const error = err instanceof Error ? err : new Error("An error occurred");
       setError(error);
       onError?.(error);
     } finally {

@@ -1,15 +1,15 @@
+import { pick } from "lodash-es";
 import React, {
   createContext,
   useContext,
   useState,
-  ReactNode,
+  type ReactNode,
   useCallback,
-} from 'react';
-import { pick } from 'lodash-es';
-import { Category, Expense, Member } from '../types';
-import { addExpense, removeExpense, updateExpense } from '../db/expenses';
+} from "react";
+import { addExpense, removeExpense, updateExpense } from "../db/expenses";
+import type { Category, Expense, Member } from "../types";
 
-type ExpenseInput = Omit<Expense, 'category' | 'handledBy'> & {
+type ExpenseInput = Omit<Expense, "category" | "handledBy"> & {
   category?: Category;
   handledBy?: Member;
 };
@@ -32,54 +32,54 @@ export const ExpensesProvider = ({ children }: { children: ReactNode }) => {
       setItems((prev) => [...prev, localData]);
 
       const remoteData = {
-        ...pick(localData, ['name', 'amount', 'date']),
+        ...pick(localData, ["name", "amount", "date"]),
         handled_by: localData.handledBy?.id,
         category_id: localData.category?.id,
       };
       const updated = await addExpense(
         groupId,
         remoteData,
-        localData.participants
+        localData.participants,
       );
       updated.handledBy = localData.handledBy;
       updated.category = localData.category;
 
       setItems((prev) =>
-        prev.map((item) => (item.id === localData.id ? updated : item))
+        prev.map((item) => (item.id === localData.id ? updated : item)),
       );
     },
-    [setItems]
+    [],
   );
 
   const update = useCallback(
     async (expenseId: string, localData: ExpenseInput) => {
       setItems((prev) =>
-        prev.map((item) => (item.id === expenseId ? localData : item))
+        prev.map((item) => (item.id === expenseId ? localData : item)),
       );
 
       const remoteData = {
-        ...pick(localData, ['name', 'amount', 'date']),
+        ...pick(localData, ["name", "amount", "date"]),
         handled_by: localData.handledBy?.id,
         category_id: localData.category?.id,
       };
       const updated = await updateExpense(
         expenseId,
         remoteData,
-        localData.participants
+        localData.participants,
       );
       updated.handledBy = localData.handledBy;
       updated.category = localData.category;
 
       setItems((prev) =>
-        prev.map((item) => (item.id === localData.id ? updated : item))
+        prev.map((item) => (item.id === localData.id ? updated : item)),
       );
     },
-    [setItems]
+    [],
   );
 
   const set = useCallback(
     (newItems: Expense[]) => setItems(newItems),
-    [setItems]
+    [],
   );
 
   const remove = useCallback(
@@ -87,7 +87,7 @@ export const ExpensesProvider = ({ children }: { children: ReactNode }) => {
       setItems((prev) => prev.filter((item) => item.id !== expenseId));
       await removeExpense(expenseId);
     },
-    [setItems]
+    [setItems],
   );
 
   return (
@@ -108,7 +108,7 @@ export const ExpensesProvider = ({ children }: { children: ReactNode }) => {
 export const useExpensesStore = () => {
   const context = useContext(ExpensesContext);
   if (!context) {
-    throw new Error('useExpensesStore must be used within an ExpensesProvider');
+    throw new Error("useExpensesStore must be used within an ExpensesProvider");
   }
   return context;
 };

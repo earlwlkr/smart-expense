@@ -41,7 +41,7 @@ export default function Terms() {
 
       <p>
         We employ the use of cookies. By accessing Expenses, you agreed to use
-        cookies in agreement with the expenses's Privacy Policy.{' '}
+        cookies in agreement with the expenses's Privacy Policy.{" "}
       </p>
 
       <p>
@@ -74,7 +74,7 @@ export default function Terms() {
 
       <p>
         This Agreement shall begin on the date hereof. Our Terms and Conditions
-        were created with the help of the{' '}
+        were created with the help of the{" "}
         <a href="https://www.termsandconditionsgenerator.com/">
           Free Terms and Conditions Generator
         </a>

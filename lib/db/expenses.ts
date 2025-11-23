@@ -1,10 +1,10 @@
-import { Category, Expense, Member } from '../types';
-import supabase from './init';
-import { first, get } from 'lodash-es';
+import { first, get } from "lodash-es";
+import type { Category, Expense, Member } from "../types";
+import supabase from "./init";
 
 export const getExpenses = async (groupId: string): Promise<Expense[]> => {
   const { data, error } = await supabase
-    .from('expenses')
+    .from("expenses")
     .select(
       `
     id,
@@ -19,12 +19,12 @@ export const getExpenses = async (groupId: string): Promise<Expense[]> => {
       id,
       name
     )
-    `
+    `,
     )
-    .eq('group_id', groupId)
-    .order('created_at');
+    .eq("group_id", groupId)
+    .order("created_at");
   const { data: participants } = await supabase
-    .from('participants')
+    .from("participants")
     .select(
       `
       id,
@@ -35,9 +35,9 @@ export const getExpenses = async (groupId: string): Promise<Expense[]> => {
         id,
         name
       )
-      `
+      `,
     )
-    .in('expense_id', data?.map<Expense>((i) => i.id) || []);
+    .in("expense_id", data?.map<Expense>((i) => i.id) || []);
 
   return (
     data?.map<Expense>((item) => ({
@@ -46,11 +46,11 @@ export const getExpenses = async (groupId: string): Promise<Expense[]> => {
       category: item.categories as unknown as Category,
       participants:
         (participants || [])
-          .filter((participant) => get(participant.expenses, 'id') === item.id)
+          .filter((participant) => get(participant.expenses, "id") === item.id)
           .map(
             (participant) =>
               (first<Member>(participant.members) as Member) ||
-              participant.members
+              participant.members,
           ) || [],
     })) || []
   );
@@ -58,7 +58,7 @@ export const getExpenses = async (groupId: string): Promise<Expense[]> => {
 
 type ExpenseInput = Omit<
   Expense,
-  'category' | 'handledBy' | 'id' | 'participants'
+  "category" | "handledBy" | "id" | "participants"
 > & {
   category?: string;
   handledBy?: string;
@@ -67,11 +67,11 @@ type ExpenseInput = Omit<
 export const addExpense = async (
   groupId: string,
   expense: ExpenseInput,
-  participants: Member[]
+  participants: Member[],
 ) => {
   const user = await supabase.auth.getUser();
   const { data: inserted, error } = await supabase
-    .from('expenses')
+    .from("expenses")
     .insert({
       ...expense,
       group_id: groupId,
@@ -81,7 +81,7 @@ export const addExpense = async (
     .single();
   participants.forEach(async (participant) => {
     await supabase
-      .from('participants')
+      .from("participants")
       .insert({ expense_id: inserted.id, member_id: participant.id });
   });
   inserted.participants = participants;
@@ -91,18 +91,18 @@ export const addExpense = async (
 export const updateExpense = async (
   expenseId: string,
   expense: ExpenseInput,
-  participants: Member[]
+  participants: Member[],
 ) => {
   const { data: updated, error } = await supabase
-    .from('expenses')
+    .from("expenses")
     .update(expense)
-    .eq('id', expenseId)
+    .eq("id", expenseId)
     .select()
     .single();
-  await supabase.from('participants').delete().eq('expense_id', expenseId);
+  await supabase.from("participants").delete().eq("expense_id", expenseId);
   participants.forEach(async (participant) => {
     await supabase
-      .from('participants')
+      .from("participants")
       .insert({ expense_id: expenseId, member_id: participant.id });
   });
   updated.participants = participants;
@@ -111,7 +111,7 @@ export const updateExpense = async (
 
 export const removeExpense = async (expenseId: string) => {
   const { error } = await supabase
-    .from('expenses')
+    .from("expenses")
     .delete()
-    .eq('id', expenseId);
+    .eq("id", expenseId);
 };

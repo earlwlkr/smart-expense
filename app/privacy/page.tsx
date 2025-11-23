@@ -14,10 +14,11 @@ export default function Privacy() {
         We use Your Personal data to provide and improve the Service. By using
         the Service, You agree to the collection and use of information in
         accordance with this Privacy Policy. This Privacy Policy has been
-        created with the help of the{' '}
+        created with the help of the{" "}
         <a
           href="https://www.freeprivacypolicy.com/free-privacy-policy-generator/"
           target="_blank"
+          rel="noreferrer"
         >
           Free Privacy Policy Generator
         </a>
@@ -112,10 +113,10 @@ export default function Privacy() {
         </li>
         <li>
           <p>
-            <strong>Website</strong> refers to Expenses, accessible from{' '}
+            <strong>Website</strong> refers to Expenses, accessible from{" "}
             <a
               href="https://smart-expense-one.vercel.app/"
-              rel="external nofollow noopener"
+              rel="noreferrer external nofollow noopener"
               target="_blank"
             >
               https://smart-expense-one.vercel.app/
@@ -228,13 +229,14 @@ export default function Privacy() {
         Cookies can be &quot;Persistent&quot; or &quot;Session&quot; Cookies.
         Persistent Cookies remain on Your personal computer or mobile device
         when You go offline, while Session Cookies are deleted as soon as You
-        close Your web browser. Learn more about cookies on the{' '}
+        close Your web browser. Learn more about cookies on the{" "}
         <a
           href="https://www.freeprivacypolicy.com/blog/sample-privacy-policy-template/#Use_Of_Cookies_And_Tracking"
           target="_blank"
+          rel="noreferrer"
         >
           Free Privacy Policy website
-        </a>{' '}
+        </a>{" "}
         article.
       </p>
       <p>

@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { GroupDetail } from '@/components/Groups/GroupDetail';
-import { CategoriesProvider } from '@/lib/contexts/CategoriesContext';
-import { ExpensesProvider } from '@/lib/contexts/ExpensesContext';
-import { MembersProvider } from '@/lib/contexts/MembersContext';
-import { TokensProvider } from '@/lib/contexts/TokensContext';
-import { ShareTokensProvider } from '@/lib/contexts/ShareTokensContext';
+import { GroupDetail } from "@/components/Groups/GroupDetail";
+import { CategoriesProvider } from "@/lib/contexts/CategoriesContext";
+import { ExpensesProvider } from "@/lib/contexts/ExpensesContext";
+import { MembersProvider } from "@/lib/contexts/MembersContext";
+import { ShareTokensProvider } from "@/lib/contexts/ShareTokensContext";
+import { TokensProvider } from "@/lib/contexts/TokensContext";
 
 export default async function Dashboard({
   params,
