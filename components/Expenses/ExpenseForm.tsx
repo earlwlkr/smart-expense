@@ -253,7 +253,7 @@ export function ExpenseForm({
           render={({ field }) => (
             <FormItem className="grid grid-cols-4 items-center gap-4 space-y-0">
               <FormLabel className="text-right">Date</FormLabel>
-              <Popover>
+              <Popover modal={true}>
                 <PopoverTrigger asChild>
                   <FormControl className="col-span-3">
                     <Button
@@ -290,9 +290,8 @@ export function ExpenseForm({
         />
 
         <DialogFooter
-          className={`flex ${
-            expense ? "sm:justify-between" : "sm:justify-end"
-          }`}
+          className={`flex ${expense ? "sm:justify-between" : "sm:justify-end"
+            }`}
         >
           {expense && (
             <Button
