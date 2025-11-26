@@ -27,29 +27,26 @@ const ExpensesContext = createContext<ExpensesState | undefined>(undefined);
 export const ExpensesProvider = ({ children }: { children: ReactNode }) => {
   const [items, setItems] = useState<Expense[]>([]);
 
-  const add = useCallback(
-    async (groupId: string, localData: ExpenseInput) => {
-      setItems((prev) => [...prev, localData]);
+  const add = useCallback(async (groupId: string, localData: ExpenseInput) => {
+    setItems((prev) => [...prev, localData]);
 
-      const remoteData = {
-        ...pick(localData, ["name", "amount", "date"]),
-        handled_by: localData.handledBy?.id,
-        category_id: localData.category?.id,
-      };
-      const updated = await addExpense(
-        groupId,
-        remoteData,
-        localData.participants,
-      );
-      updated.handledBy = localData.handledBy;
-      updated.category = localData.category;
+    const remoteData = {
+      ...pick(localData, ["name", "amount", "date"]),
+      handled_by: localData.handledBy?.id,
+      category_id: localData.category?.id,
+    };
+    const updated = await addExpense(
+      groupId,
+      remoteData,
+      localData.participants,
+    );
+    updated.handledBy = localData.handledBy;
+    updated.category = localData.category;
 
-      setItems((prev) =>
-        prev.map((item) => (item.id === localData.id ? updated : item)),
-      );
-    },
-    [],
-  );
+    setItems((prev) =>
+      prev.map((item) => (item.id === localData.id ? updated : item)),
+    );
+  }, []);
 
   const update = useCallback(
     async (expenseId: string, localData: ExpenseInput) => {
@@ -77,10 +74,7 @@ export const ExpensesProvider = ({ children }: { children: ReactNode }) => {
     [],
   );
 
-  const set = useCallback(
-    (newItems: Expense[]) => setItems(newItems),
-    [],
-  );
+  const set = useCallback((newItems: Expense[]) => setItems(newItems), []);
 
   const remove = useCallback(
     async (expenseId: string) => {
