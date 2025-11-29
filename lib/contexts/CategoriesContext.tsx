@@ -4,68 +4,72 @@ import type React from "react";
 import { createContext, useCallback, useContext, useState } from "react";
 
 type CategoriesContextType = {
-  categories: Category[];
-  loading: boolean;
-  fetchCategories: (groupId: string) => Promise<void>;
-  setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
-  addCategories: (groupId: string, categories: string[]) => Promise<void>;
-  removeCategory: (categoryId: string) => Promise<void>;
+    categories: Category[];
+    loading: boolean;
+    fetchCategories: (groupId: string) => Promise<void>;
+    setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
+    addCategories: (
+        groupId: string,
+        categories: string[],
+    ) => Promise<Category[] | null>;
+    removeCategory: (categoryId: string) => Promise<void>;
 };
 
 const CategoriesContext = createContext<CategoriesContextType | undefined>(
-  undefined,
+    undefined,
 );
 
 export const CategoriesProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
+    children,
 }) => {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(false);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [loading, setLoading] = useState(false);
 
-  const fetchCategories = useCallback(async (groupId: string) => {
-    setLoading(true);
-    const cats = await db.getCategories(groupId);
-    setCategories(cats);
-    setLoading(false);
-  }, []);
+    const fetchCategories = useCallback(async (groupId: string) => {
+        setLoading(true);
+        const cats = await db.getCategories(groupId);
+        setCategories(cats);
+        setLoading(false);
+    }, []);
 
-  const addCategories = useCallback(
-    async (groupId: string, names: string[]) => {
-      setLoading(true);
-      await db.addCategories(groupId, names);
-      await fetchCategories(groupId);
-      setLoading(false);
-    },
-    [fetchCategories],
-  );
+    const addCategories = useCallback(
+        async (groupId: string, names: string[]) => {
+            setLoading(true);
+            const newCategories = await db.addCategories(groupId, names);
+            await fetchCategories(groupId);
+            setLoading(false);
+            return newCategories;
+        },
+        [fetchCategories],
+    );
 
-  const removeCategory = useCallback(async (categoryId: string) => {
-    setLoading(true);
-    await db.removeCategory(categoryId);
-    // Optionally refetch or filter locally
-    setCategories((prev) => prev.filter((cat) => cat.id !== categoryId));
-    setLoading(false);
-  }, []);
+    const removeCategory = useCallback(async (categoryId: string) => {
+        setLoading(true);
+        await db.removeCategory(categoryId);
+        // Optionally refetch or filter locally
+        setCategories((prev) => prev.filter((cat) => cat.id !== categoryId));
+        setLoading(false);
+    }, []);
 
-  return (
-    <CategoriesContext.Provider
-      value={{
-        categories,
-        loading,
-        fetchCategories,
-        addCategories,
-        removeCategory,
-        setCategories,
-      }}
-    >
-      {children}
-    </CategoriesContext.Provider>
-  );
+    return (
+        <CategoriesContext.Provider
+            value={{
+                categories,
+                loading,
+                fetchCategories,
+                addCategories,
+                removeCategory,
+                setCategories,
+            }}
+        >
+            {children}
+        </CategoriesContext.Provider>
+    );
 };
 
 export const useCategories = () => {
-  const ctx = useContext(CategoriesContext);
-  if (!ctx)
-    throw new Error("useCategories must be used within a CategoriesProvider");
-  return ctx;
+    const ctx = useContext(CategoriesContext);
+    if (!ctx)
+        throw new Error("useCategories must be used within a CategoriesProvider");
+    return ctx;
 };

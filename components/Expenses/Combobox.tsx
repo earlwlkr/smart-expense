@@ -20,13 +20,22 @@ export function Combobox({
   options,
   defaultValue,
   onChange,
+  onCreate,
+  className,
 }: {
   options: { value: string; label: string }[];
   defaultValue?: string;
   onChange?: (value: string) => void;
+  onCreate?: (value: string) => void;
+  className?: string;
 }) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState(defaultValue);
+  const [inputValue, setInputValue] = React.useState("");
+
+  React.useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -35,7 +44,7 @@ export function Combobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className={cn("w-[200px] justify-between", className)}
         >
           {value
             ? options.find((option) => option.value === value)?.label
@@ -45,9 +54,28 @@ export function Combobox({
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search option..." className="h-9" />
+          <CommandInput
+            placeholder="Search option..."
+            className="h-9"
+            value={inputValue}
+            onValueChange={setInputValue}
+          />
           <CommandList>
-            <CommandEmpty>No option found.</CommandEmpty>
+            <CommandEmpty>
+              {onCreate && inputValue ? (
+                <div
+                  className="relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm select-none hover:bg-accent hover:text-accent-foreground"
+                  onClick={() => {
+                    onCreate(inputValue);
+                    setOpen(false);
+                  }}
+                >
+                  Create "{inputValue}"
+                </div>
+              ) : (
+                "No option found."
+              )}
+            </CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem

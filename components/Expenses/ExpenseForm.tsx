@@ -71,7 +71,7 @@ export function ExpenseForm({
   onClose: () => void;
   expense?: Expense | null;
 }) {
-  const { categories } = useCategories();
+  const { categories, addCategories } = useCategories();
   const { members } = useMembers();
   const { add: addExpense } = useExpensesStore();
   const { update: updateExpense } = useExpensesStore();
@@ -170,16 +170,28 @@ export function ExpenseForm({
           render={({ field }) => (
             <FormItem className="grid grid-cols-4 items-center gap-4 space-y-0">
               <FormLabel className="text-right">Category</FormLabel>
-
-              <Combobox
-                options={categories.map((category) => ({
-                  value: category.id,
-                  label: category.name,
-                }))}
-                defaultValue={field.value}
-                onChange={field.onChange}
-              />
-              <FormMessage />
+              <FormControl className="col-span-3">
+                <Combobox
+                  options={categories.map((category) => ({
+                    value: category.id,
+                    label: category.name,
+                  }))}
+                  defaultValue={field.value}
+                  onChange={field.onChange}
+                  onCreate={async (name) => {
+                    if (currentGroup) {
+                      const newCategories = await addCategories(currentGroup.id, [
+                        name,
+                      ]);
+                      if (newCategories && newCategories.length > 0) {
+                        field.onChange(newCategories[0].id);
+                      }
+                    }
+                  }}
+                  className="w-full"
+                />
+              </FormControl>
+              <FormMessage className="col-start-2 col-span-4" />
             </FormItem>
           )}
         />
