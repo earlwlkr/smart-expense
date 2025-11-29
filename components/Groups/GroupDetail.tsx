@@ -1,5 +1,7 @@
 "use client";
 
+import { AnalyticsView } from "@/components/Analytics/AnalyticsView";
+
 import { ExpenseSplit } from "@/components/Expenses/ExpenseSplit";
 import { Expenses } from "@/components/Expenses/Expenses";
 import { GroupEditModal } from "@/components/GroupEdit/GroupEditModal";
@@ -75,15 +77,19 @@ export function GroupDetail({ groupId }: { groupId: string }) {
             <GroupEditModal />
           </div>
           <Tabs defaultValue="expenses" className="mt-2">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="expenses">Expenses</TabsTrigger>
               <TabsTrigger value="split">Split</TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
             </TabsList>
             <TabsContent value="expenses">
               <Expenses />
             </TabsContent>
             <TabsContent value="split">
               <ExpenseSplit />
+            </TabsContent>
+            <TabsContent value="analytics">
+              <AnalyticsView />
             </TabsContent>
           </Tabs>
         </div>
