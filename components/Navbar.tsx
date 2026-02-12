@@ -1,14 +1,13 @@
 "use client";
 
 import { useGroups } from "@/lib/contexts/GroupsContext";
-import { getProfile } from "@/lib/db/profiles";
-import { createClient } from "@/lib/supabase/client";
-import type { Profile } from "@/lib/types";
-import type { User } from "@supabase/supabase-js";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useQuery } from "convex/react";
 import { ChevronLeft, LogOut, Settings, User as UserIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { api } from "../convex/_generated/api";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -23,38 +22,16 @@ import { LoadingSpinner } from "./ui/loading-spinner";
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
-  const supabase = createClient();
-  const [user, setUser] = useState<User | null>();
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const { signOut } = useAuthActions();
+  const me = useQuery(api.users.me);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const { currentGroup } = useGroups();
   const isSharePage = pathname.startsWith("/share/");
 
-  useEffect(() => {
-    const getData = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) {
-        setUser(user);
-        // Fetch profile data
-        const profileData = await getProfile();
-        if (profileData) {
-          setProfile(profileData);
-        }
-      } else {
-        setUser(null);
-        setProfile(null);
-      }
-    };
-
-    getData();
-  }, [supabase.auth]);
-
   const handleSignOut = async () => {
     setIsSigningOut(true);
     try {
-      await supabase.auth.signOut();
+      await signOut();
       router.push("/login");
     } catch (error) {
       console.error("Error signing out:", error);
@@ -75,12 +52,12 @@ export default function Navbar() {
           </Link>
         )}
       </div>
-      {user && !isSharePage && (
+      {me && !isSharePage && (
         <h1 className="font-semibold text-center md:text-2xl flex-1">
           {currentGroup?.name || "Expenses"}
         </h1>
       )}
-      {user && !isSharePage && (
+      {me && !isSharePage && (
         <div className="flex-1 justify-end flex">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -91,9 +68,7 @@ export default function Navbar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>
-                {profile
-                  ? `${profile.firstName} ${profile.lastName || ""}`.trim()
-                  : "My Account"}
+                {me.name || me.email || "My Account"}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>

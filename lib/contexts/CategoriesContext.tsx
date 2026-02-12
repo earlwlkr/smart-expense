@@ -1,13 +1,15 @@
-import * as db from "@/lib/db/categories";
-import type { Category } from "@/lib/types";
-import type React from "react";
-import { createContext, useCallback, useContext, useState } from "react";
+"use client";
+
+import { useMutation, useQuery } from "convex/react";
+import { useParams } from "next/navigation";
+import { createContext, useContext, useMemo } from "react";
+import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
+import type { Category } from "../types";
 
 type CategoriesContextType = {
     categories: Category[];
     loading: boolean;
-    fetchCategories: (groupId: string) => Promise<void>;
-    setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
     addCategories: (
         groupId: string,
         categories: string[],
@@ -22,44 +24,50 @@ const CategoriesContext = createContext<CategoriesContextType | undefined>(
 export const CategoriesProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [loading, setLoading] = useState(false);
+    const params = useParams();
+    const groupId = params?.id as Id<"groups"> | undefined;
 
-    const fetchCategories = useCallback(async (groupId: string) => {
-        setLoading(true);
-        const cats = await db.getCategories(groupId);
-        setCategories(cats);
-        setLoading(false);
-    }, []);
-
-    const addCategories = useCallback(
-        async (groupId: string, names: string[]) => {
-            setLoading(true);
-            const newCategories = await db.addCategories(groupId, names);
-            await fetchCategories(groupId);
-            setLoading(false);
-            return newCategories;
-        },
-        [fetchCategories],
+    const categories = useQuery(
+        api.categories.list,
+        groupId ? { groupId } : "skip",
     );
+    const createCategory = useMutation(api.categories.create);
+    const deleteCategory = useMutation(api.categories.remove);
 
-    const removeCategory = useCallback(async (categoryId: string) => {
-        setLoading(true);
-        await db.removeCategory(categoryId);
-        // Optionally refetch or filter locally
-        setCategories((prev) => prev.filter((cat) => cat.id !== categoryId));
-        setLoading(false);
-    }, []);
+    const loading = categories === undefined;
+
+    const addCategories = async (targetGroupId: string, names: string[]) => {
+        // We iterate because we don't have bulk insert yet, or we could add it.
+        // Keeping signature similar.
+        const results: Category[] = [];
+        for (const name of names) {
+            const id = await createCategory({
+                name,
+                groupId: targetGroupId as Id<"groups">,
+            });
+            results.push({ id, name });
+        }
+        return results;
+    };
+
+    const removeCategory = async (categoryId: string) => {
+        await deleteCategory({ id: categoryId as Id<"categories"> });
+    };
+
+    const adaptedCategories = useMemo(() => {
+        return (categories || []).map((c) => ({
+            id: c._id,
+            name: c.name,
+        }));
+    }, [categories]);
 
     return (
         <CategoriesContext.Provider
             value={{
-                categories,
+                categories: adaptedCategories,
                 loading,
-                fetchCategories,
                 addCategories,
                 removeCategory,
-                setCategories,
             }}
         >
             {children}

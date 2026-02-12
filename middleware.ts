@@ -1,29 +1,24 @@
-import { createClient } from "@/lib/supabase/middleware";
-import { NextResponse } from "next/server";
+import { convexAuthNextjsMiddleware, createRouteMatcher, isAuthenticatedNextjs, nextjsMiddlewareRedirect } from "@convex-dev/auth/nextjs/server";
 
-import type { NextRequest } from "next/server";
+const isSignInPage = createRouteMatcher(["/login", "/auth"]);
+const isProtectedRoute = createRouteMatcher(["/groups(.*)", "/profile(.*)", "/"]);
 
-export async function middleware(req: NextRequest) {
-  const { supabase, res } = createClient(req);
+export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
+  const isAuthenticated = await convexAuth.isAuthenticated();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // if user is not signed in and the current path is not / redirect the user to /
-  if (!user && req.nextUrl.pathname !== "/login") {
-    return NextResponse.redirect(
-      new URL(`/login?nextUrl=${req.nextUrl.pathname}`, req.url),
-    );
+  if (isSignInPage(request) && isAuthenticated) {
+    return nextjsMiddlewareRedirect(request, "/");
   }
-
-  if (user && req.nextUrl.pathname === "/login") {
-    return NextResponse.redirect(new URL("/", req.url));
+  if (isProtectedRoute(request) && !isAuthenticated) {
+    return nextjsMiddlewareRedirect(request, "/login");
   }
+});
 
-  return res;
-}
+
+
 
 export const config = {
-  matcher: ["/", "/login", "/groups/:id*", "/join/:token*", "/settings"],
+  // The following matcher runs middleware on all routes
+  // except static assets.
+  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
 };

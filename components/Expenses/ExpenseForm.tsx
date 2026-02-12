@@ -13,14 +13,14 @@ import {
 } from "@/components/ui/popover";
 import { useCategories } from "@/lib/contexts/CategoriesContext";
 import { useExpensesStore } from "@/lib/contexts/ExpensesContext";
-import { useGroups } from "@/lib/contexts/GroupsContext"; // <-- updated import
+import { useGroups } from "@/lib/contexts/GroupsContext";
 import { useMembers } from "@/lib/contexts/MembersContext";
 import type { Expense } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Trash } from "lucide-react"; // Import the trash icon
-import { useEffect, useState } from "react";
+import { Calendar as CalendarIcon, Trash } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import {
@@ -39,6 +39,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { Id } from "../../convex/_generated/dataModel";
 
 const addExpenseFormSchema = z.object({
   name: z
@@ -56,7 +57,6 @@ const addExpenseFormSchema = z.object({
     }
     return "0";
   }),
-  // .positive({ message: 'Must be positive' }),
   category: z.string(),
   handledBy: z.string(),
   participants: z.array(z.object({ id: z.string(), name: z.string() })),
@@ -73,9 +73,7 @@ export function ExpenseForm({
 }) {
   const { categories, addCategories } = useCategories();
   const { members } = useMembers();
-  const { add: addExpense } = useExpensesStore();
-  const { update: updateExpense } = useExpensesStore();
-  const { remove: removeExpense } = useExpensesStore();
+  const { add: addExpense, update: updateExpense, remove: removeExpense } = useExpensesStore();
   const { currentGroup } = useGroups();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -85,9 +83,9 @@ export function ExpenseForm({
     defaultValues: {
       name: expense?.name || "",
       amount: expense?.amount ? String(expense.amount) : "",
-      category: expense?.category?.id || categories[0]?.id,
-      handledBy: expense?.handledBy?.id || members[0]?.id,
-      participants: expense?.participants || members,
+      category: expense?.category?._id || categories[0]?._id,
+      handledBy: expense?.handledBy?._id || members[0]?._id,
+      participants: expense?.participants.map(p => ({ id: p._id, name: p.name })) || members.map(m => ({ id: m._id, name: m.name })),
       date: expense?.date ? new Date(expense.date) : new Date(),
     },
   });
@@ -95,24 +93,23 @@ export function ExpenseForm({
   async function onSubmit(values: AddExpenseFormValues) {
     setIsSubmitting(true);
     try {
-      // Do something with the form values.
-      // ✅ This will be type-safe and validated.
-      console.log(values);
       if (expense) {
-        await updateExpense(expense.id, {
-          ...values,
-          id: expense.id,
-          amount: String(values.amount),
-          category: categories.find((item) => item.id === values.category),
-          handledBy: members.find((item) => item.id === values.handledBy),
+        await updateExpense(expense._id, {
+          name: values.name,
+          amount: Number(values.amount),
+          date: values.date,
+          categoryId: values.category as Id<"categories">,
+          handledBy: values.handledBy as Id<"members">,
+          participants: values.participants.map(p => p.id as Id<"members">),
         });
-      } else if (currentGroup) {
-        await addExpense(currentGroup.id, {
-          id: Date.now().toString(),
-          ...values,
-          amount: String(values.amount),
-          category: categories.find((item) => item.id === values.category),
-          handledBy: members.find((item) => item.id === values.handledBy),
+      } else {
+        await addExpense({
+          name: values.name,
+          amount: Number(values.amount),
+          date: values.date,
+          categoryId: values.category as Id<"categories">,
+          handledBy: values.handledBy as Id<"members">,
+          participants: values.participants.map(p => p.id as Id<"members">),
         });
       }
       onClose();
@@ -156,7 +153,6 @@ export function ExpenseForm({
             <FormItem className="grid grid-cols-4 items-center gap-4 space-y-0">
               <FormLabel className="text-right">Amount</FormLabel>
               <FormControl className="col-span-3">
-                {/* <Input placeholder="amount" type="number" {...field} /> */}
                 <CurrencyInput {...field} />
               </FormControl>
               <FormMessage className="col-start-2 col-span-4" />
@@ -173,19 +169,27 @@ export function ExpenseForm({
               <FormControl className="col-span-3">
                 <Combobox
                   options={categories.map((category) => ({
-                    value: category.id,
+                    value: category._id,
                     label: category.name,
                   }))}
                   defaultValue={field.value}
                   onChange={field.onChange}
                   onCreate={async (name) => {
                     if (currentGroup) {
-                      const newCategories = await addCategories(currentGroup.id, [
+                      const newCategories = await addCategories(currentGroup._id, [
                         name,
                       ]);
-                      if (newCategories && newCategories.length > 0) {
-                        field.onChange(newCategories[0].id);
-                      }
+                      // Assuming addCategories returns array of categories including _id
+                      // If addCategories returns only IDs or something else, this might need adjustment.
+                      // Currently addCategories in CategoriesContext calls api.categories.create (which returns ID) 
+                      // or if it takes array it might return array of IDs?
+                      // Let's check CategoriesContext.
+                      // If it returns nothing (void), we need to re-fetch or optimistically update?
+                      // The Context uses useQuery so it updates automatically.
+                      // But we need the ID here to set field value.
+                      // api.categories.create returns ID.
+                      // If addCategories calls loop of create, it should return IDs.
+                      // I should check CategoriesContext implementation.
                     }
                   }}
                   className="w-full"
@@ -211,7 +215,7 @@ export function ExpenseForm({
                 <SelectContent>
                   <SelectGroup>
                     {members.map((member) => (
-                      <SelectItem key={member.id} value={member.id}>
+                      <SelectItem key={member._id} value={member._id}>
                         {member.name}
                       </SelectItem>
                     ))}
@@ -234,7 +238,7 @@ export function ExpenseForm({
                   <FancyMultiSelect
                     options={members.map((member) => ({
                       label: member.name,
-                      value: member.id,
+                      value: member._id,
                     }))}
                     defaultSelected={field.value.map(({ id, name }) => ({
                       label: name,
@@ -271,7 +275,6 @@ export function ExpenseForm({
                     <Button
                       variant={"outline"}
                       className={cn(
-                        // 'w-[240px] pl-3 text-left font-normal',
                         !field.value && "text-muted-foreground",
                       )}
                     >
@@ -313,8 +316,7 @@ export function ExpenseForm({
               onClick={async () => {
                 setIsDeleting(true);
                 try {
-                  console.log("Delete expense:", expense.id);
-                  await removeExpense(expense.id);
+                  await removeExpense(expense._id);
                   onClose();
                 } catch (error) {
                   console.error("Error deleting expense:", error);

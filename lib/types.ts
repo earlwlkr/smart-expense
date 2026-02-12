@@ -1,29 +1,36 @@
 export type Profile = {
-  id: string;
+  _id: string;
+  _creationTime: number;
   firstName: string;
   lastName: string;
 };
 
 export type Group = {
-  id: string;
+  _id: string;
+  _creationTime: number;
   name: string;
-  created_at: string;
+  description?: string;
 };
 
 export type Member = {
-  id: string;
+  _id: string;
+  _creationTime: number;
   name: string;
+  groupId: string;
 };
 
 export type Category = {
-  id: string;
+  _id: string;
+  _creationTime: number;
   name: string;
+  groupId: string;
 };
 
 export type Expense = {
-  id: string;
+  _id: string;
+  _creationTime: number;
   name: string;
-  amount: string;
+  amount: number; // Changed to number to match backend
   category?: Category;
   handledBy?: Member;
   participants: Member[];
@@ -31,15 +38,17 @@ export type Expense = {
 };
 
 export type Token = {
-  id: string;
-  disabled: boolean;
+  _id: string;
+  _creationTime: number;
+  name: string;
+  value: string;
   groupId: string;
-  createdAt: Date;
 };
 
 export type ShareToken = {
-  id: string;
-  disabled: boolean;
+  _id: string;
+  _creationTime: number;
+  name: string;
+  value: string;
   groupId: string;
-  createdAt: Date;
 };

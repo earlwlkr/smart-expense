@@ -41,9 +41,9 @@ export function ExpenseSplit() {
     if (groupBy === "debtor") {
       // Group by debtor (who owes money)
       groupArray = Object.entries(splitDetails).map(([fromId, details]) => {
-        const fromMember = members.find((m) => m.id === fromId);
+        const fromMember = members.find((m) => m._id === fromId);
         const items = Object.entries(details).map(([toId, amount]) => {
-          const toMember = members.find((m) => m.id === toId);
+          const toMember = members.find((m) => m._id === toId);
           return {
             key: `${fromId}-${toId}`,
             counterparty: toMember?.name || "",
@@ -70,7 +70,7 @@ export function ExpenseSplit() {
 
       // Invert the split details to group by creditor
       for (const [fromId, details] of Object.entries(splitDetails)) {
-        const fromMember = members.find((m) => m.id === fromId);
+        const fromMember = members.find((m) => m._id === fromId);
         for (const [toId, amount] of Object.entries(details)) {
           if (!creditorMap.has(toId)) {
             creditorMap.set(toId, []);
@@ -86,7 +86,7 @@ export function ExpenseSplit() {
       // Convert map to array format
       groupArray = Array.from(creditorMap.entries()).map(
         ([creditorId, items]) => {
-          const creditorMember = members.find((m) => m.id === creditorId);
+          const creditorMember = members.find((m) => m._id === creditorId);
           // Sort items within each group by amount (descending)
           items.sort((a, b) => b.amount - a.amount);
           return {

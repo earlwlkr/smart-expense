@@ -7,6 +7,8 @@ import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { GroupsProvider } from "@/lib/contexts/GroupsContext";
+import { ConvexClientProvider } from "@/components/ConvexClientProvider";
+import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,15 +31,19 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <GroupsProvider>
-            <div className="md:flex md:justify-center">
-              <div className="mt-4 mx-4 md:w-[400px]">
-                <Navbar />
-                {children}
-                <Toaster />
-              </div>
-            </div>
-          </GroupsProvider>
+          <ConvexAuthNextjsServerProvider>
+            <ConvexClientProvider>
+              <GroupsProvider>
+                <div className="md:flex md:justify-center">
+                  <div className="mt-4 mx-4 md:w-[400px]">
+                    <Navbar />
+                    {children}
+                    <Toaster />
+                  </div>
+                </div>
+              </GroupsProvider>
+            </ConvexClientProvider>
+          </ConvexAuthNextjsServerProvider>
         </ThemeProvider>
       </body>
     </html>

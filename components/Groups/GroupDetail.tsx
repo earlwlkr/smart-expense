@@ -13,54 +13,14 @@ import { useGroups } from "@/lib/contexts/GroupsContext";
 import { useMembers } from "@/lib/contexts/MembersContext";
 import { useShareTokens } from "@/lib/contexts/ShareTokensContext";
 import { useTokens } from "@/lib/contexts/TokensContext";
-import { getExpenses } from "@/lib/db/expenses";
-import { getMembers } from "@/lib/db/members";
-import { getShareToken } from "@/lib/db/shareTokens";
-import { getInviteToken } from "@/lib/db/tokens";
-import { useEffect } from "react";
+
 
 export function GroupDetail({ groupId }: { groupId: string }) {
-  const { currentGroup, getGroupDetail, loading } = useGroups();
+  const { currentGroup, loading } = useGroups();
 
-  const { fetchCategories } = useCategories();
-  const { set: setExpenses } = useExpensesStore();
-  const { updateMembers } = useMembers();
-  const { setInviteToken } = useTokens();
-  const { setShareToken } = useShareTokens();
+  // Data fetching is now handled by Contexts which use Convex hooks
+  // No need for useEffects here
 
-  useEffect(() => {
-    const initExpenses = async () => {
-      const expenses = await getExpenses(groupId);
-      setExpenses(expenses);
-    };
-    const initMembers = async () => {
-      const members = await getMembers(groupId);
-      updateMembers(members);
-    };
-    const initInviteToken = async () => {
-      const token = await getInviteToken(groupId);
-      setInviteToken(token);
-    };
-    const initShareToken = async () => {
-      const token = await getShareToken(groupId);
-      setShareToken(token);
-    };
-
-    getGroupDetail(groupId);
-    fetchCategories(groupId);
-    initExpenses();
-    initMembers();
-    initInviteToken();
-    initShareToken();
-  }, [
-    groupId,
-    getGroupDetail,
-    fetchCategories,
-    setExpenses,
-    updateMembers,
-    setInviteToken,
-    setShareToken,
-  ]);
 
   return (
     <ComponentLoading

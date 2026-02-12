@@ -9,7 +9,7 @@ type Balance = {
 
 export function calculateSplitDetails(expenses: Expense[]): SplitDetails {
   const balances = expenses.reduce<Record<string, number>>((acc, expense) => {
-    if (!expense.handledBy?.id) {
+    if (!expense.handledBy?._id) {
       return acc;
     }
 
@@ -19,11 +19,14 @@ export function calculateSplitDetails(expenses: Expense[]): SplitDetails {
         : 0;
 
     expense.participants.forEach((participant) => {
-      acc[participant.id] = (acc[participant.id] || 0) - share;
+      // @ts-ignore - _id is a string at runtime
+      const pId = participant._id as string;
+      acc[pId] = (acc[pId] || 0) - share;
     });
 
-    acc[expense.handledBy.id] =
-      (acc[expense.handledBy.id] || 0) + Number(expense.amount);
+    // @ts-ignore - _id is a string at runtime
+    const hId = expense.handledBy._id as string;
+    acc[hId] = (acc[hId] || 0) + Number(expense.amount);
 
     return acc;
   }, {});
@@ -58,8 +61,11 @@ export function calculateSplitDetails(expenses: Expense[]): SplitDetails {
       splitDetails[debtor.id] = {};
     }
 
-    splitDetails[debtor.id][creditor.id] =
-      (splitDetails[debtor.id][creditor.id] || 0) + amount;
+    if (!splitDetails[debtor.id][creditor.id]) {
+      splitDetails[debtor.id][creditor.id] = 0;
+    }
+
+    splitDetails[debtor.id][creditor.id] += amount;
 
     debtor.amount -= amount;
     creditor.amount -= amount;

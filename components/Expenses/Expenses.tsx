@@ -37,12 +37,12 @@ export function Expenses() {
     // Apply filters
     if (filterCategory !== "all") {
       filtered = filtered.filter(
-        (expense) => expense.category?.id === filterCategory,
+        (expense) => expense.category?._id === filterCategory,
       );
     }
     if (filterMember !== "all") {
       filtered = filtered.filter(
-        (expense) => expense.handledBy?.id === filterMember,
+        (expense) => expense.handledBy?._id === filterMember,
       );
     }
 
@@ -103,7 +103,7 @@ export function Expenses() {
               <span className="truncate">
                 {filterCategory === "all"
                   ? "Category"
-                  : categories.find((c) => c.id === filterCategory)?.name}
+                  : categories.find((c) => c._id === filterCategory)?.name}
               </span>
             </div>
           </SelectTrigger>
@@ -111,7 +111,7 @@ export function Expenses() {
             <SelectGroup>
               <SelectItem value="all">All Categories</SelectItem>
               {categories.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
+                <SelectItem key={category._id} value={category._id}>
                   {category.name}
                 </SelectItem>
               ))}
@@ -127,7 +127,7 @@ export function Expenses() {
             <SelectGroup>
               <SelectItem value="all">All Members</SelectItem>
               {members.map((member) => (
-                <SelectItem key={member.id} value={member.id}>
+                <SelectItem key={member._id} value={member._id}>
                   {member.name}
                 </SelectItem>
               ))}
@@ -185,7 +185,7 @@ export function Expenses() {
         ) : (
           filteredAndSortedExpenses.map((expense) => (
             <div
-              key={expense.id}
+              key={expense._id}
               className="p-4 border-b cursor-pointer hover:bg-accent/50"
               onClick={() => {
                 setExpense(expense);

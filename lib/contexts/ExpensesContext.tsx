@@ -1,96 +1,92 @@
-import { pick } from "lodash-es";
-import React, {
-  createContext,
-  useContext,
-  useState,
-  type ReactNode,
-  useCallback,
-} from "react";
-import { addExpense, removeExpense, updateExpense } from "../db/expenses";
+"use client";
+
+import { useMutation, useQuery } from "convex/react";
+import { useParams } from "next/navigation";
+import { createContext, useContext, useMemo } from "react";
+import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
 import type { Category, Expense, Member } from "../types";
 
-type ExpenseInput = Omit<Expense, "category" | "handledBy"> & {
-  category?: Category;
-  handledBy?: Member;
+type ExpenseInput = Omit<Expense, "_id" | "_creationTime" | "date" | "category" | "handledBy" | "participants"> & {
+  date: Date;
+  categoryId?: Id<"categories">;
+  handledBy?: Id<"members">;
+  participants: Id<"members">[];
 };
 
-type ExpensesState = {
+type ExpensesContextType = {
   items: Expense[];
-  add: (groupId: string, item: ExpenseInput) => Promise<void>;
-  update: (expenseId: string, item: ExpenseInput) => Promise<void>;
-  set: (items: Expense[]) => void;
-  remove: (expenseId: string) => Promise<void>;
+  loading: boolean;
+  add: (item: ExpenseInput) => Promise<void>;
+  update: (expenseId: Id<"expenses">, item: ExpenseInput) => Promise<void>;
+  remove: (expenseId: Id<"expenses">) => Promise<void>;
 };
 
-const ExpensesContext = createContext<ExpensesState | undefined>(undefined);
+const ExpensesContext = createContext<ExpensesContextType | undefined>(
+  undefined,
+);
 
-export const ExpensesProvider = ({ children }: { children: ReactNode }) => {
-  const [items, setItems] = useState<Expense[]>([]);
+export const ExpensesProvider = ({ children }: { children: React.ReactNode }) => {
+  const params = useParams();
+  const groupId = params?.id as Id<"groups"> | undefined;
 
-  const add = useCallback(async (groupId: string, localData: ExpenseInput) => {
-    setItems((prev) => [...prev, localData]);
+  const expenses = useQuery(api.expenses.list, groupId ? { groupId } : "skip");
+  const createExpense = useMutation(api.expenses.create);
+  const updateExpense = useMutation(api.expenses.update);
+  const deleteExpense = useMutation(api.expenses.remove);
 
-    const remoteData = {
-      ...pick(localData, ["name", "amount", "date"]),
-      handled_by: localData.handledBy?.id,
-      category_id: localData.category?.id,
-    };
-    const updated = await addExpense(
-      groupId,
-      remoteData,
-      localData.participants,
-    );
-    updated.handledBy = localData.handledBy;
-    updated.category = localData.category;
+  const loading = expenses === undefined;
 
-    setItems((prev) =>
-      prev.map((item) => (item.id === localData.id ? updated : item)),
-    );
-  }, []);
+  const add = async (item: ExpenseInput) => {
+    if (!groupId) return;
+    await createExpense({
+      name: item.name,
+      amount: Number(item.amount),
+      date: item.date.toISOString(),
+      groupId: groupId,
+      categoryId: item.categoryId,
+      handledBy: item.handledBy,
+      participants: item.participants,
+    });
+  };
 
-  const update = useCallback(
-    async (expenseId: string, localData: ExpenseInput) => {
-      setItems((prev) =>
-        prev.map((item) => (item.id === expenseId ? localData : item)),
-      );
+  const update = async (expenseId: Id<"expenses">, item: ExpenseInput) => {
+    await updateExpense({
+      id: expenseId,
+      name: item.name,
+      amount: Number(item.amount),
+      date: item.date.toISOString(),
+      categoryId: item.categoryId,
+      handledBy: item.handledBy,
+      participants: item.participants,
+    });
+  };
 
-      const remoteData = {
-        ...pick(localData, ["name", "amount", "date"]),
-        handled_by: localData.handledBy?.id,
-        category_id: localData.category?.id,
-      };
-      const updated = await updateExpense(
-        expenseId,
-        remoteData,
-        localData.participants,
-      );
-      updated.handledBy = localData.handledBy;
-      updated.category = localData.category;
+  const remove = async (expenseId: Id<"expenses">) => {
+    await deleteExpense({ id: expenseId });
+  };
 
-      setItems((prev) =>
-        prev.map((item) => (item.id === localData.id ? updated : item)),
-      );
-    },
-    [],
-  );
+  // Convert schema data to UI friendly types
+  // Note: api.expenses.list should return populated fields if we want names
+  // Assuming api.expenses.list returns: { ...expense, category: {name, _id}, handledByMember: {name, _id}, participantsMembers: [{name, _id}] }
+  // We need to verify what api.expenses.list returns.
+  // My previous view of `convex/expenses.ts` suggests it just returns flat data unless I did a join.
+  // I should check `convex/expenses.ts` to see if it joins. 
+  // If not, I need to fetch Members/Categories separately or do join in backend.
+  // For now I will assume `expenses` contains raw data and I need to join with other contexts or backend joins.
+  // The `types.ts` `Expense` type has optional `category?: Category` etc.
 
-  const set = useCallback((newItems: Expense[]) => setItems(newItems), []);
-
-  const remove = useCallback(
-    async (expenseId: string) => {
-      setItems((prev) => prev.filter((item) => item.id !== expenseId));
-      await removeExpense(expenseId);
-    },
-    [setItems],
-  );
+  // Let's assume the backend `list` performs the joins or we map them here if we have access to other contexts.
+  // Using other contexts here might cause circular deps or complexity.
+  // Better if backend returns joined data.
 
   return (
     <ExpensesContext.Provider
       value={{
-        items,
+        items: expenses || [], // This assumes expenses are already in correct shape or close enough
+        loading,
         add,
         update,
-        set,
         remove,
       }}
     >

@@ -1,26 +1,21 @@
 "use client";
 
-import * as db from "@/lib/db/groups";
 import type { Group } from "@/lib/types";
+import { useMutation, useQuery } from "convex/react";
+import { useParams } from "next/navigation";
 import type React from "react";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useMemo } from "react";
+import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
 
 type GroupsContextType = {
   groups: Group[];
   currentGroup?: Group;
   loading: boolean;
-  fetchGroups: () => Promise<void>;
-  getGroupDetail: (groupId: string) => Promise<Group | null>;
   addGroup: (
-    group: Omit<Group, "id" | "created_at">,
+    group: { name: string },
     profileId: string,
-  ) => Promise<Group | null>;
+  ) => Promise<string | null>;
 };
 
 const GroupsContext = createContext<GroupsContextType | undefined>(undefined);
@@ -28,44 +23,52 @@ const GroupsContext = createContext<GroupsContextType | undefined>(undefined);
 export const GroupsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [groups, setGroups] = useState<Group[]>([]);
-  const [currentGroup, setCurrentGroup] = useState<Group>();
-  const [loading, setLoading] = useState(false);
+  const params = useParams();
+  const groupId = params?.id as Id<"groups"> | undefined;
 
-  const fetchGroups = useCallback(async () => {
-    setLoading(true);
-    const data = await db.getGroups();
-    setGroups(data);
-    setLoading(false);
-  }, []);
-
-  const getGroupDetail = useCallback(async (groupId: string) => {
-    setLoading(true);
-    const detail = await db.getGroupDetail(groupId);
-    setLoading(false);
-    setCurrentGroup(detail);
-    return detail || null;
-  }, []);
-
-  const addGroup = useCallback(
-    async (group: Omit<Group, "id" | "created_at">, profileId: string) => {
-      setLoading(true);
-      const newGroup = await db.addGroup(group, profileId);
-      if (newGroup) setGroups((prev) => [...prev, newGroup]);
-      setLoading(false);
-      return newGroup;
-    },
-    [],
+  const groups = useQuery(api.groups.list);
+  const currentGroupQuery = useQuery(
+    api.groups.get,
+    groupId ? { id: groupId } : "skip",
   );
+  const createGroup = useMutation(api.groups.create);
+
+  const loading = groups === undefined;
+
+  const addGroup = async (
+    group: { name: string },
+    profileId: string, // Unused in new impl but kept for signature compatibility if possible, or remove.
+  ) => {
+    // profileId is handled by auth now.
+    const newGroupId = await createGroup({ name: group.name });
+    return newGroupId;
+  };
+
+  const currentGroup = currentGroupQuery || undefined;
+
+  // Adapt Convex return type to App type
+  const adaptedGroups = useMemo(() => {
+    return (groups || []).map((g) => ({
+      ...g,
+      // Map legacy field if needed, but we should prefer _id
+      id: g._id,
+    }));
+  }, [groups]);
+
+  const adaptedCurrentGroup = useMemo(() => {
+    if (!currentGroup) return undefined;
+    return {
+      ...currentGroup,
+      id: currentGroup._id,
+    };
+  }, [currentGroup]);
 
   return (
     <GroupsContext.Provider
       value={{
-        groups,
-        currentGroup,
+        groups: adaptedGroups,
+        currentGroup: adaptedCurrentGroup,
         loading,
-        fetchGroups,
-        getGroupDetail,
         addGroup,
       }}
     >
