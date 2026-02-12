@@ -30,15 +30,15 @@ export function Groups() {
             </div>
           ) : (
             groups.map((item) => (
-              <Link key={item.id} href={`/groups/${item.id}`}>
+              <Link key={item._id} href={`/groups/${item._id}`}>
                 <Card className="hover:shadow-lg transition-shadow duration-200 cursor-pointer">
                   <CardHeader>
                     <CardTitle className="text-lg font-semibold truncate">
                       {item.name}
                     </CardTitle>
                     <CardDescription className="text-sm text-gray-500">
-                      {item.created_at
-                        ? format(new Date(item.created_at), "PP")
+                      {item._creationTime
+                        ? format(new Date(item._creationTime), "PP")
                         : "Unknown date"}
                     </CardDescription>
                   </CardHeader>

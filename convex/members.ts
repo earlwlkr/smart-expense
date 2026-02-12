@@ -34,6 +34,16 @@ export const list = query({
     },
 });
 
+export const update = mutation({
+    args: { id: v.id("members"), name: v.string() },
+    handler: async (ctx, args) => {
+        const userId = await getAuthUserId(ctx);
+        if (!userId) throw new Error("Unauthorized");
+
+        await ctx.db.patch(args.id, { name: args.name });
+    },
+});
+
 export const remove = mutation({
     args: { id: v.id("members") },
     handler: async (ctx, args) => {

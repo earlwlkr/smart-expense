@@ -84,14 +84,20 @@ export const list = query({
         const categoryMap = new Map(categories.map(c => [c._id, c]));
         const memberMap = new Map(members.map(m => [m._id, m]));
 
-        return expenses.map(expense => ({
-            ...expense,
-            id: expense._id, // map _id to id for frontend compatibility
-            amount: expense.amount.toString(), // convert back to string for frontend
-            category: expense.categoryId ? categoryMap.get(expense.categoryId) : undefined,
-            handledBy: expense.handledBy ? memberMap.get(expense.handledBy) : undefined,
-            participants: expense.participants.map(id => memberMap.get(id)).filter(Boolean),
-        }));
+        return expenses.map(expense => {
+            const category = expense.categoryId ? categoryMap.get(expense.categoryId) : undefined;
+            const handledBy = expense.handledBy ? memberMap.get(expense.handledBy) : undefined;
+            const participants = expense.participants.map(id => memberMap.get(id)).filter((m): m is any => m !== undefined);
+
+            return {
+                ...expense,
+                id: expense._id,
+                amount: expense.amount,
+                category: category ? { ...category, id: category._id } : undefined,
+                handledBy: handledBy ? { ...handledBy, id: handledBy._id } : undefined,
+                participants: participants.map(p => ({ ...p, id: p._id })),
+            };
+        });
     },
 });
 
@@ -102,5 +108,53 @@ export const remove = mutation({
         if (!userId) throw new Error("Unauthorized");
 
         await ctx.db.delete(args.id);
+    },
+});
+export const listPublic = query({
+    args: { token: v.string() },
+    handler: async (ctx, args) => {
+        const tokenDoc = await ctx.db
+            .query("share_tokens")
+            .withIndex("by_token", (q) => q.eq("token", args.token))
+            .unique();
+
+        if (!tokenDoc || tokenDoc.disabled) {
+            return null;
+        }
+
+        const groupId = tokenDoc.groupId;
+        const group = await ctx.db.get(groupId);
+        if (!group) return null;
+
+        const expenses = await ctx.db
+            .query("expenses")
+            .withIndex("by_groupId", (q) => q.eq("groupId", groupId))
+            .collect();
+
+        const categories = await ctx.db
+            .query("categories")
+            .filter((q) => q.eq(q.field("groupId"), groupId))
+            .collect();
+
+        const members = await ctx.db
+            .query("members")
+            .filter((q) => q.eq(q.field("groupId"), groupId))
+            .collect();
+
+        const categoryMap = new Map(categories.map(c => [c._id, c]));
+        const memberMap = new Map(members.map(m => [m._id, m]));
+
+        return {
+            groupName: group.name,
+            members: members.map(m => ({ ...m, id: m._id })),
+            expenses: expenses.map(expense => ({
+                ...expense,
+                id: expense._id,
+                amount: expense.amount,
+                category: expense.categoryId ? categoryMap.get(expense.categoryId) : undefined,
+                handledBy: expense.handledBy ? memberMap.get(expense.handledBy) : undefined,
+                participants: expense.participants.map(id => memberMap.get(id)).filter(Boolean),
+            })),
+        };
     },
 });

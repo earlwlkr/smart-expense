@@ -15,6 +15,7 @@ type MembersContextType = {
     groupId: string,
     profileId?: string,
   ) => Promise<void>;
+  updateMembers: (id: string, name: string) => Promise<void>;
   removeMember: (id: string) => Promise<void>;
 };
 
@@ -28,6 +29,7 @@ export const MembersProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const members = useQuery(api.members.list, groupId ? { groupId } : "skip");
   const createMember = useMutation(api.members.create);
+  const updateMemberMutation = useMutation(api.members.update);
   const deleteMember = useMutation(api.members.remove);
 
   const loading = members === undefined;
@@ -44,14 +46,20 @@ export const MembersProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
+  const updateMembers = async (id: string, name: string) => {
+    await updateMemberMutation({ id: id as Id<"members">, name });
+  };
+
   const removeMember = async (id: string) => {
     await deleteMember({ id: id as Id<"members"> });
   };
 
   const adaptedMembers = useMemo(() => {
     return (members || []).map((m) => ({
-      id: m._id,
+      _id: m._id,
       name: m.name,
+      groupId: m.groupId,
+      _creationTime: m._creationTime
     }));
   }, [members]);
 
@@ -61,6 +69,7 @@ export const MembersProvider: React.FC<{ children: React.ReactNode }> = ({
         members: adaptedMembers,
         loading,
         addMember,
+        updateMembers,
         removeMember,
       }}
     >

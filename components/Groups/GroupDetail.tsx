@@ -11,8 +11,6 @@ import { useCategories } from "@/lib/contexts/CategoriesContext";
 import { useExpensesStore } from "@/lib/contexts/ExpensesContext";
 import { useGroups } from "@/lib/contexts/GroupsContext";
 import { useMembers } from "@/lib/contexts/MembersContext";
-import { useShareTokens } from "@/lib/contexts/ShareTokensContext";
-import { useTokens } from "@/lib/contexts/TokensContext";
 
 
 export function GroupDetail({ groupId }: { groupId: string }) {

@@ -35,7 +35,7 @@ export function AnalyticsView() {
         const totals: Record<string, number> = {};
         for (const expense of expenses) {
             const categoryName = expense.category?.name || "Uncategorized";
-            const amount = Number.parseFloat(expense.amount);
+            const amount = expense.amount;
             if (!Number.isNaN(amount)) {
                 totals[categoryName] = (totals[categoryName] || 0) + amount;
             }
@@ -54,7 +54,7 @@ export function AnalyticsView() {
 
         for (const expense of expenses) {
             const payerName = expense.handledBy?.name;
-            const amount = Number.parseFloat(expense.amount);
+            const amount = expense.amount;
             if (payerName && !Number.isNaN(amount)) {
                 totals[payerName] = (totals[payerName] || 0) + amount;
             }
@@ -67,7 +67,7 @@ export function AnalyticsView() {
 
     const totalSpending = useMemo(() => {
         return expenses.reduce((acc, curr) => {
-            const amount = Number.parseFloat(curr.amount);
+            const amount = curr.amount;
             return acc + (Number.isNaN(amount) ? 0 : amount);
         }, 0);
     }, [expenses]);
@@ -79,8 +79,8 @@ export function AnalyticsView() {
     const highestExpense = useMemo(() => {
         if (expenses.length === 0) return null;
         return expenses.reduce((prev, current) => {
-            const prevAmount = Number.parseFloat(prev.amount) || 0;
-            const currentAmount = Number.parseFloat(current.amount) || 0;
+            const prevAmount = prev.amount || 0;
+            const currentAmount = current.amount || 0;
             return prevAmount > currentAmount ? prev : current;
         });
     }, [expenses]);
@@ -152,12 +152,12 @@ export function AnalyticsView() {
                             className="text-2xl font-bold truncate"
                             title={
                                 highestExpense
-                                    ? formatCurrency(Number.parseFloat(highestExpense.amount))
+                                    ? formatCurrency(highestExpense.amount)
                                     : formatCurrency(0)
                             }
                         >
                             {highestExpense
-                                ? formatCurrency(Number.parseFloat(highestExpense.amount))
+                                ? formatCurrency(highestExpense.amount)
                                 : formatCurrency(0)}
                         </div>
                         <p

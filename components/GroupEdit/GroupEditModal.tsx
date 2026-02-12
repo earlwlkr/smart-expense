@@ -27,12 +27,7 @@ export function GroupEditModal() {
   return isSmallDevice ? (
     <Sheet
       open={open}
-      onOpenChange={(opening) => {
-        if (!opening) {
-          updateMembers(members);
-        }
-        setOpen(opening);
-      }}
+      onOpenChange={setOpen}
     >
       <SheetTrigger asChild>
         <div>

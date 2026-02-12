@@ -1,164 +1,72 @@
+"use client";
+
 import { ShareGroupView } from "@/components/Share/ShareGroupView";
-import { createClient } from "@/lib/supabase/server";
 import type { Expense, Member } from "@/lib/types";
-import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { PageLoading } from "@/components/ui/page-loading";
 
-type SharePageParams = {
-  token: string;
-};
+export default function SharePage() {
+  const params = useParams();
+  const token = params.token as string;
 
-type ShareTokenRow = {
-  id: string;
-  group_id: string;
-  disabled: boolean;
-  groups?: {
-    id: string;
-    name: string;
-  } | null;
-};
+  const publicData = useQuery(api.expenses.listPublic, { token });
 
-type ExpenseRow = {
-  id: string;
-  name: string;
-  amount: string;
-  date: string;
-  categories:
-    | { id: string; name: string }
-    | { id: string; name: string }[]
-    | null;
-  handled_by:
-    | { id: string; name: string }
-    | { id: string; name: string }[]
-    | null;
-};
-
-type ParticipantRow = {
-  expense_id: string;
-  members: Member | Member[] | null;
-};
-
-export default async function SharePage({
-  params,
-}: {
-  params: Promise<SharePageParams>;
-}) {
-  const { token } = await params;
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
-
-  const { data: tokenRow } = await supabase
-    .from("share_tokens")
-    .select(
-      `
-        id,
-        group_id,
-        disabled,
-        groups (
-          id,
-          name
-        )
-      `,
-    )
-    .eq("id", token)
-    .single();
-
-  const shareToken = tokenRow as ShareTokenRow | null;
-
-  if (!shareToken) {
-    notFound();
+  if (publicData === undefined) {
+    return <PageLoading message="Loading shared group..." />;
   }
 
-  if (shareToken.disabled) {
+  if (publicData === null) {
     notFound();
+    return null; // unreachable but for TS
   }
 
-  const groupId = shareToken.group_id;
-  const groupName = shareToken.groups?.name || "Shared group";
+  const { groupName, members, expenses } = publicData;
 
-  const { data: membersData } = await supabase
-    .from("members")
-    .select("id, name")
-    .eq("group_id", groupId)
-    .order("name");
-
-  const { data: expensesData } = await supabase
-    .from("expenses")
-    .select(
-      `
-        id,
-        name,
-        amount,
-        date,
-        categories (
-          id,
-          name
-        ),
-        handled_by (
-          id,
-          name
-        )
-      `,
-    )
-    .eq("group_id", groupId)
-    .order("date");
-
-  const expenseIds = expensesData?.map((expense) => expense.id) || [];
-  const participantsResponse =
-    expenseIds.length > 0
-      ? await supabase
-          .from("participants")
-          .select(
-            `
-        id,
-        expense_id,
-        members (
-          id,
-          name
-        )
-      `,
-          )
-          .in("expense_id", expenseIds)
-      : { data: [] };
-  const participantsData = (participantsResponse.data ??
-    []) as ParticipantRow[];
-
-  const expenseRows = (expensesData ?? []) as ExpenseRow[];
-  const participantRows = participantsData;
-
-  const expenses: Expense[] = expenseRows.map((expense) => ({
+  const adaptedExpenses: Expense[] = (expenses as any[]).map((expense) => ({
+    _id: expense.id,
+    _creationTime: expense._creationTime || 0,
     id: expense.id,
     name: expense.name,
-    amount: expense.amount,
+    amount: Number.parseFloat(expense.amount),
     date: new Date(expense.date),
-    category: Array.isArray(expense.categories)
-      ? expense.categories[0]
-      : expense.categories || undefined,
-    handledBy: Array.isArray(expense.handled_by)
-      ? expense.handled_by[0]
-      : expense.handled_by || undefined,
-    participants: participantRows
-      .filter((participant) => participant.expense_id === expense.id)
-      .map((participant) => {
-        const member = participant.members;
-        if (!member) {
-          return null;
-        }
-        if (Array.isArray(member)) {
-          return member[0] ?? null;
-        }
-        return member;
-      })
-      .filter((member): member is Member => member !== null),
+    category: expense.category ? {
+      _id: expense.category._id,
+      _creationTime: expense.category._creationTime || 0,
+      id: expense.category._id,
+      name: expense.category.name,
+      groupId: expense.category.groupId
+    } : undefined,
+    handledBy: expense.handledBy ? {
+      _id: expense.handledBy._id,
+      _creationTime: expense.handledBy._creationTime || 0,
+      id: expense.handledBy._id,
+      name: expense.handledBy.name,
+      groupId: expense.handledBy.groupId
+    } : undefined,
+    participants: (expense.participants as any[]).map(p => ({
+      _id: p._id,
+      _creationTime: p._creationTime || 0,
+      id: p._id,
+      name: p.name,
+      groupId: p.groupId
+    })),
   }));
 
-  const members: Member[] = (membersData as Member[]) || [];
+  const adaptedMembers: Member[] = (members as any[]).map(m => ({
+    id: m._id,
+    name: m.name,
+    groupId: m.groupId,
+    _id: m._id,
+    _creationTime: m._creationTime
+  }));
 
   return (
     <ShareGroupView
       groupName={groupName}
-      expenses={expenses}
-      members={members}
+      expenses={adaptedExpenses}
+      members={adaptedMembers}
     />
   );
 }

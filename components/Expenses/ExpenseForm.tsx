@@ -94,7 +94,7 @@ export function ExpenseForm({
     setIsSubmitting(true);
     try {
       if (expense) {
-        await updateExpense(expense._id, {
+        await updateExpense(expense._id as Id<"expenses">, {
           name: values.name,
           amount: Number(values.amount),
           date: values.date,
@@ -316,7 +316,7 @@ export function ExpenseForm({
               onClick={async () => {
                 setIsDeleting(true);
                 try {
-                  await removeExpense(expense._id);
+                  await removeExpense(expense._id as Id<"expenses">);
                   onClose();
                 } catch (error) {
                   console.error("Error deleting expense:", error);

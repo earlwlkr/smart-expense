@@ -13,62 +13,45 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { PageLoading } from "@/components/ui/page-loading";
-import { getProfile, updateProfile } from "@/lib/db/profiles";
-import { createClient } from "@/lib/supabase/client";
-import type { Profile } from "@/lib/types";
 import { ArrowLeft, Check } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useState } from "react";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useAuthActions } from "@convex-dev/auth/react";
 
 export default function SettingsPage() {
   const router = useRouter();
-  const supabase = createClient();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const { signOut } = useAuthActions();
+  const me = useQuery(api.users.me);
+  const updateProfile = useMutation(api.users.update);
+
+  const [name, setName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
-  const firstNameId = useId();
-  const lastNameId = useId();
+  const nameId = useId();
+
+  const isLoading = me === undefined;
 
   useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const profileData = await getProfile();
-        if (profileData) {
-          setProfile(profileData);
-          setFirstName(profileData.firstName);
-          setLastName(profileData.lastName);
-        }
-      } catch (error) {
-        console.error("Error loading profile:", error);
-        setMessage({ type: "error", text: "Failed to load profile" });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadProfile();
-  }, []);
+    if (me?.name) {
+      setName(me.name);
+    }
+  }, [me]);
 
   const handleSave = async () => {
-    if (!profile) return;
-
     setIsSaving(true);
     setMessage(null);
 
     try {
-      const updatedProfile = await updateProfile({
-        firstName: firstName.trim() || undefined,
-        lastName: lastName.trim() || undefined,
+      await updateProfile({
+        name: name.trim() || undefined,
       });
 
-      setProfile(updatedProfile);
       setMessage({ type: "success", text: "Profile updated successfully!" });
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -79,7 +62,7 @@ export default function SettingsPage() {
   };
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    await signOut();
     router.push("/login");
   };
 
@@ -118,23 +101,14 @@ export default function SettingsPage() {
             <CardDescription>Update your personal information</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <div className="space-y-2">
-                <Label htmlFor={firstNameId}>First Name</Label>
+                <Label htmlFor={nameId}>Display Name</Label>
                 <Input
-                  id={firstNameId}
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="Enter your first name"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor={lastNameId}>Last Name (Optional)</Label>
-                <Input
-                  id={lastNameId}
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Enter your last name (optional)"
+                  id={nameId}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter your name"
                 />
               </div>
             </div>
@@ -160,10 +134,11 @@ export default function SettingsPage() {
             )}
 
             <div className="flex gap-2">
-              <Button
+              <button
+                type="button"
                 onClick={handleSave}
                 disabled={isSaving}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md disabled:opacity-50"
               >
                 {isSaving ? (
                   <>
@@ -176,7 +151,7 @@ export default function SettingsPage() {
                     Save Changes
                   </>
                 )}
-              </Button>
+              </button>
             </div>
           </CardContent>
         </Card>

@@ -45,7 +45,7 @@ export const CategoriesProvider: React.FC<{ children: React.ReactNode }> = ({
                 name,
                 groupId: targetGroupId as Id<"groups">,
             });
-            results.push({ id, name });
+            results.push({ _id: id, name, groupId: targetGroupId, _creationTime: 0 } as Category);
         }
         return results;
     };
@@ -56,8 +56,10 @@ export const CategoriesProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const adaptedCategories = useMemo(() => {
         return (categories || []).map((c) => ({
-            id: c._id,
+            _id: c._id,
             name: c.name,
+            groupId: c.groupId,
+            _creationTime: c._creationTime
         }));
     }, [categories]);
 

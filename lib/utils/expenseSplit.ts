@@ -15,7 +15,7 @@ export function calculateSplitDetails(expenses: Expense[]): SplitDetails {
 
     const share =
       expense.participants.length > 0
-        ? Number(expense.amount) / expense.participants.length
+        ? expense.amount / expense.participants.length
         : 0;
 
     expense.participants.forEach((participant) => {
@@ -26,7 +26,7 @@ export function calculateSplitDetails(expenses: Expense[]): SplitDetails {
 
     // @ts-ignore - _id is a string at runtime
     const hId = expense.handledBy._id as string;
-    acc[hId] = (acc[hId] || 0) + Number(expense.amount);
+    acc[hId] = (acc[hId] || 0) + expense.amount;
 
     return acc;
   }, {});

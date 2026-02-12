@@ -80,10 +80,17 @@ export const ExpensesProvider = ({ children }: { children: React.ReactNode }) =>
   // Using other contexts here might cause circular deps or complexity.
   // Better if backend returns joined data.
 
+  const adaptedExpenses: Expense[] = useMemo(() => {
+    return (expenses || []).map((e: any) => ({
+      ...e,
+      date: new Date(e.date),
+    }));
+  }, [expenses]);
+
   return (
     <ExpensesContext.Provider
       value={{
-        items: expenses || [], // This assumes expenses are already in correct shape or close enough
+        items: adaptedExpenses,
         loading,
         add,
         update,

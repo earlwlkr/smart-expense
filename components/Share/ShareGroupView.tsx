@@ -31,11 +31,11 @@ export function ShareGroupView({
   const splitDetails = calculateSplitDetails(expenses);
   const splitGroups = Object.entries(splitDetails)
     .map(([fromId, details]) => {
-      const fromMember = members.find((member) => member.id === fromId);
+      const fromMember = members.find((member) => member._id === fromId);
       const items = Object.entries(details)
         .filter(([, amount]) => amount > 0)
         .map(([toId, amount]) => {
-          const toMember = members.find((member) => member.id === toId);
+          const toMember = members.find((member) => member._id === toId);
           return {
             id: `${fromId}-${toId}`,
             to: toMember?.name || "",
@@ -88,7 +88,7 @@ export function ShareGroupView({
               </p>
             ) : (
               expenses.map((expense) => (
-                <div key={expense.id} className="flex flex-col gap-2 p-4">
+                <div key={expense._id} className="flex flex-col gap-2 p-4">
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
                       <p className="text-lg font-medium">{expense.name}</p>
