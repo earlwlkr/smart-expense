@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { LoadingSpinner } from "./ui/loading-spinner";
+import { SettingsModal } from "./SettingsModal";
 
 export default function Navbar() {
   const router = useRouter();
@@ -25,6 +26,7 @@ export default function Navbar() {
   const { signOut } = useAuthActions();
   const me = useQuery(api.users.me);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { currentGroup } = useGroups();
   const isSharePage = pathname.startsWith("/share/");
 
@@ -71,11 +73,9 @@ export default function Navbar() {
                 {me.name || me.email || "My Account"}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/settings" className="flex items-center">
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
-                </Link>
+              <DropdownMenuItem onSelect={() => setIsSettingsOpen(true)}>
+                <Settings className="mr-2 h-4 w-4" />
+                Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -93,6 +93,12 @@ export default function Navbar() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+      )}
+      {me && (
+        <SettingsModal
+          open={isSettingsOpen}
+          onOpenChange={setIsSettingsOpen}
+        />
       )}
     </div>
   );
