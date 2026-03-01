@@ -1,6 +1,39 @@
-## Supabase setup
+# smart-expense
 
-The application expects a `share_tokens` table for managing read-only sharing links. You can create it in your Supabase project with the following SQL:
+Group expense tracking app for shared spending scenarios (trips, roommates, events).
+
+Core capabilities:
+- create groups and manage members
+- add and categorize expenses
+- split balances between members
+- analytics view (category/member breakdown)
+- share read-only group views via links
+
+## Tech stack
+- Next.js (App Router)
+- React + TypeScript
+- Convex (app data and realtime state)
+- Supabase (share token storage)
+
+## Required environment variables
+Create `.env.local` with:
+
+```env
+NEXT_PUBLIC_CONVEX_URL=
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+```
+
+Optional (AI parsing endpoints used by API routes):
+
+```env
+HF_API_KEY=
+OPENAI_API_KEY=
+```
+
+## Supabase setup
+The app expects a `share_tokens` table for read-only sharing links.
 
 ```sql
 create table if not exists public.share_tokens (
@@ -17,10 +50,18 @@ create index if not exists share_tokens_group_id_idx on public.share_tokens (gro
 create index if not exists share_tokens_active_idx on public.share_tokens (group_id, disabled, expires_at);
 ```
 
-If you prefer using the Supabase dashboard:
+Make sure the key used by the app has `select`, `insert`, and `update` access to `public.share_tokens` through RLS policies.
 
-1. Navigate to **SQL Editor → New query**.
-2. Paste the script above and click **Run**.
-3. Confirm the new table appears under **Table editor → public → share_tokens**.
+## Run locally
+```bash
+pnpm install
+pnpm dev
+```
 
-Make sure your service role or anon key used by the app has `select`, `insert`, and `update` access to `public.share_tokens` through Row Level Security policies.
+## Scripts
+- `pnpm dev`
+- `pnpm build`
+- `pnpm start`
+- `pnpm lint`
+- `pnpm format`
+- `pnpm check`
