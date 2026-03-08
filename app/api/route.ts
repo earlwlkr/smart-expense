@@ -51,6 +51,7 @@ function tryParseJsonObject(
 
 function parseCategorization(raw: string): ExpenseCategorization | null {
   const trimmed = raw.trim();
+  const amountPattern = /^(\d+(?:[.,]\d+)?)\s*(k)?$/i;
 
   // Prefer JSON output when the model returns valid structured content.
   const parsed = tryParseJsonObject(trimmed);
@@ -60,10 +61,18 @@ function parseCategorization(raw: string): ExpenseCategorization | null {
     typeof parsed.amount === "string" &&
     typeof parsed.category === "string"
   ) {
+    const name = parsed.name.trim();
+    const amount = parsed.amount.trim();
+    const category = parsed.category.trim();
+
+    if (!name || !category || !amountPattern.test(amount)) {
+      return null;
+    }
+
     return {
-      name: parsed.name.trim(),
-      amount: parsed.amount.trim(),
-      category: parsed.category.trim(),
+      name,
+      amount,
+      category,
     };
   }
 
@@ -72,6 +81,9 @@ function parseCategorization(raw: string): ExpenseCategorization | null {
   );
   if (bracketMatches.length >= 3) {
     const [name, amount, category] = bracketMatches;
+    if (!name || !category || !amountPattern.test(amount)) {
+      return null;
+    }
     return { name, amount, category };
   }
 
