@@ -15,25 +15,56 @@ type UpstreamResponse = {
   }[];
 };
 
+const MAX_QUERY_LENGTH = 250;
+const UPSTREAM_TIMEOUT_MS = 12000;
+
+function stripCodeFence(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed.startsWith("```")) {
+    return trimmed;
+  }
+
+  const match = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+  return match?.[1]?.trim() ?? trimmed;
+}
+
+function tryParseJsonObject(
+  raw: string,
+): Partial<ExpenseCategorization> | null {
+  const normalized = stripCodeFence(raw);
+
+  try {
+    return JSON.parse(normalized) as Partial<ExpenseCategorization>;
+  } catch {
+    const objectMatch = normalized.match(/\{[\s\S]*\}/);
+    if (!objectMatch) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(objectMatch[0]) as Partial<ExpenseCategorization>;
+    } catch {
+      return null;
+    }
+  }
+}
+
 function parseCategorization(raw: string): ExpenseCategorization | null {
   const trimmed = raw.trim();
 
   // Prefer JSON output when the model returns valid structured content.
-  try {
-    const parsed = JSON.parse(trimmed) as Partial<ExpenseCategorization>;
-    if (
-      typeof parsed.name === "string" &&
-      typeof parsed.amount === "string" &&
-      typeof parsed.category === "string"
-    ) {
-      return {
-        name: parsed.name.trim(),
-        amount: parsed.amount.trim(),
-        category: parsed.category.trim(),
-      };
-    }
-  } catch {
-    // Ignore and try fallback format parsing.
+  const parsed = tryParseJsonObject(trimmed);
+  if (
+    parsed &&
+    typeof parsed.name === "string" &&
+    typeof parsed.amount === "string" &&
+    typeof parsed.category === "string"
+  ) {
+    return {
+      name: parsed.name.trim(),
+      amount: parsed.amount.trim(),
+      category: parsed.category.trim(),
+    };
   }
 
   const bracketMatches = [...trimmed.matchAll(/\[(.*?)\]/g)].map((m) =>
@@ -57,6 +88,9 @@ You will only reply with the name, cost, category in JSON format, and nothing el
   }
 
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS);
+
     const response = await fetch(
       "https://router.huggingface.co/fireworks-ai/v1/chat/completions",
       {
@@ -76,8 +110,11 @@ You will only reply with the name, cost, category in JSON format, and nothing el
           model: "accounts/fireworks/models/deepseek-v3-0324",
           stream: false,
         }),
+        signal: controller.signal,
       },
-    );
+    ).finally(() => {
+      clearTimeout(timeout);
+    });
 
     if (!response.ok) {
       console.error("Upstream request failed", {
@@ -97,13 +134,25 @@ You will only reply with the name, cost, category in JSON format, and nothing el
 
     return parseCategorization(raw);
   } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      console.error("Upstream request timed out");
+      return null;
+    }
     console.error("Failed to categorize expense", error);
     return null;
   }
 }
 
 export async function POST(request: Request) {
-  const body = (await request.json()) as { q?: unknown };
+  let body: { q?: unknown };
+  try {
+    body = (await request.json()) as { q?: unknown };
+  } catch {
+    return NextResponse.json(
+      { error: "Request body must be valid JSON." },
+      { status: 400 },
+    );
+  }
 
   if (typeof body.q !== "string" || body.q.trim().length === 0) {
     return NextResponse.json(
@@ -112,7 +161,15 @@ export async function POST(request: Request) {
     );
   }
 
-  const res = await query(body.q);
+  const normalizedQuery = body.q.trim();
+  if (normalizedQuery.length > MAX_QUERY_LENGTH) {
+    return NextResponse.json(
+      { error: `Field 'q' must be at most ${MAX_QUERY_LENGTH} characters.` },
+      { status: 400 },
+    );
+  }
+
+  const res = await query(normalizedQuery);
 
   if (!res) {
     return NextResponse.json(
