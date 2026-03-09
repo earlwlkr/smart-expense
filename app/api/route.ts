@@ -76,8 +76,9 @@ function parseCategorization(raw: string): ExpenseCategorization | null {
     };
   }
 
-  const bracketMatches = [...trimmed.matchAll(/\[(.*?)\]/g)].map((m) =>
-    m[1].trim(),
+  const bracketMatches = Array.from(
+    trimmed.matchAll(/\[(.*?)\]/g),
+    (match) => match[1].trim(),
   );
   if (bracketMatches.length >= 3) {
     const [name, amount, category] = bracketMatches;
