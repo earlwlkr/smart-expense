@@ -1,6 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { resolveMemberNamesFromProfiles } from "./memberNames";
 
 export const create = mutation({
     args: {
@@ -80,14 +81,18 @@ export const list = query({
             .query("members")
             .filter((q) => q.eq(q.field("groupId"), args.groupId))
             .collect();
+        const resolvedMembers = await resolveMemberNamesFromProfiles(ctx, members);
 
         const categoryMap = new Map(categories.map(c => [c._id, c]));
-        const memberMap = new Map(members.map(m => [m._id, m]));
+        const memberMap = new Map(resolvedMembers.map(m => [m._id, m]));
 
         return expenses.map(expense => {
             const category = expense.categoryId ? categoryMap.get(expense.categoryId) : undefined;
             const handledBy = expense.handledBy ? memberMap.get(expense.handledBy) : undefined;
-            const participants = expense.participants.map(id => memberMap.get(id)).filter((m): m is any => m !== undefined);
+            const participants = expense.participants.flatMap((id) => {
+                const member = memberMap.get(id);
+                return member ? [member] : [];
+            });
 
             return {
                 ...expense,
@@ -140,13 +145,14 @@ export const listPublic = query({
             .query("members")
             .filter((q) => q.eq(q.field("groupId"), groupId))
             .collect();
+        const resolvedMembers = await resolveMemberNamesFromProfiles(ctx, members);
 
         const categoryMap = new Map(categories.map(c => [c._id, c]));
-        const memberMap = new Map(members.map(m => [m._id, m]));
+        const memberMap = new Map(resolvedMembers.map(m => [m._id, m]));
 
         return {
             groupName: group.name,
-            members: members.map(m => ({ ...m, id: m._id })),
+            members: resolvedMembers.map(m => ({ ...m, id: m._id })),
             expenses: expenses.map(expense => ({
                 ...expense,
                 id: expense._id,

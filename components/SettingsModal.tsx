@@ -16,7 +16,6 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { api } from "@/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { Check } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 
 interface SettingsModalProps {
@@ -25,7 +24,6 @@ interface SettingsModalProps {
 }
 
 export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
-    const router = useRouter();
     const me = useQuery(api.users.me);
     const updateProfile = useMutation(api.users.update);
 
@@ -60,13 +58,7 @@ export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
                 name: name.trim() || undefined,
             });
 
-            setMessage({ type: "success", text: "Profile updated successfully!" });
-
-            // Clear success message after 3 seconds
-            setTimeout(() => {
-                if (open) setMessage(null);
-            }, 3000);
-
+            onOpenChange(false);
         } catch (error) {
             console.error("Error updating profile:", error);
             setMessage({ type: "error", text: "Failed to update profile" });

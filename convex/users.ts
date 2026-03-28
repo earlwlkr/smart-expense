@@ -28,7 +28,7 @@ export const update = mutation({
         await ctx.db.patch(userId, data);
 
         // Sync name to members if name is updated
-        if (args.name) {
+        if (args.name !== undefined) {
             const members = await ctx.db
                 .query("members")
                 .filter((q) => q.eq(q.field("profileId"), userId))

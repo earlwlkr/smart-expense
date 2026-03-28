@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { getPreferredUserName } from "./memberNames";
 
 export const getInviteToken = query({
     args: { groupId: v.id("groups") },
@@ -109,7 +110,7 @@ export const joinGroupWithToken = mutation({
             await ctx.db.insert("members", {
                 groupId: tokenDoc.groupId,
                 profileId: userId,
-                name: (user as any)?.name || "New Member",
+                name: getPreferredUserName(user) || "New Member",
             });
         }
 

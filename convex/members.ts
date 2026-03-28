@@ -1,6 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { getPreferredUserName, resolveMemberNamesFromProfiles } from "./memberNames";
 
 export const create = mutation({
     args: {
@@ -12,8 +13,11 @@ export const create = mutation({
         const userId = await getAuthUserId(ctx);
         if (!userId) throw new Error("Unauthorized");
 
+        const linkedUser = args.profileId ? await ctx.db.get(args.profileId) : null;
+        const resolvedName = getPreferredUserName(linkedUser) ?? args.name;
+
         const memberId = await ctx.db.insert("members", {
-            name: args.name,
+            name: resolvedName,
             groupId: args.groupId,
             profileId: args.profileId,
         });
@@ -27,10 +31,12 @@ export const list = query({
         const userId = await getAuthUserId(ctx);
         if (!userId) return [];
 
-        return await ctx.db
+        const members = await ctx.db
             .query("members")
             .filter((q) => q.eq(q.field("groupId"), args.groupId))
             .collect();
+
+        return await resolveMemberNamesFromProfiles(ctx, members);
     },
 });
 
@@ -40,7 +46,14 @@ export const update = mutation({
         const userId = await getAuthUserId(ctx);
         if (!userId) throw new Error("Unauthorized");
 
+        const member = await ctx.db.get(args.id);
+        if (!member) throw new Error("Member not found");
+
         await ctx.db.patch(args.id, { name: args.name });
+
+        if (member.profileId && member.profileId === userId) {
+            await ctx.db.patch(userId, { name: args.name });
+        }
     },
 });
 
