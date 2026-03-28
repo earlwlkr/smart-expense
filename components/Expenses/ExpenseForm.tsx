@@ -175,21 +175,17 @@ export function ExpenseForm({
                   defaultValue={field.value}
                   onChange={field.onChange}
                   onCreate={async (name) => {
-                    if (currentGroup) {
-                      const newCategories = await addCategories(currentGroup._id, [
-                        name,
-                      ]);
-                      // Assuming addCategories returns array of categories including _id
-                      // If addCategories returns only IDs or something else, this might need adjustment.
-                      // Currently addCategories in CategoriesContext calls api.categories.create (which returns ID) 
-                      // or if it takes array it might return array of IDs?
-                      // Let's check CategoriesContext.
-                      // If it returns nothing (void), we need to re-fetch or optimistically update?
-                      // The Context uses useQuery so it updates automatically.
-                      // But we need the ID here to set field value.
-                      // api.categories.create returns ID.
-                      // If addCategories calls loop of create, it should return IDs.
-                      // I should check CategoriesContext implementation.
+                    if (!currentGroup) return;
+
+                    const normalizedName = name.trim();
+                    if (!normalizedName) return;
+
+                    const newCategories = await addCategories(currentGroup._id, [
+                      normalizedName,
+                    ]);
+                    const createdId = newCategories?.[0]?._id;
+                    if (createdId) {
+                      field.onChange(createdId);
                     }
                   }}
                   className="w-full"
