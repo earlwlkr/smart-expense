@@ -14,13 +14,11 @@ export default function AppLayout({
     <ConvexAuthNextjsServerProvider>
       <ConvexClientProvider>
         <GroupsProvider>
-          <div className="md:flex md:justify-center">
-            <div className="mt-4 mx-4 md:w-[400px]">
-              <Navbar />
-              <OnboardingModal />
-              {children}
-              <Toaster />
-            </div>
+          <div className="mx-auto mt-4 w-full max-w-4xl px-4">
+            <Navbar />
+            <OnboardingModal />
+            {children}
+            <Toaster />
           </div>
         </GroupsProvider>
       </ConvexClientProvider>
