@@ -27,6 +27,15 @@ const COLORS = [
     "#82ca9d",
 ];
 
+function normalizeTooltipValue(
+    value: number | string | Array<number | string> | ReadonlyArray<number | string> | undefined,
+) {
+    const rawValue = Array.isArray(value) ? value[0] : value;
+    const parsedValue = typeof rawValue === "number" ? rawValue : Number(rawValue ?? 0);
+
+    return Number.isFinite(parsedValue) ? parsedValue : 0;
+}
+
 export function AnalyticsView() {
     const { items: expenses } = useExpensesStore();
     const { members } = useMembers();
@@ -226,7 +235,10 @@ export function AnalyticsView() {
                                         ))}
                                     </Pie>
                                     <Tooltip
-                                        formatter={(value: number) => [formatCurrency(value), "Amount"]}
+                                        formatter={(value) => [
+                                            formatCurrency(normalizeTooltipValue(value)),
+                                            "Amount",
+                                        ]}
                                     />
                                 </PieChart>
                             </ResponsiveContainer>
@@ -268,7 +280,10 @@ export function AnalyticsView() {
                                             borderColor: "var(--border)",
                                             color: "var(--popover-foreground)",
                                         }}
-                                        formatter={(value: number) => [formatCurrency(value), "Amount"]}
+                                        formatter={(value) => [
+                                            formatCurrency(normalizeTooltipValue(value)),
+                                            "Amount",
+                                        ]}
                                     />
                                     <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
                                 </BarChart>
