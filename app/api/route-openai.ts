@@ -1,20 +1,19 @@
 import { NextResponse } from "next/server";
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI from "openai";
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 async function runCompletion(text: string) {
   const prompt = `I want you to act as an expense categorizer. I will provide you with the input ${text}". You will only reply with the cost and category in JSON format, and nothing else. Do not write explanations.`;
   try {
-    const completion = await openai.createCompletion({
-      model: "gpt-3.5-turbo",
-      prompt,
+    const completion = await openai.responses.create({
+      model: "gpt-4.1-mini",
+      input: prompt,
     });
-    console.log(completion.data.choices[0].text);
-    return completion.data.choices[0].text;
+    console.log(completion.output_text);
+    return completion.output_text;
   } catch (error) {
     // if (error.response) {
     //   console.log(error.response.status);
