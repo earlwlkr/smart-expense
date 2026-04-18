@@ -28,8 +28,8 @@ NEXT_PUBLIC_BASE_URL=http://localhost:3000
 Optional (AI parsing endpoints used by API routes):
 
 ```env
-HF_API_KEY=
-OPENAI_API_KEY=
+AI_GATEWAY_API_KEY=
+AI_GATEWAY_MODEL=moonshotai/kimi-k2.5
 ```
 
 ## Supabase setup
