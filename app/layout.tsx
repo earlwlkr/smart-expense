@@ -5,7 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
   title: "Smart Expense",
-  description: "Split expenses with friends, track spending, settle up easily.",
+  description: "Group expense splitter for tracking shared costs, balances, spending patterns, and read-only summaries.",
 };
 
 export default function RootLayout({
