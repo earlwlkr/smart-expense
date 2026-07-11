@@ -1,6 +1,6 @@
 import { extractJsonMiddleware, gateway, wrapLanguageModel } from "ai";
 
-export const DEFAULT_GATEWAY_MODEL = "openai/gpt-5.6-luna";
+export const DEFAULT_GATEWAY_MODEL = "zai/glm-5.2";
 
 export function requireGatewayKey() {
   if (!process.env.AI_GATEWAY_API_KEY) {

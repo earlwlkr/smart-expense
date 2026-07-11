@@ -28,7 +28,7 @@ Optional (AI parsing endpoints used by API routes):
 
 ```env
 AI_GATEWAY_API_KEY=
-AI_GATEWAY_MODEL=openai/gpt-5.6-luna
+AI_GATEWAY_MODEL=zai/glm-5.2
 ```
 
 ## Run locally
